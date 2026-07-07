@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { deletePatient } from "../actions";
+import { createVisit } from "./visits/actions";
+import { FormField, inputClass } from "@/components/FormField";
+import { SubmitButton } from "@/components/SubmitButton";
+import { DataTable } from "@/components/DataTable";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -21,6 +25,12 @@ export default async function PatientDetail({
 
   const owner = p.owner as unknown as { name: string; contact: string | null } | null;
   const hospital = p.hospital as unknown as { name: string; contact: string | null } | null;
+
+  const { data: visits } = await supabase
+    .from("visit")
+    .select("id, visit_date, visit_no, note")
+    .eq("patient_id", id)
+    .order("visit_date", { ascending: false });
 
   const rows: [string, string][] = [
     ["종/품종", [p.species, p.breed].filter(Boolean).join(" / ") || "-"],
@@ -57,9 +67,39 @@ export default async function PatientDetail({
         ))}
       </dl>
 
-      <section>
-        <h2 className="mb-2 text-lg font-medium">진료 회차</h2>
-        <p className="text-sm text-gray-500">Plan 03에서 구현됩니다.</p>
+      <section className="space-y-4">
+        <h2 className="text-lg font-medium">진료 회차</h2>
+        <DataTable
+          headers={["날짜", "회차", "요약", ""]}
+          empty="회차가 없습니다."
+          rows={(visits ?? []).map((v) => [
+            v.visit_date,
+            v.visit_no ?? "-",
+            (v.note ?? "").slice(0, 30) || "-",
+            <Link key="o" href={`/visits/${v.id}`} className="text-blue-600">
+              열기
+            </Link>,
+          ])}
+        />
+        <form
+          action={createVisit.bind(null, p.id)}
+          className="grid max-w-md grid-cols-2 gap-3"
+        >
+          <FormField label="날짜">
+            <input type="date" name="visit_date" className={inputClass} />
+          </FormField>
+          <FormField label="회차">
+            <input name="visit_no" inputMode="numeric" className={inputClass} />
+          </FormField>
+          <div className="col-span-2">
+            <FormField label="진료 내용">
+              <textarea name="note" rows={3} className={inputClass} />
+            </FormField>
+          </div>
+          <div className="col-span-2">
+            <SubmitButton>회차 추가</SubmitButton>
+          </div>
+        </form>
       </section>
     </div>
   );

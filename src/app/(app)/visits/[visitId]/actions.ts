@@ -1,6 +1,7 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { validatePrescriptionInput } from "@/lib/validation/prescription";
+import { BUCKET, imagePath, mediaPath } from "@/lib/storage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -30,5 +31,73 @@ export async function addPrescription(visitId: string, formData: FormData) {
 export async function deletePrescription(visitId: string, id: string) {
   const supabase = await createClient();
   await supabase.from("prescription").delete().eq("id", id);
+  revalidatePath(`/visits/${visitId}`);
+}
+
+async function uploadTo(
+  kind: "image" | "media",
+  visitId: string,
+  patientId: string,
+  formData: FormData
+) {
+  const file = formData.get("file") as File | null;
+  if (!file || file.size === 0)
+    redirect(`/visits/${visitId}?error=` + encodeURIComponent("파일을 선택하세요."));
+  const supabase = await createClient();
+  const path =
+    kind === "image"
+      ? imagePath(patientId, visitId, file!.name)
+      : mediaPath(patientId, visitId, file!.name);
+  const { error: upErr } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, file!, { contentType: file!.type || undefined });
+  if (upErr) redirect(`/visits/${visitId}?error=` + encodeURIComponent(upErr.message));
+
+  if (kind === "image") {
+    const modality = String(formData.get("modality") ?? "other");
+    await supabase.from("medical_image").insert({
+      visit_id: visitId,
+      modality,
+      storage_path: path,
+      file_name: file!.name,
+    });
+  } else {
+    const mkind = String(formData.get("kind") ?? "").trim() || null;
+    await supabase.from("media").insert({
+      patient_id: patientId,
+      visit_id: visitId,
+      kind: mkind,
+      storage_path: path,
+      file_name: file!.name,
+    });
+  }
+  revalidatePath(`/visits/${visitId}`);
+}
+
+export async function uploadImage(
+  visitId: string,
+  patientId: string,
+  formData: FormData
+) {
+  await uploadTo("image", visitId, patientId, formData);
+}
+
+export async function uploadMedia(
+  visitId: string,
+  patientId: string,
+  formData: FormData
+) {
+  await uploadTo("media", visitId, patientId, formData);
+}
+
+export async function deleteFile(
+  visitId: string,
+  table: "medical_image" | "media",
+  id: string,
+  path: string
+) {
+  const supabase = await createClient();
+  await supabase.storage.from(BUCKET).remove([path]);
+  await supabase.from(table).delete().eq("id", id);
   revalidatePath(`/visits/${visitId}`);
 }

@@ -28,6 +28,8 @@ export default async function AppLayout({
         <nav className="flex gap-4 text-sm">
           <Link href="/">대시보드</Link>
           <Link href="/patients">환자</Link>
+          <Link href="/owners">보호자</Link>
+          <Link href="/hospitals">1차병원</Link>
           <Link href="/drugs">약품</Link>
         </nav>
         <span className="text-sm text-gray-500">{profile?.name} · 직원</span>

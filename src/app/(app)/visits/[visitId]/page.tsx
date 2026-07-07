@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
-import { updateVisitNote } from "./actions";
+import { DataTable } from "@/components/DataTable";
+import { updateVisitNote, deletePrescription } from "./actions";
+import { PrescriptionForm } from "./PrescriptionForm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -20,6 +22,14 @@ export default async function VisitDetail({
   if (!v) notFound();
   const patient = v.patient as unknown as { id: string; name: string };
 
+  const [{ data: drugs }, { data: rxs }] = await Promise.all([
+    supabase.from("drug").select("id, name").order("name"),
+    supabase
+      .from("prescription")
+      .select("id, dose, frequency, duration, drug:drug_id(name)")
+      .eq("visit_id", visitId),
+  ]);
+
   return (
     <div className="max-w-2xl space-y-8">
       <div>
@@ -37,6 +47,24 @@ export default async function VisitDetail({
           <textarea name="note" rows={6} defaultValue={v.note ?? ""} className={inputClass} />
           <SubmitButton>저장</SubmitButton>
         </form>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-medium">처방</h2>
+        <DataTable
+          headers={["약품", "용량", "용법", "기간", ""]}
+          empty="처방이 없습니다."
+          rows={(rxs ?? []).map((r) => [
+            (r.drug as unknown as { name: string })?.name ?? "-",
+            r.dose ?? "-",
+            r.frequency ?? "-",
+            r.duration ?? "-",
+            <form key="d" action={deletePrescription.bind(null, v.id, r.id)}>
+              <button className="text-red-600">삭제</button>
+            </form>,
+          ])}
+        />
+        <PrescriptionForm visitId={v.id} drugs={drugs ?? []} />
       </section>
     </div>
   );

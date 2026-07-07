@@ -2,6 +2,9 @@ import { describe, it, expect } from "vitest";
 import { validateHospitalInput } from "@/lib/validation/hospital";
 import { validateOwnerInput } from "@/lib/validation/owner";
 import { validatePatientInput, buildPatientSearch } from "@/lib/validation/patient";
+import { validateDrugInput } from "@/lib/validation/drug";
+import { validateVisitInput } from "@/lib/validation/visit";
+import { validatePrescriptionInput } from "@/lib/validation/prescription";
 
 describe("validateHospitalInput", () => {
   it("requires a name", () => {
@@ -46,5 +49,47 @@ describe("buildPatientSearch", () => {
   });
   it("escapes commas and parens that would break the or() filter", () => {
     expect(buildPatientSearch("a,b")).toBe("name.ilike.%a b%,species.ilike.%a b%");
+  });
+});
+
+describe("validateDrugInput", () => {
+  it("requires a name", () => {
+    expect(validateDrugInput({ name: " " }).ok).toBe(false);
+  });
+  it("trims and nulls empties", () => {
+    const r = validateDrugInput({ name: " 아목시실린 ", unit: "", spec: "정" });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value).toEqual({ name: "아목시실린", unit: null, spec: "정", note: null });
+  });
+});
+
+describe("validateVisitInput", () => {
+  it("requires patient_id", () => {
+    expect(validateVisitInput({ patient_id: "" }).ok).toBe(false);
+  });
+  it("defaults visit_date when blank and parses visit_no", () => {
+    const r = validateVisitInput({ patient_id: "p1", visit_date: "", visit_no: "3", note: " 메모 " });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.patient_id).toBe("p1");
+      expect(r.value.visit_no).toBe(3);
+      expect(r.value.note).toBe("메모");
+      expect(typeof r.value.visit_date).toBe("string");
+    }
+  });
+  it("rejects a non-numeric visit_no", () => {
+    expect(validateVisitInput({ patient_id: "p1", visit_no: "abc" }).ok).toBe(false);
+  });
+});
+
+describe("validatePrescriptionInput", () => {
+  it("requires visit_id and drug_id", () => {
+    expect(validatePrescriptionInput({ visit_id: "", drug_id: "d" }).ok).toBe(false);
+    expect(validatePrescriptionInput({ visit_id: "v", drug_id: "" }).ok).toBe(false);
+  });
+  it("nulls empty optional fields", () => {
+    const r = validatePrescriptionInput({ visit_id: "v", drug_id: "d", dose: "1T", frequency: "", duration: "5d" });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value).toEqual({ visit_id: "v", drug_id: "d", dose: "1T", frequency: null, duration: "5d", note: null });
   });
 });

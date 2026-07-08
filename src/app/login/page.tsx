@@ -1,4 +1,5 @@
-import { signIn } from "./actions";
+import { signIn, quickLoginStaff, quickLoginOwner } from "./actions";
+import { DEMO_ACCOUNTS } from "./demo";
 
 export default async function LoginPage({
   searchParams,
@@ -29,6 +30,35 @@ export default async function LoginPage({
           로그인
         </button>
       </form>
+
+      {/* ⚠️ DEMO ONLY — remove before production */}
+      <div className="mt-8 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4">
+        <p className="mb-3 text-xs font-medium text-gray-500">테스트 계정 (클릭하면 바로 입장)</p>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-xs text-gray-600">
+              <div className="font-medium text-gray-800">직원 (EMR)</div>
+              <code>{DEMO_ACCOUNTS.staff.email}</code> / <code>{DEMO_ACCOUNTS.staff.password}</code>
+            </div>
+            <form action={quickLoginStaff}>
+              <button className="shrink-0 rounded border border-gray-800 px-3 py-1.5 text-sm">
+                직원으로 입장
+              </button>
+            </form>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-xs text-gray-600">
+              <div className="font-medium text-gray-800">보호자 (포털)</div>
+              <code>{DEMO_ACCOUNTS.owner.email}</code> / <code>{DEMO_ACCOUNTS.owner.password}</code>
+            </div>
+            <form action={quickLoginOwner}>
+              <button className="shrink-0 rounded border border-gray-800 px-3 py-1.5 text-sm">
+                보호자로 입장
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

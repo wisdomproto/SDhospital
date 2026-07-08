@@ -4,7 +4,14 @@ import { validateVitalInput } from "@/lib/validation/vital";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function discharge(admissionId: string, formData: FormData) {
+const apath = (patientId: string, admissionId: string) =>
+  `/patients/${patientId}/a/${admissionId}`;
+
+export async function discharge(
+  patientId: string,
+  admissionId: string,
+  formData: FormData
+) {
   const raw = String(formData.get("discharged_at") ?? "").trim();
   const discharged_at = raw || new Date().toISOString().slice(0, 10);
   const supabase = await createClient();
@@ -12,19 +19,23 @@ export async function discharge(admissionId: string, formData: FormData) {
     .from("admission")
     .update({ discharged_at, status: "discharged" })
     .eq("id", admissionId);
-  revalidatePath(`/admissions/${admissionId}`);
+  revalidatePath(apath(patientId, admissionId));
 }
 
-export async function reopenAdmission(admissionId: string) {
+export async function reopenAdmission(patientId: string, admissionId: string) {
   const supabase = await createClient();
   await supabase
     .from("admission")
     .update({ discharged_at: null, status: "admitted" })
     .eq("id", admissionId);
-  revalidatePath(`/admissions/${admissionId}`);
+  revalidatePath(apath(patientId, admissionId));
 }
 
-export async function addVital(admissionId: string, formData: FormData) {
+export async function addVital(
+  patientId: string,
+  admissionId: string,
+  formData: FormData
+) {
   const v = validateVitalInput({
     admission_id: admissionId,
     temperature: String(formData.get("temperature") ?? ""),
@@ -34,7 +45,7 @@ export async function addVital(admissionId: string, formData: FormData) {
     diastolic: String(formData.get("diastolic") ?? ""),
     note: String(formData.get("note") ?? ""),
   });
-  if (!v.ok) redirect(`/admissions/${admissionId}?error=` + encodeURIComponent(v.error));
+  if (!v.ok) redirect(apath(patientId, admissionId) + "?error=" + encodeURIComponent(v.error));
 
   const measuredRaw = String(formData.get("measured_at") ?? "").trim();
   const row: Record<string, unknown> = { ...v.value };
@@ -42,12 +53,16 @@ export async function addVital(admissionId: string, formData: FormData) {
 
   const supabase = await createClient();
   const { error } = await supabase.from("vital").insert(row);
-  if (error) redirect(`/admissions/${admissionId}?error=` + encodeURIComponent(error.message));
-  revalidatePath(`/admissions/${admissionId}`);
+  if (error) redirect(apath(patientId, admissionId) + "?error=" + encodeURIComponent(error.message));
+  revalidatePath(apath(patientId, admissionId));
 }
 
-export async function deleteVital(admissionId: string, id: string) {
+export async function deleteVital(
+  patientId: string,
+  admissionId: string,
+  id: string
+) {
   const supabase = await createClient();
   await supabase.from("vital").delete().eq("id", id);
-  revalidatePath(`/admissions/${admissionId}`);
+  revalidatePath(apath(patientId, admissionId));
 }

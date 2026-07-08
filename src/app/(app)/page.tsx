@@ -22,7 +22,7 @@ export default async function Dashboard() {
     supabase.from("drug").select("id", { count: "exact", head: true }),
     supabase
       .from("admission")
-      .select("id, admitted_at, status, patient:patient_id(name)")
+      .select("id, admitted_at, status, patient:patient_id(id, name)")
       .eq("status", "admitted")
       .order("admitted_at", { ascending: false })
       .limit(8),
@@ -52,14 +52,21 @@ export default async function Dashboard() {
         <DataTable
           headers={["환자", "입원일", "상태", ""]}
           empty="입원 중인 환자가 없습니다."
-          rows={(recentAdm.data ?? []).map((a) => [
-            (a.patient as unknown as { name: string } | null)?.name ?? "-",
-            a.admitted_at,
-            <span key="s" className="pill warning">입원중</span>,
-            <Link key="o" href={`/admissions/${a.id}`} className="link-btn">
-              열기
-            </Link>,
-          ])}
+          rows={(recentAdm.data ?? []).map((a) => {
+            const pt = a.patient as unknown as { id: string; name: string } | null;
+            return [
+              pt?.name ?? "-",
+              a.admitted_at,
+              <span key="s" className="pill warning">입원중</span>,
+              pt ? (
+                <Link key="o" href={`/patients/${pt.id}/a/${a.id}`} className="link-btn">
+                  열기
+                </Link>
+              ) : (
+                "-"
+              ),
+            ];
+          })}
         />
       </div>
     </div>

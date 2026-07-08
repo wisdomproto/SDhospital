@@ -19,6 +19,6 @@ export async function createVisit(patientId: string, formData: FormData) {
     .select("id")
     .single();
   if (error) redirect(`/patients/${patientId}?error=` + encodeURIComponent(error.message));
-  revalidatePath(`/patients/${patientId}`);
-  redirect(`/visits/${data!.id}`);
+  revalidatePath(`/patients/${patientId}`, "layout");
+  redirect(`/patients/${patientId}/v/${data!.id}`);
 }

@@ -2,8 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Role } from "@/lib/auth/roles";
-import { Sidebar } from "./Sidebar";
-import { signOut } from "./logout";
+import { AppSidebar } from "./AppSidebar";
 
 export default async function AppLayout({
   children,
@@ -26,20 +25,7 @@ export default async function AppLayout({
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <span className="brand-glyph">🐾</span>
-          <span>SDhospital</span>
-        </div>
-        <Sidebar />
-        <div className="role-panel">
-          <span className="role-badge">STAFF · {profile?.name ?? "직원"}</span>
-          <form action={signOut}>
-            <button className="btn btn-ghost btn-sm">로그아웃</button>
-          </form>
-        </div>
-      </aside>
-
+      <AppSidebar name={profile?.name ?? "직원"} />
       <div className="workspace">
         <header className="topbar">
           <span className="hospital-chip">SDhospital · 2차 동물병원 · Asia/Seoul</span>

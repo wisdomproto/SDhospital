@@ -2,4 +2,5 @@
 export const DEMO_ACCOUNTS = {
   staff: { email: "staff@sdhospital.test", password: "sdhospital123!", dest: "/" },
   owner: { email: "1@example.com", password: "1234", dest: "/portal" },
+  vet: { email: "2@example.com", password: "1234", dest: "/portal" },
 } as const;

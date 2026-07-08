@@ -3,6 +3,16 @@ import Link from "next/link";
 
 export default async function PortalHome() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from("profile")
+    .select("role")
+    .eq("id", user!.id)
+    .single();
+  const heading = profile?.role === "owner" ? "내 반려동물" : "의뢰 환자";
+
   const { data: patients } = await supabase
     .from("patient")
     .select("id, name, species, breed")
@@ -14,7 +24,7 @@ export default async function PortalHome() {
 
   return (
     <div style={{ display: "grid", gap: 12 }}>
-      <h2 className="section-title">내 반려동물</h2>
+      <h2 className="section-title">{heading}</h2>
       {patients.map((p) => (
         <Link
           key={p.id}

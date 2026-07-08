@@ -1,4 +1,4 @@
-import { signIn, quickLoginStaff, quickLoginOwner } from "./actions";
+import { signIn, quickLoginStaff, quickLoginOwner, quickLoginVet } from "./actions";
 import { DEMO_ACCOUNTS } from "./demo";
 
 export default async function LoginPage({
@@ -80,6 +80,15 @@ export default async function LoginPage({
               </div>
               <form action={quickLoginOwner}>
                 <button className="btn btn-ghost btn-sm">보호자 입장</button>
+              </form>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <div style={{ fontSize: ".78rem", color: "var(--muted)" }}>
+                <div style={{ fontWeight: 800, color: "var(--text)" }}>1차병원 원장 · 포털</div>
+                <code>{DEMO_ACCOUNTS.vet.email}</code> / <code>{DEMO_ACCOUNTS.vet.password}</code>
+              </div>
+              <form action={quickLoginVet}>
+                <button className="btn btn-ghost btn-sm">원장 입장</button>
               </form>
             </div>
           </div>

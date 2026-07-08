@@ -5,6 +5,8 @@ import { validatePatientInput, buildPatientSearch } from "@/lib/validation/patie
 import { validateDrugInput } from "@/lib/validation/drug";
 import { validateVisitInput } from "@/lib/validation/visit";
 import { validatePrescriptionInput } from "@/lib/validation/prescription";
+import { validateAdmissionInput } from "@/lib/validation/admission";
+import { validateVitalInput } from "@/lib/validation/vital";
 
 describe("validateHospitalInput", () => {
   it("requires a name", () => {
@@ -91,5 +93,50 @@ describe("validatePrescriptionInput", () => {
     const r = validatePrescriptionInput({ visit_id: "v", drug_id: "d", dose: "1T", frequency: "", duration: "5d" });
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value).toEqual({ visit_id: "v", drug_id: "d", dose: "1T", frequency: null, duration: "5d", note: null });
+  });
+});
+
+describe("validateAdmissionInput", () => {
+  it("requires patient_id", () => {
+    expect(validateAdmissionInput({ patient_id: "" }).ok).toBe(false);
+  });
+  it("defaults admitted_at when blank, nulls note", () => {
+    const r = validateAdmissionInput({ patient_id: "p1", admitted_at: "", note: "" });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.patient_id).toBe("p1");
+      expect(typeof r.value.admitted_at).toBe("string");
+      expect(r.value.note).toBeNull();
+    }
+  });
+});
+
+describe("validateVitalInput", () => {
+  it("requires admission_id", () => {
+    expect(validateVitalInput({ admission_id: "", temperature: "38" }).ok).toBe(false);
+  });
+  it("requires at least one measurement", () => {
+    expect(validateVitalInput({ admission_id: "a1" }).ok).toBe(false);
+  });
+  it("parses numbers and nulls blanks", () => {
+    const r = validateVitalInput({
+      admission_id: "a1",
+      temperature: "38.5",
+      heart_rate: "120",
+      resp_rate: "",
+      systolic: "130",
+      diastolic: "",
+    });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.temperature).toBe(38.5);
+      expect(r.value.heart_rate).toBe(120);
+      expect(r.value.resp_rate).toBeNull();
+      expect(r.value.systolic).toBe(130);
+      expect(r.value.diastolic).toBeNull();
+    }
+  });
+  it("rejects a non-numeric measurement", () => {
+    expect(validateVitalInput({ admission_id: "a1", heart_rate: "fast" }).ok).toBe(false);
   });
 });

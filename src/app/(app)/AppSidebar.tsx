@@ -46,7 +46,15 @@ export function AppSidebar({ name }: { name: string }) {
   return (
     <aside className={`sidebar${collapsed ? " collapsed" : ""}`}>
       <div className="sidebar-brand">
-        <span className="brand-glyph">🐾</span>
+        <span className="brand-glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="6" cy="10" r="1.9" />
+            <circle cx="10" cy="6" r="1.9" />
+            <circle cx="14" cy="6" r="1.9" />
+            <circle cx="18" cy="10" r="1.9" />
+            <path d="M7 16.2c0-2.4 2.2-3.9 5-3.9s5 1.5 5 3.9c0 2.2-2.2 3.6-5 3.6s-5-1.4-5-3.6Z" />
+          </svg>
+        </span>
         <span className="brand-text">SDhospital</span>
       </div>
       <nav className="side-nav">

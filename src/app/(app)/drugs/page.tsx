@@ -18,48 +18,47 @@ export default async function DrugsPage({
     .order("name");
 
   return (
-    <div className="max-w-3xl space-y-8">
-      <section>
-        <h1 className="mb-4 text-xl font-semibold">약품</h1>
-        {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+    <div style={{ maxWidth: 880, display: "grid", gap: 20 }}>
+      <div>
+        <p className="eyebrow">Drugs</p>
+        <h1 className="page-title">약품</h1>
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <h2 className="section-title">약품 목록</h2>
+          <span className="pill muted">{(drugs ?? []).length}종</span>
+        </div>
+        {error && <p style={{ color: "var(--danger)", fontSize: ".9rem", margin: "0 0 10px" }}>{error}</p>}
         <DataTable
           headers={["약품명", "단위", "규격", ""]}
+          empty="등록된 약품이 없습니다."
           rows={(drugs ?? []).map((d) => [
             d.name,
             d.unit ?? "-",
             d.spec ?? "-",
-            <span key="a" className="flex gap-3">
-              <Link href={`/drugs/${d.id}/edit`} className="link-btn">
-                수정
-              </Link>
+            <span key="a" style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+              <Link href={`/drugs/${d.id}/edit`} className="link-btn">수정</Link>
               <form action={deleteDrug.bind(null, d.id)}>
                 <button className="link-btn danger">삭제</button>
               </form>
             </span>,
           ])}
         />
-      </section>
+      </div>
 
-      <section>
-        <h2 className="mb-3 text-lg font-medium">약품 추가</h2>
-        <form action={createDrug} className="space-y-3">
-          <FormField label="약품명">
-            <input name="name" required className={inputClass} />
-          </FormField>
-          <div className="grid grid-cols-2 gap-3">
-            <FormField label="단위">
-              <input name="unit" className={inputClass} />
-            </FormField>
-            <FormField label="규격">
-              <input name="spec" className={inputClass} />
-            </FormField>
+      <div className="card">
+        <div className="card-head"><h2 className="section-title">약품 추가</h2></div>
+        <form action={createDrug} style={{ display: "grid", gap: 12, maxWidth: 480 }}>
+          <FormField label="약품명"><input name="name" required className={inputClass} /></FormField>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <FormField label="단위"><input name="unit" className={inputClass} /></FormField>
+            <FormField label="규격"><input name="spec" className={inputClass} /></FormField>
           </div>
-          <FormField label="비고">
-            <input name="note" className={inputClass} />
-          </FormField>
-          <SubmitButton>추가</SubmitButton>
+          <FormField label="비고"><input name="note" className={inputClass} /></FormField>
+          <div><SubmitButton>추가</SubmitButton></div>
         </form>
-      </section>
+      </div>
     </div>
   );
 }

@@ -10,7 +10,15 @@ export default async function LoginPage({
   return (
     <main className="login-shell">
       <section className="login-card">
-        <div className="brand-mark">🐾</div>
+        <div className="brand-mark">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="6" cy="10" r="1.9" />
+            <circle cx="10" cy="6" r="1.9" />
+            <circle cx="14" cy="6" r="1.9" />
+            <circle cx="18" cy="10" r="1.9" />
+            <path d="M7 16.2c0-2.4 2.2-3.9 5-3.9s5 1.5 5 3.9c0 2.2-2.2 3.6-5 3.6s-5-1.4-5-3.6Z" />
+          </svg>
+        </div>
         <p className="eyebrow" style={{ marginTop: 16 }}>
           Veterinary EMR
         </p>

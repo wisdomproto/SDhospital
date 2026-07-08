@@ -18,39 +18,42 @@ export default async function OwnersPage({
     .order("name");
 
   return (
-    <div className="max-w-3xl space-y-8">
-      <section>
-        <h1 className="mb-4 text-xl font-semibold">보호자</h1>
-        {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+    <div style={{ maxWidth: 880, display: "grid", gap: 20 }}>
+      <div>
+        <p className="eyebrow">Owners</p>
+        <h1 className="page-title">보호자</h1>
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <h2 className="section-title">보호자 목록</h2>
+          <span className="pill muted">{(owners ?? []).length}명</span>
+        </div>
+        {error && <p style={{ color: "var(--danger)", fontSize: ".9rem", margin: "0 0 10px" }}>{error}</p>}
         <DataTable
           headers={["이름", "연락처", ""]}
+          empty="등록된 보호자가 없습니다."
           rows={(owners ?? []).map((o) => [
             o.name,
             o.contact ?? "-",
-            <span key="a" className="flex gap-3">
-              <Link href={`/owners/${o.id}/edit`} className="link-btn">
-                수정
-              </Link>
+            <span key="a" style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+              <Link href={`/owners/${o.id}/edit`} className="link-btn">수정</Link>
               <form action={deleteOwner.bind(null, o.id)}>
                 <button className="link-btn danger">삭제</button>
               </form>
             </span>,
           ])}
         />
-      </section>
+      </div>
 
-      <section>
-        <h2 className="mb-3 text-lg font-medium">보호자 추가</h2>
-        <form action={createOwner} className="space-y-3">
-          <FormField label="이름">
-            <input name="name" required className={inputClass} />
-          </FormField>
-          <FormField label="연락처">
-            <input name="contact" className={inputClass} />
-          </FormField>
-          <SubmitButton>추가</SubmitButton>
+      <div className="card">
+        <div className="card-head"><h2 className="section-title">보호자 추가</h2></div>
+        <form action={createOwner} style={{ display: "grid", gap: 12, maxWidth: 420 }}>
+          <FormField label="이름"><input name="name" required className={inputClass} /></FormField>
+          <FormField label="연락처"><input name="contact" className={inputClass} /></FormField>
+          <div><SubmitButton>추가</SubmitButton></div>
         </form>
-      </section>
+      </div>
     </div>
   );
 }

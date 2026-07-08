@@ -6,6 +6,7 @@ import { issueOwnerInvite, revokeInvite } from "./invites/actions";
 import { inviteUrl } from "@/lib/invites";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
+import { DataTable } from "@/components/DataTable";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -30,12 +31,24 @@ export default async function PatientOverview({
   const hospital = p.hospital as unknown as { name: string; contact: string | null } | null;
 
   const host = (await headers()).get("host") ?? "localhost:3000";
-  const { data: ownerInvites } = await supabase
-    .from("invite")
-    .select("id, token, used")
-    .eq("owner_id", p.owner_id)
-    .eq("role", "owner")
-    .order("created_at", { ascending: false });
+  const [{ data: visits }, { data: admissions }, { data: ownerInvites }] = await Promise.all([
+    supabase
+      .from("visit")
+      .select("id, visit_date, visit_no, note")
+      .eq("patient_id", id)
+      .order("visit_date", { ascending: false }),
+    supabase
+      .from("admission")
+      .select("id, admitted_at, discharged_at, status")
+      .eq("patient_id", id)
+      .order("admitted_at", { ascending: false }),
+    supabase
+      .from("invite")
+      .select("id, token, used")
+      .eq("owner_id", p.owner_id)
+      .eq("role", "owner")
+      .order("created_at", { ascending: false }),
+  ]);
 
   const info: [string, string][] = [
     ["종", p.species ?? "-"],
@@ -79,10 +92,24 @@ export default async function PatientOverview({
         {p.note && <p style={{ marginTop: 12, fontSize: ".9rem", color: "var(--muted)" }}>{p.note}</p>}
       </div>
 
-      <div className="quickadd-grid">
-        <div className="card">
-          <div className="card-head"><h2 className="section-title">진료 회차 추가</h2></div>
-          <form action={createVisit.bind(null, p.id)} style={{ display: "grid", gap: 12 }}>
+      <div className="card">
+        <div className="card-head">
+          <h2 className="section-title">진료 회차</h2>
+          <span className="pill muted">{(visits ?? []).length}건</span>
+        </div>
+        <DataTable
+          headers={["날짜", "회차", "진료 요약", ""]}
+          empty="진료 회차가 없습니다."
+          rows={(visits ?? []).map((v) => [
+            v.visit_date,
+            v.visit_no ?? "-",
+            (v.note ?? "").slice(0, 40) || "-",
+            <Link key="o" href={`/patients/${p.id}/v/${v.id}`} className="link-btn">열기 →</Link>,
+          ])}
+        />
+        <details style={{ marginTop: 12 }}>
+          <summary><span className="btn btn-secondary btn-sm">+ 회차 추가</span></summary>
+          <form action={createVisit.bind(null, p.id)} style={{ display: "grid", gap: 12, maxWidth: 460, marginTop: 12 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <FormField label="날짜"><input type="date" name="visit_date" className={inputClass} /></FormField>
               <FormField label="회차"><input name="visit_no" inputMode="numeric" className={inputClass} /></FormField>
@@ -90,16 +117,36 @@ export default async function PatientOverview({
             <FormField label="진료 내용"><textarea name="note" rows={3} className={inputClass} /></FormField>
             <SubmitButton>회차 추가</SubmitButton>
           </form>
-        </div>
+        </details>
+      </div>
 
-        <div className="card">
-          <div className="card-head"><h2 className="section-title">입원 등록</h2></div>
-          <form action={createAdmission.bind(null, p.id)} style={{ display: "grid", gap: 12 }}>
+      <div className="card">
+        <div className="card-head">
+          <h2 className="section-title">입원</h2>
+          <span className="pill muted">{(admissions ?? []).length}건</span>
+        </div>
+        <DataTable
+          headers={["입원일", "퇴원일", "상태", ""]}
+          empty="입원 이력이 없습니다."
+          rows={(admissions ?? []).map((a) => [
+            a.admitted_at,
+            a.discharged_at ?? "-",
+            a.status === "admitted" ? (
+              <span key="s" className="pill warning">입원중</span>
+            ) : (
+              <span key="s" className="pill success">퇴원</span>
+            ),
+            <Link key="o" href={`/patients/${p.id}/a/${a.id}`} className="link-btn">열기 →</Link>,
+          ])}
+        />
+        <details style={{ marginTop: 12 }}>
+          <summary><span className="btn btn-secondary btn-sm">+ 입원 등록</span></summary>
+          <form action={createAdmission.bind(null, p.id)} style={{ display: "grid", gap: 12, maxWidth: 460, marginTop: 12 }}>
             <FormField label="입원일"><input type="date" name="admitted_at" className={inputClass} /></FormField>
             <FormField label="비고"><input name="note" className={inputClass} /></FormField>
             <SubmitButton>입원 등록</SubmitButton>
           </form>
-        </div>
+        </details>
       </div>
 
       <div className="card">

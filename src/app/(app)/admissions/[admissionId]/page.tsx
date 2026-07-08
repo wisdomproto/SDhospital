@@ -3,6 +3,7 @@ import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DataTable } from "@/components/DataTable";
 import { discharge, reopenAdmission, addVital, deleteVital } from "./actions";
+import { VitalChart } from "./VitalChart";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -58,6 +59,22 @@ export default async function AdmissionDetail({
           </form>
         )}
       </section>
+
+      {(vitals ?? []).length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-lg font-medium">바이털 추이</h2>
+          <VitalChart
+            data={(vitals ?? []).map((v) => ({
+              measured_at: v.measured_at,
+              temperature: v.temperature,
+              heart_rate: v.heart_rate,
+              resp_rate: v.resp_rate,
+              systolic: v.systolic,
+              diastolic: v.diastolic,
+            }))}
+          />
+        </section>
+      )}
 
       <section className="space-y-3">
         <h2 className="text-lg font-medium">바이털</h2>

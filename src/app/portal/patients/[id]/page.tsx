@@ -1,140 +1,73 @@
 import { createClient } from "@/lib/supabase/server";
-import { signedUrl } from "@/lib/storage";
-import { VitalChart } from "@/components/VitalChart";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
-type FileRow = { id: string; file_name: string | null; storage_path: string };
-type Rx = { dose: string | null; frequency: string | null; duration: string | null; drug: { name: string } | null };
-
-async function signAll<T extends { storage_path: string }>(rows: T[]) {
-  return Promise.all(rows.map(async (r) => ({ ...r, url: await signedUrl(r.storage_path) })));
-}
-
-export default async function PortalPatient({
+export default async function PortalPatientOverview({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
   const supabase = await createClient();
-
   const { data: p } = await supabase
     .from("patient")
-    .select("id, name, species, breed, sex, birth_date")
+    .select("id, name, species, breed, sex, birth_date, hospital:referring_hospital_id(name)")
     .eq("id", id)
     .single();
   if (!p) notFound();
+  const hospital = p.hospital as unknown as { name: string } | null;
 
-  const { data: visits } = await supabase
-    .from("visit")
-    .select(
-      "id, visit_date, visit_no, note, prescription(dose, frequency, duration, drug:drug_id(name)), medical_image(id, file_name, storage_path), media(id, file_name, storage_path)"
-    )
-    .eq("patient_id", id)
-    .order("visit_date", { ascending: false });
-
-  const { data: admissions } = await supabase
-    .from("admission")
-    .select(
-      "id, admitted_at, discharged_at, status, vital(measured_at, temperature, heart_rate, resp_rate, systolic, diastolic)"
-    )
-    .eq("patient_id", id)
-    .order("admitted_at", { ascending: false });
-
-  const visitBlocks = await Promise.all(
-    (visits ?? []).map(async (v) => {
-      const imgs = await signAll((v.medical_image as FileRow[]) ?? []);
-      const med = await signAll((v.media as FileRow[]) ?? []);
-      const rx = (v.prescription as unknown as Rx[]) ?? [];
-      const files = [...imgs, ...med];
-      return (
-        <div key={v.id} className="rounded border p-3 text-sm">
-          <div className="font-medium">
-            {v.visit_date}
-            {v.visit_no != null ? ` · ${v.visit_no}회차` : ""}
-          </div>
-          {v.note && <p className="mt-1 whitespace-pre-wrap text-gray-700">{v.note}</p>}
-          {rx.length > 0 && (
-            <ul className="mt-2 list-disc pl-5 text-gray-700">
-              {rx.map((r, i) => (
-                <li key={i}>
-                  {r.drug?.name} {r.dose ?? ""} {r.frequency ?? ""} {r.duration ?? ""}
-                </li>
-              ))}
-            </ul>
-          )}
-          {files.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-3">
-              {files.map((f) =>
-                f.url ? (
-                  <a key={f.id} href={f.url} target="_blank" className="link-btn">
-                    {f.file_name}
-                  </a>
-                ) : (
-                  <span key={f.id}>{f.file_name}</span>
-                )
-              )}
-            </div>
-          )}
-        </div>
-      );
-    })
-  );
+  const [{ count: visitCount }, { count: admCount }, { data: lastVisit }, { data: openAdm }] =
+    await Promise.all([
+      supabase.from("visit").select("id", { count: "exact", head: true }).eq("patient_id", id),
+      supabase.from("admission").select("id", { count: "exact", head: true }).eq("patient_id", id),
+      supabase.from("visit").select("visit_date").eq("patient_id", id).order("visit_date", { ascending: false }).limit(1).maybeSingle(),
+      supabase.from("admission").select("id").eq("patient_id", id).eq("status", "admitted").limit(1).maybeSingle(),
+    ]);
 
   return (
-    <div className="max-w-2xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">{p.name}</h1>
-        <p className="text-sm text-gray-600">
-          {[p.species, p.breed].filter(Boolean).join(" / ")}
-          {p.sex ? ` · ${p.sex}` : ""}
-          {p.birth_date ? ` · ${p.birth_date}` : ""}
-        </p>
+    <>
+      <div className="portal-hero">
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ width: 52, height: 52, borderRadius: 16, display: "grid", placeItems: "center", background: "rgba(255,255,255,.22)", fontSize: 28 }}>
+            {p.species === "고양이" ? "🐱" : "🐶"}
+          </span>
+          <div>
+            <div style={{ fontSize: "1.4rem", fontWeight: 900 }}>{p.name}</div>
+            <div style={{ fontSize: ".85rem", opacity: 0.92 }}>
+              {[p.species, p.breed].filter(Boolean).join(" / ") || "-"}
+              {p.sex ? ` · ${p.sex}` : ""}
+            </div>
+          </div>
+        </div>
+        {openAdm && (
+          <div style={{ marginTop: 12, display: "inline-block", background: "rgba(255,255,255,.2)", padding: "5px 11px", borderRadius: 999, fontSize: ".78rem", fontWeight: 800 }}>
+            현재 입원중
+          </div>
+        )}
       </div>
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-medium">진료 기록</h2>
-        {visitBlocks.length > 0 ? (
-          visitBlocks
-        ) : (
-          <p className="text-sm text-gray-500">진료 기록이 없습니다.</p>
-        )}
-      </section>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <Link href={`/portal/patients/${p.id}/visits`} className="portal-card" style={{ textDecoration: "none", color: "inherit" }}>
+          <div style={{ fontSize: "1.7rem", fontWeight: 900, color: "var(--primary)" }}>{visitCount ?? 0}</div>
+          <div className="portal-tile-sub">진료 회차 →</div>
+        </Link>
+        <Link href={`/portal/patients/${p.id}/admissions`} className="portal-card" style={{ textDecoration: "none", color: "inherit" }}>
+          <div style={{ fontSize: "1.7rem", fontWeight: 900, color: "var(--warning)" }}>{admCount ?? 0}</div>
+          <div className="portal-tile-sub">입원 →</div>
+        </Link>
+      </div>
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-medium">입원 / 바이털</h2>
-        {(admissions ?? []).length > 0 ? (
-          (admissions ?? []).map((a) => {
-            const vitals = (
-              (a.vital as {
-                measured_at: string;
-                temperature: number | null;
-                heart_rate: number | null;
-                resp_rate: number | null;
-                systolic: number | null;
-                diastolic: number | null;
-              }[]) ?? []
-            )
-              .slice()
-              .sort((x, y) => x.measured_at.localeCompare(y.measured_at));
-            return (
-              <div key={a.id} className="rounded border p-3">
-                <div className="text-sm font-medium">
-                  입원 {a.admitted_at}{" "}
-                  {a.status === "admitted" ? "· 입원중" : `· 퇴원 ${a.discharged_at ?? ""}`}
-                </div>
-                {vitals.length > 0 && (
-                  <div className="mt-2">
-                    <VitalChart data={vitals} />
-                  </div>
-                )}
-              </div>
-            );
-          })
-        ) : (
-          <p className="text-sm text-gray-500">입원 기록이 없습니다.</p>
+      <div className="portal-card">
+        <div style={{ fontWeight: 800, marginBottom: 8 }}>기본 정보</div>
+        <div className="info-row"><span className="k">생일</span><span className="v">{p.birth_date ?? "-"}</span></div>
+        <div className="info-row" style={{ borderBottom: 0 }}><span className="k">의뢰 병원</span><span className="v">{hospital?.name ?? "-"}</span></div>
+        {lastVisit?.visit_date && (
+          <p style={{ margin: "10px 0 0", fontSize: ".82rem", color: "var(--muted)" }}>
+            최근 진료: {lastVisit.visit_date}
+          </p>
         )}
-      </section>
-    </div>
+      </div>
+    </>
   );
 }

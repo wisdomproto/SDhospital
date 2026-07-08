@@ -7,6 +7,7 @@ import { validateVisitInput } from "@/lib/validation/visit";
 import { validatePrescriptionInput } from "@/lib/validation/prescription";
 import { validateAdmissionInput } from "@/lib/validation/admission";
 import { validateVitalInput } from "@/lib/validation/vital";
+import { validateRedeemInput } from "@/lib/validation/invite";
 
 describe("validateHospitalInput", () => {
   it("requires a name", () => {
@@ -138,5 +139,19 @@ describe("validateVitalInput", () => {
   });
   it("rejects a non-numeric measurement", () => {
     expect(validateVitalInput({ admission_id: "a1", heart_rate: "fast" }).ok).toBe(false);
+  });
+});
+
+describe("validateRedeemInput", () => {
+  it("requires a valid email", () => {
+    expect(validateRedeemInput({ email: "nope", password: "secretpw1" }).ok).toBe(false);
+  });
+  it("requires an 8+ char password", () => {
+    expect(validateRedeemInput({ email: "a@b.com", password: "short" }).ok).toBe(false);
+  });
+  it("accepts good input and lowercases email", () => {
+    const r = validateRedeemInput({ email: "  A@B.com ", password: "secretpw1" });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value.email).toBe("a@b.com");
   });
 });

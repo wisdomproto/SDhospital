@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { inputClass } from "@/components/FormField";
+import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
-import { DataTable } from "@/components/DataTable";
-import { updateVisitNote, deletePrescription, deleteFile } from "./actions";
+import { updateVisit, updatePrescription, deletePrescription, deleteFile } from "./actions";
 import { PrescriptionForm } from "./PrescriptionForm";
 import { ImageUpload, MediaUpload } from "./FileUpload";
 import { signedUrl } from "@/lib/storage";
@@ -27,12 +26,13 @@ export default async function VisitDetail({
       supabase.from("drug").select("id, name").order("name"),
       supabase
         .from("prescription")
-        .select("id, dose, frequency, duration, drug:drug_id(name)")
+        .select("id, drug_id, dose, frequency, duration")
         .eq("visit_id", visitId),
       supabase.from("medical_image").select("id, modality, file_name, storage_path").eq("visit_id", visitId),
       supabase.from("media").select("id, kind, file_name, storage_path").eq("visit_id", visitId),
     ]);
 
+  const drugList = drugs ?? [];
   const imageLinks = await Promise.all(
     (images ?? []).map(async (i) => ({ ...i, url: await signedUrl(i.storage_path) }))
   );
@@ -50,9 +50,19 @@ export default async function VisitDetail({
       </div>
 
       <div className="card">
-        <div className="card-head"><h2 className="section-title">진료 내용</h2></div>
-        <form action={updateVisitNote.bind(null, patientId, v.id)} style={{ display: "grid", gap: 10 }}>
-          <textarea name="note" rows={6} defaultValue={v.note ?? ""} className={inputClass} />
+        <div className="card-head"><h2 className="section-title">회차 정보</h2></div>
+        <form action={updateVisit.bind(null, patientId, v.id)} style={{ display: "grid", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <FormField label="날짜">
+              <input type="date" name="visit_date" defaultValue={v.visit_date} className={inputClass} />
+            </FormField>
+            <FormField label="회차">
+              <input name="visit_no" inputMode="numeric" defaultValue={v.visit_no ?? ""} className={inputClass} />
+            </FormField>
+          </div>
+          <FormField label="진료 내용">
+            <textarea name="note" rows={6} defaultValue={v.note ?? ""} className={inputClass} />
+          </FormField>
           <div><SubmitButton>저장</SubmitButton></div>
         </form>
       </div>
@@ -62,20 +72,33 @@ export default async function VisitDetail({
           <h2 className="section-title">처방</h2>
           <span className="pill muted">{(rxs ?? []).length}건</span>
         </div>
-        <DataTable
-          headers={["약품", "용량", "용법", "기간", ""]}
-          empty="처방이 없습니다."
-          rows={(rxs ?? []).map((r) => [
-            (r.drug as unknown as { name: string })?.name ?? "-",
-            r.dose ?? "-",
-            r.frequency ?? "-",
-            r.duration ?? "-",
-            <form key="d" action={deletePrescription.bind(null, patientId, v.id, r.id)}>
-              <button className="link-btn danger">삭제</button>
-            </form>,
-          ])}
-        />
-        <PrescriptionForm patientId={patientId} visitId={v.id} drugs={drugs ?? []} />
+        {(rxs ?? []).length === 0 ? (
+          <div className="empty-state">처방이 없습니다.</div>
+        ) : (
+          <div>
+            <div className="row-head rx-row" style={{ borderBottom: "1px solid var(--line)" }}>
+              <span>약품</span><span>용량</span><span>용법</span><span>기간</span><span></span><span></span>
+            </div>
+            {(rxs ?? []).map((r) => (
+              <form key={r.id} action={updatePrescription.bind(null, patientId, v.id, r.id)} className="rx-row">
+                <select name="drug_id" defaultValue={r.drug_id} className={inputClass}>
+                  {drugList.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+                <input name="dose" defaultValue={r.dose ?? ""} placeholder="용량" className={inputClass} />
+                <input name="frequency" defaultValue={r.frequency ?? ""} placeholder="용법" className={inputClass} />
+                <input name="duration" defaultValue={r.duration ?? ""} placeholder="기간" className={inputClass} />
+                <button className="btn btn-secondary btn-sm">저장</button>
+                <button formAction={deletePrescription.bind(null, patientId, v.id, r.id)} className="btn btn-danger btn-sm">삭제</button>
+              </form>
+            ))}
+          </div>
+        )}
+        <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px dashed var(--line)" }}>
+          <p style={{ margin: "0 0 4px", fontWeight: 700, fontSize: ".85rem", color: "var(--muted)" }}>처방 추가</p>
+          <PrescriptionForm patientId={patientId} visitId={v.id} drugs={drugList} />
+        </div>
       </div>
 
       <div className="quickadd-grid">

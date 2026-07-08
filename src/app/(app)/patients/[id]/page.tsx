@@ -2,9 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { deletePatient } from "../actions";
 import { createVisit } from "./visits/actions";
 import { createAdmission } from "./admissions/actions";
+import { issueOwnerInvite, revokeInvite } from "./invites/actions";
+import { inviteUrl } from "@/lib/invites";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DataTable } from "@/components/DataTable";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -18,7 +21,7 @@ export default async function PatientDetail({
   const { data: p } = await supabase
     .from("patient")
     .select(
-      "id, name, species, breed, sex, birth_date, note, owner:owner_id(name, contact), hospital:referring_hospital_id(name, contact)"
+      "id, name, species, breed, sex, birth_date, note, owner_id, owner:owner_id(name, contact), hospital:referring_hospital_id(name, contact)"
     )
     .eq("id", id)
     .single();
@@ -26,6 +29,14 @@ export default async function PatientDetail({
 
   const owner = p.owner as unknown as { name: string; contact: string | null } | null;
   const hospital = p.hospital as unknown as { name: string; contact: string | null } | null;
+
+  const host = (await headers()).get("host") ?? "localhost:3000";
+  const { data: ownerInvites } = await supabase
+    .from("invite")
+    .select("id, token, used")
+    .eq("owner_id", p.owner_id)
+    .eq("role", "owner")
+    .order("created_at", { ascending: false });
 
   const { data: visits } = await supabase
     .from("visit")
@@ -138,6 +149,29 @@ export default async function PatientDetail({
           <div className="col-span-2">
             <SubmitButton>입원 등록</SubmitButton>
           </div>
+        </form>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-medium">보호자 초대</h2>
+        <ul className="space-y-1 text-sm">
+          {(ownerInvites ?? []).map((iv) => (
+            <li key={iv.id} className="flex items-center gap-3">
+              <code className="rounded bg-gray-100 px-2 py-1 text-xs break-all">
+                {inviteUrl(host, iv.token)}
+              </code>
+              <span className="shrink-0 text-gray-500">{iv.used ? "사용됨" : "미사용"}</span>
+              <form action={revokeInvite.bind(null, p.id, iv.id)}>
+                <button className="text-red-600">취소</button>
+              </form>
+            </li>
+          ))}
+          {(ownerInvites ?? []).length === 0 && (
+            <li className="text-gray-500">발급된 초대가 없습니다.</li>
+          )}
+        </ul>
+        <form action={issueOwnerInvite.bind(null, p.id, p.owner_id)}>
+          <SubmitButton>보호자 초대 링크 발급</SubmitButton>
         </form>
       </section>
     </div>

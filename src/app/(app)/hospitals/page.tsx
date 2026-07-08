@@ -3,6 +3,9 @@ import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DataTable } from "@/components/DataTable";
 import { createHospital, deleteHospital } from "./actions";
+import { issueVetInvite, revokeVetInvite } from "./invites/actions";
+import { inviteUrl } from "@/lib/invites";
+import { headers } from "next/headers";
 import Link from "next/link";
 
 export default async function HospitalsPage({
@@ -16,6 +19,13 @@ export default async function HospitalsPage({
     .from("referring_hospital")
     .select("id, name, contact")
     .order("name");
+
+  const host = (await headers()).get("host") ?? "localhost:3000";
+  const { data: vetInvites } = await supabase
+    .from("invite")
+    .select("id, token, used, hospital:referring_hospital_id(name)")
+    .eq("role", "referring_vet")
+    .order("created_at", { ascending: false });
 
   return (
     <div className="max-w-3xl space-y-8">
@@ -31,12 +41,38 @@ export default async function HospitalsPage({
               <Link href={`/hospitals/${h.id}/edit`} className="text-blue-600">
                 수정
               </Link>
+              <form action={issueVetInvite.bind(null, h.id)}>
+                <button className="text-blue-600">초대 발급</button>
+              </form>
               <form action={deleteHospital.bind(null, h.id)}>
                 <button className="text-red-600">삭제</button>
               </form>
             </span>,
           ])}
         />
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-lg font-medium">발급된 1차병원 초대</h2>
+        <ul className="space-y-1 text-sm">
+          {(vetInvites ?? []).map((iv) => (
+            <li key={iv.id} className="flex items-center gap-3">
+              <span className="shrink-0 text-gray-600">
+                {(iv.hospital as unknown as { name: string } | null)?.name ?? "-"}
+              </span>
+              <code className="rounded bg-gray-100 px-2 py-1 text-xs break-all">
+                {inviteUrl(host, iv.token)}
+              </code>
+              <span className="shrink-0 text-gray-500">{iv.used ? "사용됨" : "미사용"}</span>
+              <form action={revokeVetInvite.bind(null, iv.id)}>
+                <button className="text-red-600">취소</button>
+              </form>
+            </li>
+          ))}
+          {(vetInvites ?? []).length === 0 && (
+            <li className="text-gray-500">발급된 초대가 없습니다.</li>
+          )}
+        </ul>
       </section>
 
       <section>

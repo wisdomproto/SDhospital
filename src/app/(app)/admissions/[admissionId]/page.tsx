@@ -3,7 +3,7 @@ import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DataTable } from "@/components/DataTable";
 import { discharge, reopenAdmission, addVital, deleteVital } from "./actions";
-import { VitalChart } from "./VitalChart";
+import { VitalChart } from "@/components/VitalChart";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 

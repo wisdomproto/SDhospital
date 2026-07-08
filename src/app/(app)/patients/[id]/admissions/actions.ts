@@ -18,6 +18,6 @@ export async function createAdmission(patientId: string, formData: FormData) {
     .select("id")
     .single();
   if (error) redirect(`/patients/${patientId}?error=` + encodeURIComponent(error.message));
-  revalidatePath(`/patients/${patientId}`);
-  redirect(`/admissions/${data!.id}`);
+  revalidatePath(`/patients/${patientId}`, "layout");
+  redirect(`/patients/${patientId}/a/${data!.id}`);
 }

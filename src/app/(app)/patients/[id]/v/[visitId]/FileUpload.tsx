@@ -3,44 +3,44 @@ import { inputClass } from "@/components/FormField";
 import { uploadImage, uploadMedia } from "./actions";
 
 export function ImageUpload({
-  visitId,
   patientId,
+  visitId,
 }: {
-  visitId: string;
   patientId: string;
+  visitId: string;
 }) {
   return (
     <form
-      action={uploadImage.bind(null, visitId, patientId)}
-      className="flex flex-wrap items-center gap-2"
+      action={uploadImage.bind(null, patientId, visitId)}
+      style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 10 }}
     >
-      <select name="modality" defaultValue="xray" className={inputClass + " w-28"}>
+      <select name="modality" defaultValue="xray" className={inputClass} style={{ width: 110 }}>
         <option value="xray">X-ray</option>
         <option value="mri">MRI</option>
         <option value="ct">CT</option>
         <option value="other">기타</option>
       </select>
       <input type="file" name="file" required accept="image/*,.dcm" />
-      <SubmitButton>영상 업로드</SubmitButton>
+      <SubmitButton variant="secondary">영상 업로드</SubmitButton>
     </form>
   );
 }
 
 export function MediaUpload({
-  visitId,
   patientId,
+  visitId,
 }: {
-  visitId: string;
   patientId: string;
+  visitId: string;
 }) {
   return (
     <form
-      action={uploadMedia.bind(null, visitId, patientId)}
-      className="flex flex-wrap items-center gap-2"
+      action={uploadMedia.bind(null, patientId, visitId)}
+      style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 10 }}
     >
-      <input name="kind" placeholder="종류(예: 보행영상)" className={inputClass + " w-40"} />
+      <input name="kind" placeholder="종류(예: 보행영상)" className={inputClass} style={{ width: 160 }} />
       <input type="file" name="file" required accept="image/*,video/*" />
-      <SubmitButton>사진/영상 업로드</SubmitButton>
+      <SubmitButton variant="secondary">사진/영상 업로드</SubmitButton>
     </form>
   );
 }

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
+import { DataTable } from "@/components/DataTable";
 import {
   discharge,
   reopenAdmission,
@@ -8,8 +9,11 @@ import {
   addVital,
   updateVital,
   deleteVital,
+  deleteAdmFile,
 } from "./actions";
+import { AdmImageUpload, AdmMediaUpload } from "./FileUpload";
 import { VitalChart } from "@/components/VitalChart";
+import { signedUrl } from "@/lib/storage";
 import { notFound } from "next/navigation";
 
 export default async function AdmissionDetail({
@@ -26,11 +30,22 @@ export default async function AdmissionDetail({
     .single();
   if (!a) notFound();
 
-  const { data: vitals } = await supabase
-    .from("vital")
-    .select("id, measured_at, temperature, heart_rate, resp_rate, systolic, diastolic")
-    .eq("admission_id", admissionId)
-    .order("measured_at", { ascending: true });
+  const [{ data: vitals }, { data: images }, { data: mediaRows }] = await Promise.all([
+    supabase
+      .from("vital")
+      .select("id, measured_at, temperature, heart_rate, resp_rate, systolic, diastolic")
+      .eq("admission_id", admissionId)
+      .order("measured_at", { ascending: true }),
+    supabase.from("medical_image").select("id, modality, file_name, storage_path").eq("admission_id", admissionId),
+    supabase.from("media").select("id, kind, file_name, storage_path").eq("admission_id", admissionId),
+  ]);
+
+  const imageLinks = await Promise.all(
+    (images ?? []).map(async (i) => ({ ...i, url: await signedUrl(i.storage_path) }))
+  );
+  const mediaLinks = await Promise.all(
+    (mediaRows ?? []).map(async (m) => ({ ...m, url: await signedUrl(m.storage_path) }))
+  );
 
   return (
     <div style={{ display: "grid", gap: 20 }}>
@@ -62,13 +77,13 @@ export default async function AdmissionDetail({
       </div>
 
       <div className="card">
-        <div className="card-head"><h2 className="section-title">입원 정보</h2></div>
-        <form action={updateAdmission.bind(null, patientId, a.id)} style={{ display: "grid", gap: 12, maxWidth: 480 }}>
+        <div className="card-head"><h2 className="section-title">입원 정보 · 메모</h2></div>
+        <form action={updateAdmission.bind(null, patientId, a.id)} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
           <FormField label="입원일">
-            <input type="date" name="admitted_at" defaultValue={a.admitted_at} className={inputClass} />
+            <input type="date" name="admitted_at" defaultValue={a.admitted_at} className={inputClass} style={{ maxWidth: 200 }} />
           </FormField>
-          <FormField label="비고">
-            <input name="note" defaultValue={a.note ?? ""} className={inputClass} />
+          <FormField label="메모 (경과·간호 기록)">
+            <textarea name="note" rows={6} defaultValue={a.note ?? ""} className={inputClass} />
           </FormField>
           <div><SubmitButton>저장</SubmitButton></div>
         </form>
@@ -131,6 +146,42 @@ export default async function AdmissionDetail({
             <FormField label="이완기"><input name="diastolic" inputMode="numeric" className={inputClass} /></FormField>
             <div style={{ gridColumn: "1 / -1" }}><SubmitButton>바이털 추가</SubmitButton></div>
           </form>
+        </div>
+      </div>
+
+      <div className="quickadd-grid">
+        <div className="card">
+          <div className="card-head"><h2 className="section-title">의료영상</h2></div>
+          <ul style={{ display: "grid", gap: 6, fontSize: ".9rem", listStyle: "none", padding: 0, margin: 0 }}>
+            {imageLinks.map((i) => (
+              <li key={i.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span className="pill muted" style={{ textTransform: "uppercase" }}>{i.modality}</span>
+                {i.url ? <a href={i.url} target="_blank" className="link-btn">{i.file_name}</a> : i.file_name}
+                <form action={deleteAdmFile.bind(null, patientId, a.id, "medical_image", i.id, i.storage_path)}>
+                  <button className="link-btn danger">삭제</button>
+                </form>
+              </li>
+            ))}
+            {imageLinks.length === 0 && <li style={{ color: "var(--muted)" }}>없음</li>}
+          </ul>
+          <AdmImageUpload patientId={patientId} admissionId={a.id} />
+        </div>
+
+        <div className="card">
+          <div className="card-head"><h2 className="section-title">사진 / 영상</h2></div>
+          <ul style={{ display: "grid", gap: 6, fontSize: ".9rem", listStyle: "none", padding: 0, margin: 0 }}>
+            {mediaLinks.map((m) => (
+              <li key={m.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ color: "var(--muted)" }}>{m.kind ?? "-"}</span>
+                {m.url ? <a href={m.url} target="_blank" className="link-btn">{m.file_name}</a> : m.file_name}
+                <form action={deleteAdmFile.bind(null, patientId, a.id, "media", m.id, m.storage_path)}>
+                  <button className="link-btn danger">삭제</button>
+                </form>
+              </li>
+            ))}
+            {mediaLinks.length === 0 && <li style={{ color: "var(--muted)" }}>없음</li>}
+          </ul>
+          <AdmMediaUpload patientId={patientId} admissionId={a.id} />
         </div>
       </div>
     </div>

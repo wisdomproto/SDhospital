@@ -78,7 +78,7 @@ export default async function VisitDetail({
             r.frequency ?? "-",
             r.duration ?? "-",
             <form key="d" action={deletePrescription.bind(null, v.id, r.id)}>
-              <button className="text-red-600">삭제</button>
+              <button className="link-btn danger">삭제</button>
             </form>,
           ])}
         />
@@ -92,14 +92,14 @@ export default async function VisitDetail({
             <li key={i.id} className="flex items-center gap-3">
               <span className="uppercase text-gray-500">{i.modality}</span>
               {i.url ? (
-                <a href={i.url} target="_blank" className="text-blue-600">
+                <a href={i.url} target="_blank" className="link-btn">
                   {i.file_name}
                 </a>
               ) : (
                 i.file_name
               )}
               <form action={deleteFile.bind(null, v.id, "medical_image", i.id, i.storage_path)}>
-                <button className="text-red-600">삭제</button>
+                <button className="link-btn danger">삭제</button>
               </form>
             </li>
           ))}
@@ -115,14 +115,14 @@ export default async function VisitDetail({
             <li key={m.id} className="flex items-center gap-3">
               <span className="text-gray-500">{m.kind ?? "-"}</span>
               {m.url ? (
-                <a href={m.url} target="_blank" className="text-blue-600">
+                <a href={m.url} target="_blank" className="link-btn">
                   {m.file_name}
                 </a>
               ) : (
                 m.file_name
               )}
               <form action={deleteFile.bind(null, v.id, "media", m.id, m.storage_path)}>
-                <button className="text-red-600">삭제</button>
+                <button className="link-btn danger">삭제</button>
               </form>
             </li>
           ))}

@@ -28,3 +28,7 @@ export async function quickLoginStaff() {
 export async function quickLoginOwner() {
   await quickLogin("owner");
 }
+
+export async function quickLoginVet() {
+  await quickLogin("vet");
+}

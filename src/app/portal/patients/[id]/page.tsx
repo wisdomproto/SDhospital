@@ -67,7 +67,7 @@ export default async function PortalPatient({
             <div className="mt-2 flex flex-wrap gap-3">
               {files.map((f) =>
                 f.url ? (
-                  <a key={f.id} href={f.url} target="_blank" className="text-blue-600">
+                  <a key={f.id} href={f.url} target="_blank" className="link-btn">
                     {f.file_name}
                   </a>
                 ) : (

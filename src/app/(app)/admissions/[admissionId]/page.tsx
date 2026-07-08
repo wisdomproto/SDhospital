@@ -89,7 +89,7 @@ export default async function AdmissionDetail({
             v.systolic ?? "-",
             v.diastolic ?? "-",
             <form key="d" action={deleteVital.bind(null, a.id, v.id)}>
-              <button className="text-red-600">삭제</button>
+              <button className="link-btn danger">삭제</button>
             </form>,
           ])}
         />

@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Role } from "@/lib/auth/roles";
+import { Sidebar } from "./Sidebar";
+import { signOut } from "./logout";
 
 export default async function AppLayout({
   children,
@@ -23,18 +25,30 @@ export default async function AppLayout({
   if (role !== "staff") redirect("/portal");
 
   return (
-    <div className="min-h-screen">
-      <header className="flex items-center justify-between border-b px-6 py-3">
-        <nav className="flex gap-4 text-sm">
-          <Link href="/">대시보드</Link>
-          <Link href="/patients">환자</Link>
-          <Link href="/owners">보호자</Link>
-          <Link href="/hospitals">1차병원</Link>
-          <Link href="/drugs">약품</Link>
-        </nav>
-        <span className="text-sm text-gray-500">{profile?.name} · 직원</span>
-      </header>
-      <main className="p-6">{children}</main>
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="sidebar-brand">
+          <span className="brand-glyph">🐾</span>
+          <span>SDhospital</span>
+        </div>
+        <Sidebar />
+        <div className="role-panel">
+          <span className="role-badge">STAFF · {profile?.name ?? "직원"}</span>
+          <form action={signOut}>
+            <button className="btn btn-ghost btn-sm">로그아웃</button>
+          </form>
+        </div>
+      </aside>
+
+      <div className="workspace">
+        <header className="topbar">
+          <span className="hospital-chip">SDhospital · 2차 동물병원 · Asia/Seoul</span>
+          <Link href="/patients/new" className="btn btn-secondary btn-sm">
+            + 환자 등록
+          </Link>
+        </header>
+        <main className="main-content">{children}</main>
+      </div>
     </div>
   );
 }

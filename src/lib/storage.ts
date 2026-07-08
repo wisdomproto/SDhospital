@@ -11,8 +11,15 @@ export function mediaPath(patientId: string, visitId: string, fileName: string) 
 }
 
 // Mint a short-lived signed URL for viewing/downloading a stored object.
-export async function signedUrl(path: string, expiresIn = 60): Promise<string | null> {
+export async function signedUrl(path: string, expiresIn = 300): Promise<string | null> {
   const supabase = await createClient();
   const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, expiresIn);
   return data?.signedUrl ?? null;
+}
+
+export function isVideoFile(fileName: string | null | undefined): boolean {
+  return /\.(mp4|mov|webm|m4v|avi|mkv)$/i.test(fileName ?? "");
+}
+export function isImageFile(fileName: string | null | undefined): boolean {
+  return /\.(png|jpe?g|gif|webp|bmp|heic|svg)$/i.test(fileName ?? "");
 }

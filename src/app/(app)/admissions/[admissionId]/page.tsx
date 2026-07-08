@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { inputClass } from "@/components/FormField";
+import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
-import { discharge, reopenAdmission } from "./actions";
+import { DataTable } from "@/components/DataTable";
+import { discharge, reopenAdmission, addVital, deleteVital } from "./actions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -19,6 +20,12 @@ export default async function AdmissionDetail({
     .single();
   if (!a) notFound();
   const patient = a.patient as unknown as { id: string; name: string };
+
+  const { data: vitals } = await supabase
+    .from("vital")
+    .select("id, measured_at, temperature, heart_rate, resp_rate, systolic, diastolic")
+    .eq("admission_id", admissionId)
+    .order("measured_at", { ascending: true });
 
   return (
     <div className="max-w-3xl space-y-8">
@@ -50,6 +57,52 @@ export default async function AdmissionDetail({
             <button className="text-sm text-blue-600">입원중으로 되돌리기</button>
           </form>
         )}
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-medium">바이털</h2>
+        <DataTable
+          headers={["측정시각", "체온", "심박", "호흡", "수축기", "이완기", ""]}
+          empty="측정 기록이 없습니다."
+          rows={[...(vitals ?? [])].reverse().map((v) => [
+            new Date(v.measured_at).toLocaleString("ko-KR"),
+            v.temperature ?? "-",
+            v.heart_rate ?? "-",
+            v.resp_rate ?? "-",
+            v.systolic ?? "-",
+            v.diastolic ?? "-",
+            <form key="d" action={deleteVital.bind(null, a.id, v.id)}>
+              <button className="text-red-600">삭제</button>
+            </form>,
+          ])}
+        />
+
+        <form
+          action={addVital.bind(null, a.id)}
+          className="grid grid-cols-3 gap-2 md:grid-cols-6"
+        >
+          <FormField label="측정시각">
+            <input type="datetime-local" name="measured_at" className={inputClass} />
+          </FormField>
+          <FormField label="체온">
+            <input name="temperature" inputMode="decimal" className={inputClass} />
+          </FormField>
+          <FormField label="심박">
+            <input name="heart_rate" inputMode="numeric" className={inputClass} />
+          </FormField>
+          <FormField label="호흡">
+            <input name="resp_rate" inputMode="numeric" className={inputClass} />
+          </FormField>
+          <FormField label="수축기">
+            <input name="systolic" inputMode="numeric" className={inputClass} />
+          </FormField>
+          <FormField label="이완기">
+            <input name="diastolic" inputMode="numeric" className={inputClass} />
+          </FormField>
+          <div className="col-span-3 md:col-span-6">
+            <SubmitButton>바이털 추가</SubmitButton>
+          </div>
+        </form>
       </section>
     </div>
   );

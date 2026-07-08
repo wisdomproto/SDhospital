@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { deletePatient } from "../actions";
 import { createVisit } from "./visits/actions";
+import { createAdmission } from "./admissions/actions";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DataTable } from "@/components/DataTable";
@@ -31,6 +32,12 @@ export default async function PatientDetail({
     .select("id, visit_date, visit_no, note")
     .eq("patient_id", id)
     .order("visit_date", { ascending: false });
+
+  const { data: admissions } = await supabase
+    .from("admission")
+    .select("id, admitted_at, discharged_at, status")
+    .eq("patient_id", id)
+    .order("admitted_at", { ascending: false });
 
   const rows: [string, string][] = [
     ["종/품종", [p.species, p.breed].filter(Boolean).join(" / ") || "-"],
@@ -98,6 +105,38 @@ export default async function PatientDetail({
           </div>
           <div className="col-span-2">
             <SubmitButton>회차 추가</SubmitButton>
+          </div>
+        </form>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-medium">입원</h2>
+        <DataTable
+          headers={["입원일", "퇴원일", "상태", ""]}
+          empty="입원 이력이 없습니다."
+          rows={(admissions ?? []).map((a) => [
+            a.admitted_at,
+            a.discharged_at ?? "-",
+            a.status === "admitted" ? "입원중" : "퇴원",
+            <Link key="o" href={`/admissions/${a.id}`} className="text-blue-600">
+              열기
+            </Link>,
+          ])}
+        />
+        <form
+          action={createAdmission.bind(null, p.id)}
+          className="grid max-w-md grid-cols-2 gap-3"
+        >
+          <FormField label="입원일">
+            <input type="date" name="admitted_at" className={inputClass} />
+          </FormField>
+          <div className="col-span-2">
+            <FormField label="비고">
+              <input name="note" className={inputClass} />
+            </FormField>
+          </div>
+          <div className="col-span-2">
+            <SubmitButton>입원 등록</SubmitButton>
           </div>
         </form>
       </section>

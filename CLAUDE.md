@@ -15,7 +15,7 @@
 - `referring_vet` — 1차 병원: 자기가 의뢰한 환자만 읽기 (`patient.referring_hospital_id`)
 - `owner` — 보호자: 자기 반려동물만 읽기 (`patient.owner_id`)
 
-외부 사용자는 병원이 발급하는 **초대 링크/코드**로 가입(Plan 05).
+외부 사용자는 병원이 발급하는 **초대 링크**로 가입(`redeem_invite` DEFINER 함수 → `/invite/[token]` → `/portal`).
 
 ## 명령어
 - `npm run dev` — 개발 서버 (localhost:3000)
@@ -39,7 +39,9 @@
 - **02 환자 관리** ✅ — 보호자·1차병원·환자 CRUD, 검색 목록, 상세/수정
 - **03 진료 기록** ✅ — 회차·약품 마스터·처방·의료영상/사진 업로드(Storage+서명URL)
 - **04 입원·바이털** ✅ — 입원 생애주기·바이털 입력·Recharts 시계열 그래프
-- 05 초대·외부 포털 (예정)
+- **05 초대·외부 포털** ✅ — 초대 발급/수락(DEFINER 함수), 읽기전용 보호자·1차병원 포털
+
+**MVP 완성** (Plan 01–05). 이후 후보: 알림, DICOM 뷰어, 예약/청구, 감사 로그, 네이티브 앱.
 
 스펙: `docs/superpowers/specs/2026-07-07-vet-emr-design.md`
 

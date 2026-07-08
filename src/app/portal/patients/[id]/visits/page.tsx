@@ -20,7 +20,7 @@ export default async function PortalVisits({
       {(visits ?? []).length === 0 && <div className="empty-state">진료 기록이 없습니다.</div>}
       {(visits ?? []).map((v) => (
         <Link key={v.id} href={`/portal/patients/${id}/visits/${v.id}`} className="portal-tile" style={{ alignItems: "flex-start" }}>
-          <span style={{ width: 44, height: 44, borderRadius: 13, display: "grid", placeItems: "center", background: "var(--surface-soft)", color: "var(--primary)", fontWeight: 800, fontSize: ".9rem", flexShrink: 0 }}>
+          <span className="portal-chip" style={{ background: "#e8f0ff", color: "var(--primary)", fontWeight: 900, fontSize: ".92rem" }}>
             {v.visit_no != null ? `${v.visit_no}회` : "·"}
           </span>
           <div style={{ flex: 1, minWidth: 0 }}>

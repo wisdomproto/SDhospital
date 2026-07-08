@@ -56,7 +56,7 @@ export default async function PortalHome() {
         </div>
         {(patients ?? []).map((p) => (
           <Link key={p.id} href={`/portal/patients/${p.id}`} className="portal-tile">
-            <span style={{ width: 46, height: 46, borderRadius: 14, display: "grid", placeItems: "center", background: "var(--surface-soft)", fontSize: 24 }}>
+            <span className="portal-chip" style={{ background: "#eaf1ff", fontSize: 24 }}>
               {p.species === "고양이" ? "🐱" : "🐶"}
             </span>
             <div style={{ flex: 1 }}>

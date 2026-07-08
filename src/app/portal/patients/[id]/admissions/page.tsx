@@ -20,9 +20,7 @@ export default async function PortalAdmissions({
       {(admissions ?? []).length === 0 && <div className="empty-state">입원 기록이 없습니다.</div>}
       {(admissions ?? []).map((a) => (
         <Link key={a.id} href={`/portal/patients/${id}/admissions/${a.id}`} className="portal-tile" style={{ alignItems: "flex-start" }}>
-          <span style={{ width: 44, height: 44, borderRadius: 13, display: "grid", placeItems: "center", background: "var(--surface-soft)", fontSize: 20, flexShrink: 0 }}>
-            🏥
-          </span>
+          <span className="portal-chip" style={{ background: "#fff1e6", fontSize: 22 }}>🏥</span>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="portal-tile-title">{a.admitted_at}</div>
             <div className="portal-tile-sub">

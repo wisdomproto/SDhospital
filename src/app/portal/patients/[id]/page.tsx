@@ -28,33 +28,33 @@ export default async function PortalPatientOverview({
   return (
     <>
       <div className="portal-hero">
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ width: 52, height: 52, borderRadius: 16, display: "grid", placeItems: "center", background: "rgba(255,255,255,.22)", fontSize: 28 }}>
+        <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 14 }}>
+          <span style={{ width: 58, height: 58, borderRadius: 20, display: "grid", placeItems: "center", background: "rgba(255,255,255,.24)", fontSize: 32 }}>
             {p.species === "고양이" ? "🐱" : "🐶"}
           </span>
           <div>
-            <div style={{ fontSize: "1.4rem", fontWeight: 900 }}>{p.name}</div>
-            <div style={{ fontSize: ".85rem", opacity: 0.92 }}>
+            <div style={{ fontSize: "1.55rem", fontWeight: 900, letterSpacing: "-0.01em" }}>{p.name}</div>
+            <div style={{ fontSize: ".88rem", opacity: 0.94, marginTop: 2 }}>
               {[p.species, p.breed].filter(Boolean).join(" / ") || "-"}
               {p.sex ? ` · ${p.sex}` : ""}
             </div>
           </div>
         </div>
         {openAdm && (
-          <div style={{ marginTop: 12, display: "inline-block", background: "rgba(255,255,255,.2)", padding: "5px 11px", borderRadius: 999, fontSize: ".78rem", fontWeight: 800 }}>
-            현재 입원중
+          <div style={{ position: "relative", zIndex: 1, marginTop: 14, display: "inline-block", background: "rgba(255,255,255,.24)", padding: "6px 13px", borderRadius: 999, fontSize: ".8rem", fontWeight: 800 }}>
+            🏥 현재 입원중
           </div>
         )}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <Link href={`/portal/patients/${p.id}/visits`} className="portal-card" style={{ textDecoration: "none", color: "inherit" }}>
-          <div style={{ fontSize: "1.7rem", fontWeight: 900, color: "var(--primary)" }}>{visitCount ?? 0}</div>
-          <div className="portal-tile-sub">진료 회차 →</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <Link href={`/portal/patients/${p.id}/visits`} className="portal-stat" style={{ background: "linear-gradient(140deg,#3b82f6,#2563eb)" }}>
+          <div className="num">{visitCount ?? 0}</div>
+          <div className="lbl">진료 회차 →</div>
         </Link>
-        <Link href={`/portal/patients/${p.id}/admissions`} className="portal-card" style={{ textDecoration: "none", color: "inherit" }}>
-          <div style={{ fontSize: "1.7rem", fontWeight: 900, color: "var(--warning)" }}>{admCount ?? 0}</div>
-          <div className="portal-tile-sub">입원 →</div>
+        <Link href={`/portal/patients/${p.id}/admissions`} className="portal-stat" style={{ background: "linear-gradient(140deg,#ff9d5c,#f97316)" }}>
+          <div className="num">{admCount ?? 0}</div>
+          <div className="lbl">입원 기록 →</div>
         </Link>
       </div>
 

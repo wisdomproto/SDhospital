@@ -38,14 +38,14 @@ export default async function HospitalsPage({
             h.name,
             h.contact ?? "-",
             <span key="a" className="flex gap-3">
-              <Link href={`/hospitals/${h.id}/edit`} className="text-blue-600">
+              <Link href={`/hospitals/${h.id}/edit`} className="link-btn">
                 수정
               </Link>
               <form action={issueVetInvite.bind(null, h.id)}>
-                <button className="text-blue-600">초대 발급</button>
+                <button className="link-btn">초대 발급</button>
               </form>
               <form action={deleteHospital.bind(null, h.id)}>
-                <button className="text-red-600">삭제</button>
+                <button className="link-btn danger">삭제</button>
               </form>
             </span>,
           ])}
@@ -65,7 +65,7 @@ export default async function HospitalsPage({
               </code>
               <span className="shrink-0 text-gray-500">{iv.used ? "사용됨" : "미사용"}</span>
               <form action={revokeVetInvite.bind(null, iv.id)}>
-                <button className="text-red-600">취소</button>
+                <button className="link-btn danger">취소</button>
               </form>
             </li>
           ))}

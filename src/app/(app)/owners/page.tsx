@@ -28,11 +28,11 @@ export default async function OwnersPage({
             o.name,
             o.contact ?? "-",
             <span key="a" className="flex gap-3">
-              <Link href={`/owners/${o.id}/edit`} className="text-blue-600">
+              <Link href={`/owners/${o.id}/edit`} className="link-btn">
                 수정
               </Link>
               <form action={deleteOwner.bind(null, o.id)}>
-                <button className="text-red-600">삭제</button>
+                <button className="link-btn danger">삭제</button>
               </form>
             </span>,
           ])}

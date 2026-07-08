@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { signOut } from "../(app)/logout";
 
 export default async function PortalLayout({
   children,
@@ -22,16 +22,33 @@ export default async function PortalLayout({
   if (role !== "owner" && role !== "referring_vet") redirect("/login");
 
   return (
-    <div className="min-h-screen">
-      <header className="flex items-center justify-between border-b px-6 py-3">
-        <Link href="/portal" className="text-sm font-medium">
-          진료 기록
-        </Link>
-        <span className="text-sm text-gray-500">
-          {profile?.name ?? ""} · {role === "owner" ? "보호자" : "의뢰 병원"} (읽기 전용)
-        </span>
-      </header>
-      <main className="p-6">{children}</main>
+    <div className="portal-shell">
+      <div className="portal-phone">
+        <div className="portal-hero">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div>
+              <div style={{ fontSize: ".72rem", fontWeight: 800, letterSpacing: ".08em", opacity: 0.9 }}>
+                {role === "owner" ? "보호자 · 읽기 전용" : "의뢰 병원 · 읽기 전용"}
+              </div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 900, marginTop: 4 }}>
+                {profile?.name ?? "내 반려동물"}
+              </div>
+            </div>
+            <span style={{ fontSize: 26 }}>🐾</span>
+          </div>
+          <p style={{ margin: "10px 0 0", fontSize: ".85rem", opacity: 0.92 }}>
+            SDhospital 진료·입원 기록
+          </p>
+        </div>
+        <div className="portal-content">{children}</div>
+        <div style={{ padding: "0 18px 18px" }}>
+          <form action={signOut}>
+            <button className="btn btn-ghost btn-sm" style={{ width: "100%" }}>
+              로그아웃
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

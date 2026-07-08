@@ -32,29 +32,33 @@ export default async function PatientsPage({
   const patients = (data ?? []) as unknown as PatientRow[];
 
   return (
-    <div className="max-w-4xl space-y-5">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">환자</h1>
-        <Link href="/patients/new" className="rounded bg-black px-3 py-2 text-sm text-white">
-          환자 등록
+    <div style={{ maxWidth: 960, display: "grid", gap: 18 }}>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12 }}>
+        <div>
+          <p className="eyebrow">Patients</p>
+          <h1 className="page-title">환자</h1>
+        </div>
+        <Link href="/patients/new" className="btn btn-primary btn-sm">
+          + 환자 등록
         </Link>
       </div>
 
-      <form className="flex gap-2">
+      <form style={{ display: "flex", gap: 8 }}>
         <input
           name="q"
           defaultValue={q}
           placeholder="이름 또는 종으로 검색"
-          className="w-64 rounded border px-3 py-2 text-sm"
+          className="field"
+          style={{ maxWidth: 280 }}
         />
-        <button className="rounded border px-3 py-2 text-sm">검색</button>
+        <button className="btn btn-ghost btn-sm">검색</button>
       </form>
 
       <DataTable
         headers={["이름", "종/품종", "보호자", "의뢰 병원"]}
         empty="환자가 없습니다."
         rows={patients.map((p) => [
-          <Link key="n" href={`/patients/${p.id}`} className="text-blue-600">
+          <Link key="n" href={`/patients/${p.id}`} className="link-btn">
             {p.name}
           </Link>,
           [p.species, p.breed].filter(Boolean).join(" / ") || "-",

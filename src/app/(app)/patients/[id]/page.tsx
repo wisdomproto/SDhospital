@@ -67,11 +67,11 @@ export default async function PatientDetail({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{p.name}</h1>
         <div className="flex gap-3 text-sm">
-          <Link href={`/patients/${p.id}/edit`} className="text-blue-600">
+          <Link href={`/patients/${p.id}/edit`} className="link-btn">
             수정
           </Link>
           <form action={deletePatient.bind(null, p.id)}>
-            <button className="text-red-600">삭제</button>
+            <button className="link-btn danger">삭제</button>
           </form>
         </div>
       </div>
@@ -94,7 +94,7 @@ export default async function PatientDetail({
             v.visit_date,
             v.visit_no ?? "-",
             (v.note ?? "").slice(0, 30) || "-",
-            <Link key="o" href={`/visits/${v.id}`} className="text-blue-600">
+            <Link key="o" href={`/visits/${v.id}`} className="link-btn">
               열기
             </Link>,
           ])}
@@ -129,7 +129,7 @@ export default async function PatientDetail({
             a.admitted_at,
             a.discharged_at ?? "-",
             a.status === "admitted" ? "입원중" : "퇴원",
-            <Link key="o" href={`/admissions/${a.id}`} className="text-blue-600">
+            <Link key="o" href={`/admissions/${a.id}`} className="link-btn">
               열기
             </Link>,
           ])}
@@ -162,7 +162,7 @@ export default async function PatientDetail({
               </code>
               <span className="shrink-0 text-gray-500">{iv.used ? "사용됨" : "미사용"}</span>
               <form action={revokeInvite.bind(null, p.id, iv.id)}>
-                <button className="text-red-600">취소</button>
+                <button className="link-btn danger">취소</button>
               </form>
             </li>
           ))}

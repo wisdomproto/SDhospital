@@ -29,11 +29,11 @@ export default async function DrugsPage({
             d.unit ?? "-",
             d.spec ?? "-",
             <span key="a" className="flex gap-3">
-              <Link href={`/drugs/${d.id}/edit`} className="text-blue-600">
+              <Link href={`/drugs/${d.id}/edit`} className="link-btn">
                 수정
               </Link>
               <form action={deleteDrug.bind(null, d.id)}>
-                <button className="text-red-600">삭제</button>
+                <button className="link-btn danger">삭제</button>
               </form>
             </span>,
           ])}

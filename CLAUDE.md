@@ -7,6 +7,7 @@
 - **Next.js 16** (App Router, TS, Tailwind v4) — EMR 웹 + 외부 포털 한 코드베이스
 - **Supabase** (Postgres + Auth + Storage + **RLS**) — 프로젝트 ref `wzkobutctoilazdznpbb` (서울)
 - **배포**: Railway (앱) + Supabase 클라우드
+- **차트**: Recharts (입원 바이털 시계열)
 - **테스트**: Vitest (TS 단위), `supabase/tests/rls.sql` (RLS 검증)
 
 ## 역할 (RLS로 DB에서 강제)
@@ -37,7 +38,8 @@
 - **01 기반** ✅ — 스키마·RLS·직원 로그인·앱 셸
 - **02 환자 관리** ✅ — 보호자·1차병원·환자 CRUD, 검색 목록, 상세/수정
 - **03 진료 기록** ✅ — 회차·약품 마스터·처방·의료영상/사진 업로드(Storage+서명URL)
-- 04 입원·바이털 / 05 초대·외부 포털 (예정)
+- **04 입원·바이털** ✅ — 입원 생애주기·바이털 입력·Recharts 시계열 그래프
+- 05 초대·외부 포털 (예정)
 
 스펙: `docs/superpowers/specs/2026-07-07-vet-emr-design.md`
 

@@ -3,7 +3,6 @@ import { signedUrl } from "@/lib/storage";
 import { VitalChart } from "@/components/VitalChart";
 import { DataTable } from "@/components/DataTable";
 import { MediaGrid, type SignedFile } from "@/app/portal/patients/[id]/MediaGrid";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 async function signAll(rows: Omit<SignedFile, "url">[]): Promise<SignedFile[]> {
@@ -21,7 +20,7 @@ export default async function ReferralAdmissionDetail({
 }: {
   params: Promise<{ id: string; admissionId: string }>;
 }) {
-  const { id: patientId, admissionId } = await params;
+  const { admissionId } = await params;
   const supabase = await createClient();
   const { data: a } = await supabase
     .from("admission")
@@ -44,10 +43,9 @@ export default async function ReferralAdmissionDetail({
   const vlist = vitals ?? [];
 
   return (
-    <div style={{ display: "grid", gap: 20, maxWidth: 1000 }}>
+    <div style={{ display: "grid", gap: 20 }}>
       <div>
-        <Link href={`/referral/patients/${patientId}`} className="link-btn" style={{ fontSize: ".82rem" }}>← 환자 개요</Link>
-        <p className="eyebrow" style={{ marginTop: 10 }}>입원</p>
+        <p className="eyebrow">입원</p>
         <h1 className="page-title" style={{ display: "flex", alignItems: "center", gap: 10 }}>
           입원 {a.admitted_at}
           <span className={`pill ${a.status === "admitted" ? "warning" : "success"}`}>

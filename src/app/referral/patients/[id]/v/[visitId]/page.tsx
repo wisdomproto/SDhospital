@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
 import { DataTable } from "@/components/DataTable";
 import { MediaGrid, type SignedFile } from "@/app/portal/patients/[id]/MediaGrid";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 async function signAll(rows: Omit<SignedFile, "url">[]): Promise<SignedFile[]> {
@@ -14,7 +13,7 @@ export default async function ReferralVisitDetail({
 }: {
   params: Promise<{ id: string; visitId: string }>;
 }) {
-  const { id: patientId, visitId } = await params;
+  const { visitId } = await params;
   const supabase = await createClient();
   const { data: v } = await supabase
     .from("visit")
@@ -32,10 +31,9 @@ export default async function ReferralVisitDetail({
   const mediaLinks = await signAll((media as Omit<SignedFile, "url">[]) ?? []);
 
   return (
-    <div style={{ display: "grid", gap: 20, maxWidth: 1000 }}>
+    <div style={{ display: "grid", gap: 20 }}>
       <div>
-        <Link href={`/referral/patients/${patientId}`} className="link-btn" style={{ fontSize: ".82rem" }}>← 환자 개요</Link>
-        <p className="eyebrow" style={{ marginTop: 10 }}>진료 회차</p>
+        <p className="eyebrow">진료 회차</p>
         <h1 className="page-title">
           {v.visit_date} {v.visit_no != null ? `· ${v.visit_no}회차` : ""}
         </h1>

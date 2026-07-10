@@ -32,11 +32,7 @@ export default async function ReferralPatientOverview({
   ];
 
   return (
-    <div style={{ display: "grid", gap: 20, maxWidth: 1000 }}>
-      <div style={{ marginBottom: -4 }}>
-        <Link href="/referral" className="link-btn" style={{ fontSize: ".82rem" }}>← 의뢰 환자 목록</Link>
-      </div>
-
+    <div style={{ display: "grid", gap: 20 }}>
       <div className="card" style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p className="eyebrow">Patient · 개요{p.chart_no ? ` · 차트 ${p.chart_no}` : ""}</p>

@@ -1,8 +1,27 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { validateOwnerInput } from "@/lib/validation/owner";
+import { newInviteToken } from "@/lib/invites";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
+export async function issueOwnerInvite(ownerId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("invite").insert({
+    token: newInviteToken(),
+    role: "owner",
+    owner_id: ownerId,
+    expires_at: new Date(Date.now() + 14 * 864e5).toISOString(),
+  });
+  if (error) redirect("/owners?error=" + encodeURIComponent(error.message));
+  revalidatePath("/owners");
+}
+
+export async function revokeOwnerInvite(id: string) {
+  const supabase = await createClient();
+  await supabase.from("invite").delete().eq("id", id);
+  revalidatePath("/owners");
+}
 
 export async function createOwner(formData: FormData) {
   const v = validateOwnerInput({

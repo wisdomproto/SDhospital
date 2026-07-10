@@ -25,6 +25,12 @@ export default async function PortalHome() {
     redirect(`/portal/patients/${patients[0].id}`);
   }
 
+  const { data: admitted } = await supabase
+    .from("admission")
+    .select("patient_id")
+    .eq("status", "admitted");
+  const admittedSet = new Set((admitted ?? []).map((a) => a.patient_id));
+
   return (
     <>
       <header className="portal-appbar">
@@ -40,11 +46,11 @@ export default async function PortalHome() {
       </header>
       <div className="portal-body">
         <div className="portal-hero">
-          <div style={{ fontSize: ".72rem", fontWeight: 800, letterSpacing: ".08em", opacity: 0.9 }}>
+          <div style={{ fontSize: ".72rem", fontWeight: 600, letterSpacing: ".08em", opacity: 0.9 }}>
             {isOwner ? "보호자 · 읽기 전용" : "의뢰 병원 · 읽기 전용"}
           </div>
-          <div style={{ fontSize: "1.4rem", fontWeight: 900, marginTop: 4 }}>
-            {profile?.name ?? "내 반려동물"}
+          <div style={{ fontSize: "1.35rem", fontWeight: 700, marginTop: 4 }}>
+            {profile?.name ? `${profile.name} 님` : "내 반려동물"}
           </div>
           <p style={{ margin: "8px 0 0", fontSize: ".85rem", opacity: 0.92 }}>
             SDhospital 진료·입원 기록을 확인하세요.
@@ -56,14 +62,18 @@ export default async function PortalHome() {
         </div>
         {(patients ?? []).map((p) => (
           <Link key={p.id} href={`/portal/patients/${p.id}`} className="portal-tile">
-            <span className="portal-chip" style={{ background: "#eaf1ff", fontSize: 24 }}>
+            <span className="portal-chip" style={{ fontSize: 24 }}>
               {p.species === "고양이" ? "🐱" : "🐶"}
             </span>
             <div style={{ flex: 1 }}>
               <div className="portal-tile-title">{p.name}</div>
               <div className="portal-tile-sub">{[p.species, p.breed].filter(Boolean).join(" / ") || "-"}</div>
             </div>
-            <span style={{ color: "var(--muted)", fontSize: "1.2rem" }}>›</span>
+            {admittedSet.has(p.id) ? (
+              <span className="pill warning">입원중</span>
+            ) : (
+              <span style={{ color: "var(--muted-2)", fontSize: "1.2rem" }}>›</span>
+            )}
           </Link>
         ))}
         {(patients ?? []).length === 0 && (

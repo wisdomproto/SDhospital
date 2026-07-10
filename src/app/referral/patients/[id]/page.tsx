@@ -1,14 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { deletePatient } from "../actions";
-import { createVisit } from "./visits/actions";
-import { createAdmission } from "./admissions/actions";
-import { FormField, inputClass } from "@/components/FormField";
-import { SubmitButton } from "@/components/SubmitButton";
 import { DataTable } from "@/components/DataTable";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export default async function PatientOverview({
+export default async function ReferralPatientOverview({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -17,27 +12,15 @@ export default async function PatientOverview({
   const supabase = await createClient();
   const { data: p } = await supabase
     .from("patient")
-    .select(
-      "id, chart_no, name, species, breed, sex, birth_date, note, owner:owner_id(name, contact), hospital:referring_hospital_id(name, contact)"
-    )
+    .select("id, chart_no, name, species, breed, sex, birth_date, note, hospital:referring_hospital_id(name, contact)")
     .eq("id", id)
     .single();
   if (!p) notFound();
-
-  const owner = p.owner as unknown as { name: string; contact: string | null } | null;
   const hospital = p.hospital as unknown as { name: string; contact: string | null } | null;
 
   const [{ data: visits }, { data: admissions }] = await Promise.all([
-    supabase
-      .from("visit")
-      .select("id, visit_date, visit_no, note")
-      .eq("patient_id", id)
-      .order("visit_date", { ascending: false }),
-    supabase
-      .from("admission")
-      .select("id, admitted_at, discharged_at, status")
-      .eq("patient_id", id)
-      .order("admitted_at", { ascending: false }),
+    supabase.from("visit").select("id, visit_date, visit_no, note").eq("patient_id", id).order("visit_date", { ascending: false }),
+    supabase.from("admission").select("id, admitted_at, discharged_at, status").eq("patient_id", id).order("admitted_at", { ascending: false }),
   ]);
 
   const info: [string, string][] = [
@@ -45,12 +28,15 @@ export default async function PatientOverview({
     ["품종", p.breed ?? "-"],
     ["성별", p.sex ?? "-"],
     ["생일", p.birth_date ?? "-"],
-    ["보호자", owner ? `${owner.name}${owner.contact ? ` · ${owner.contact}` : ""}` : "-"],
     ["의뢰 병원", hospital ? `${hospital.name}${hospital.contact ? ` · ${hospital.contact}` : ""}` : "-"],
   ];
 
   return (
-    <div style={{ display: "grid", gap: 20 }}>
+    <div style={{ display: "grid", gap: 20, maxWidth: 1000 }}>
+      <div style={{ marginBottom: -4 }}>
+        <Link href="/referral" className="link-btn" style={{ fontSize: ".82rem" }}>← 의뢰 환자 목록</Link>
+      </div>
+
       <div className="card" style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p className="eyebrow">Patient · 개요{p.chart_no ? ` · 차트 ${p.chart_no}` : ""}</p>
@@ -60,12 +46,6 @@ export default async function PatientOverview({
             {p.sex && <span className="pill muted">{p.sex}</span>}
             {hospital && <span className="pill">의뢰 · {hospital.name}</span>}
           </div>
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <Link href={`/patients/${p.id}/edit`} className="btn btn-ghost btn-sm">수정</Link>
-          <form action={deletePatient.bind(null, p.id)}>
-            <button className="btn btn-danger btn-sm">삭제</button>
-          </form>
         </div>
       </div>
 
@@ -94,20 +74,9 @@ export default async function PatientOverview({
             v.visit_date,
             v.visit_no ?? "-",
             (v.note ?? "").slice(0, 40) || "-",
-            <Link key="o" href={`/patients/${p.id}/v/${v.id}`} className="link-btn">열기 →</Link>,
+            <Link key="o" href={`/referral/patients/${p.id}/v/${v.id}`} className="link-btn">열기 →</Link>,
           ])}
         />
-        <details style={{ marginTop: 12 }}>
-          <summary><span className="btn btn-secondary btn-sm">+ 회차 추가</span></summary>
-          <form action={createVisit.bind(null, p.id)} style={{ display: "grid", gap: 12, maxWidth: 460, marginTop: 12 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <FormField label="날짜"><input type="date" name="visit_date" className={inputClass} /></FormField>
-              <FormField label="회차"><input name="visit_no" inputMode="numeric" className={inputClass} /></FormField>
-            </div>
-            <FormField label="진료 내용"><textarea name="note" rows={3} className={inputClass} /></FormField>
-            <SubmitButton>회차 추가</SubmitButton>
-          </form>
-        </details>
       </div>
 
       <div className="card">
@@ -126,17 +95,9 @@ export default async function PatientOverview({
             ) : (
               <span key="s" className="pill success">퇴원</span>
             ),
-            <Link key="o" href={`/patients/${p.id}/a/${a.id}`} className="link-btn">열기 →</Link>,
+            <Link key="o" href={`/referral/patients/${p.id}/a/${a.id}`} className="link-btn">열기 →</Link>,
           ])}
         />
-        <details style={{ marginTop: 12 }}>
-          <summary><span className="btn btn-secondary btn-sm">+ 입원 등록</span></summary>
-          <form action={createAdmission.bind(null, p.id)} style={{ display: "grid", gap: 12, maxWidth: 460, marginTop: 12 }}>
-            <FormField label="입원일"><input type="date" name="admitted_at" className={inputClass} /></FormField>
-            <FormField label="비고"><input name="note" className={inputClass} /></FormField>
-            <SubmitButton>입원 등록</SubmitButton>
-          </form>
-        </details>
       </div>
     </div>
   );

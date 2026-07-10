@@ -2,18 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DataTable } from "@/components/DataTable";
-import {
-  discharge,
-  reopenAdmission,
-  updateAdmission,
-  addVital,
-  updateVital,
-  deleteVital,
-  deleteAdmFile,
-} from "./actions";
+import { discharge, reopenAdmission, updateAdmission } from "./actions";
 import { AdmImageUpload, AdmMediaUpload } from "./FileUpload";
+import { AdmissionFlowsheet } from "./AdmissionFlowsheet";
+import { MediaGallery } from "./MediaGallery";
 import { VitalChart } from "@/components/VitalChart";
-import { signedUrl } from "@/lib/storage";
+import { signedUrl, isVideoFile } from "@/lib/storage";
 import { notFound } from "next/navigation";
 
 export default async function AdmissionDetail({
@@ -30,15 +24,80 @@ export default async function AdmissionDetail({
     .single();
   if (!a) notFound();
 
-  const [{ data: vitals }, { data: images }, { data: mediaRows }] = await Promise.all([
+  const [{ data: vitals }, { data: treatments }, { data: images }, { data: mediaRows }] = await Promise.all([
     supabase
       .from("vital")
-      .select("id, measured_at, temperature, heart_rate, resp_rate, systolic, diastolic")
+      .select(
+        "id, measured_at, temperature, heart_rate, resp_rate, systolic, diastolic, glucose, weight, respiratory, vomit, defecation, urination, feeding, fluid, tests"
+      )
       .eq("admission_id", admissionId)
       .order("measured_at", { ascending: true }),
+    supabase
+      .from("treatment")
+      .select("id, given_at, name")
+      .eq("admission_id", admissionId)
+      .order("given_at", { ascending: true }),
     supabase.from("medical_image").select("id, modality, file_name, storage_path").eq("admission_id", admissionId),
     supabase.from("media").select("id, kind, file_name, storage_path").eq("admission_id", admissionId),
   ]);
+
+  // ---- build day-by-day flowsheet: admission → discharge/today (KST) ----
+  const dayKey = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+  const timeLabel = (iso: string) =>
+    new Date(iso).toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false });
+  const dayLabel = (day: string) =>
+    new Date(day + "T00:00:00+09:00").toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric", weekday: "short" });
+
+  type VRow = NonNullable<typeof vitals>[number];
+  const vitalsByDay = new Map<string, VRow[]>();
+  for (const v of vitals ?? []) {
+    const day = dayKey(v.measured_at);
+    (vitalsByDay.get(day) ?? vitalsByDay.set(day, []).get(day)!).push(v);
+  }
+  const treatByDay = new Map<string, string[]>();
+  for (const t of treatments ?? []) {
+    const day = dayKey(t.given_at);
+    (treatByDay.get(day) ?? treatByDay.set(day, []).get(day)!).push(t.name);
+  }
+
+  // every date from admission to discharge (or today if still admitted)
+  const startDay = dayKey(a.admitted_at);
+  const endDay = a.discharged_at ? dayKey(a.discharged_at) : dayKey(new Date().toISOString());
+  const allDays: string[] = [];
+  {
+    let d = new Date(startDay + "T00:00:00+09:00");
+    const end = new Date(endDay + "T00:00:00+09:00");
+    let guard = 0;
+    while (d <= end && guard++ < 400) {
+      allDays.push(dayKey(d.toISOString()));
+      d = new Date(d.getTime() + 86_400_000);
+    }
+  }
+
+  // every day shows all 24 hourly slots; existing records fill their hour, the rest are empty & editable
+  const HOURS = Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, "0")}:00`);
+  const emptyRow = (day: string, t: string) => ({
+    vitalId: null, time: t, iso: `${day}T${t}:00+09:00`,
+    temperature: null, heart_rate: null, resp_rate: null, systolic: null,
+    glucose: null, weight: null, urination: null, feeding: null, tests: null,
+  });
+  const flowDays = allDays.map((day) => {
+    const byHour = new Map<string, VRow[]>();
+    for (const v of vitalsByDay.get(day) ?? []) {
+      const hh = timeLabel(v.measured_at).slice(0, 2) + ":00";
+      (byHour.get(hh) ?? byHour.set(hh, []).get(hh)!).push(v);
+    }
+    const rows = HOURS.flatMap((hh) => {
+      const at = byHour.get(hh) ?? [];
+      if (at.length === 0) return [emptyRow(day, hh)];
+      return at.map((v) => ({
+        vitalId: v.id, time: timeLabel(v.measured_at), iso: v.measured_at,
+        temperature: v.temperature, heart_rate: v.heart_rate, resp_rate: v.resp_rate, systolic: v.systolic,
+        glucose: v.glucose, weight: v.weight, urination: v.urination, feeding: v.feeding, tests: v.tests,
+      }));
+    });
+    return { key: day, label: dayLabel(day), rows, treats: treatByDay.get(day) ?? [] };
+  });
 
   const imageLinks = await Promise.all(
     (images ?? []).map(async (i) => ({ ...i, url: await signedUrl(i.storage_path) }))
@@ -100,87 +159,65 @@ export default async function AdmissionDetail({
               resp_rate: v.resp_rate,
               systolic: v.systolic,
               diastolic: v.diastolic,
+              glucose: v.glucose,
+              weight: v.weight,
             }))}
           />
         </div>
       )}
 
-      <div className="card">
-        <div className="card-head">
-          <h2 className="section-title">바이털 기록</h2>
-          <span className="pill muted">{(vitals ?? []).length}건</span>
-        </div>
-
-        {(vitals ?? []).length === 0 ? (
-          <div className="empty-state">측정 기록이 없습니다.</div>
-        ) : (
-          <div>
-            <div className="row-head vital-row">
-              <span>측정시각</span><span>체온</span><span>심박</span><span>호흡</span><span>수축기</span><span>이완기</span><span></span><span></span>
-            </div>
-            {[...(vitals ?? [])].reverse().map((v) => (
-              <form key={v.id} action={updateVital.bind(null, patientId, a.id, v.id)} className="vital-row">
-                <span style={{ fontSize: ".82rem", color: "var(--muted)" }}>
-                  {new Date(v.measured_at).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                </span>
-                <input name="temperature" defaultValue={v.temperature ?? ""} className={inputClass} />
-                <input name="heart_rate" defaultValue={v.heart_rate ?? ""} className={inputClass} />
-                <input name="resp_rate" defaultValue={v.resp_rate ?? ""} className={inputClass} />
-                <input name="systolic" defaultValue={v.systolic ?? ""} className={inputClass} />
-                <input name="diastolic" defaultValue={v.diastolic ?? ""} className={inputClass} />
-                <button className="btn btn-secondary btn-sm">저장</button>
-                <button formAction={deleteVital.bind(null, patientId, a.id, v.id)} className="btn btn-danger btn-sm">삭제</button>
-              </form>
-            ))}
+      {/* 일자별 입원 기록 (처치표 · 투약) — 입원~퇴원 날짜별 편집 */}
+      {flowDays.length > 0 && (
+        <div className="card">
+          <div className="card-head">
+            <h2 className="section-title">일자별 입원 기록 · 처치표</h2>
+            <span className="pill muted">{flowDays.length}일 · 입원~{a.discharged_at ? "퇴원" : "현재"}</span>
           </div>
-        )}
-
-        <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px dashed var(--line)" }}>
-          <p style={{ margin: "0 0 6px", fontWeight: 700, fontSize: ".85rem", color: "var(--muted)" }}>바이털 추가</p>
-          <form action={addVital.bind(null, patientId, a.id)} className="vital-form">
-            <FormField label="측정시각"><input type="datetime-local" name="measured_at" className={inputClass} /></FormField>
-            <FormField label="체온"><input name="temperature" inputMode="decimal" className={inputClass} /></FormField>
-            <FormField label="심박"><input name="heart_rate" inputMode="numeric" className={inputClass} /></FormField>
-            <FormField label="호흡"><input name="resp_rate" inputMode="numeric" className={inputClass} /></FormField>
-            <FormField label="수축기"><input name="systolic" inputMode="numeric" className={inputClass} /></FormField>
-            <FormField label="이완기"><input name="diastolic" inputMode="numeric" className={inputClass} /></FormField>
-            <div style={{ gridColumn: "1 / -1" }}><SubmitButton>바이털 추가</SubmitButton></div>
-          </form>
+          <AdmissionFlowsheet patientId={patientId} admissionId={a.id} days={flowDays} />
         </div>
-      </div>
+      )}
 
       <div className="quickadd-grid">
         <div className="card">
-          <div className="card-head"><h2 className="section-title">의료영상</h2></div>
-          <ul style={{ display: "grid", gap: 6, fontSize: ".9rem", listStyle: "none", padding: 0, margin: 0 }}>
-            {imageLinks.map((i) => (
-              <li key={i.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span className="pill muted" style={{ textTransform: "uppercase" }}>{i.modality}</span>
-                {i.url ? <a href={i.url} target="_blank" className="link-btn">{i.file_name}</a> : i.file_name}
-                <form action={deleteAdmFile.bind(null, patientId, a.id, "medical_image", i.id, i.storage_path)}>
-                  <button className="link-btn danger">삭제</button>
-                </form>
-              </li>
-            ))}
-            {imageLinks.length === 0 && <li style={{ color: "var(--muted)" }}>없음</li>}
-          </ul>
+          <div className="card-head">
+            <h2 className="section-title">의료영상</h2>
+            <span className="pill muted">이 입원 {imageLinks.length}건</span>
+          </div>
+          {imageLinks.length === 0 ? (
+            <div className="empty-state">등록된 의료영상이 없습니다.</div>
+          ) : (
+            <MediaGallery
+              patientId={patientId}
+              admissionId={a.id}
+              table="medical_image"
+              items={imageLinks.map((i) => ({
+                id: i.id, url: i.url, storagePath: i.storage_path,
+                label: i.modality ?? "기타", isVideo: false, fileName: i.file_name ?? "",
+              }))}
+            />
+          )}
           <AdmImageUpload patientId={patientId} admissionId={a.id} />
         </div>
 
         <div className="card">
-          <div className="card-head"><h2 className="section-title">사진 / 영상</h2></div>
-          <ul style={{ display: "grid", gap: 6, fontSize: ".9rem", listStyle: "none", padding: 0, margin: 0 }}>
-            {mediaLinks.map((m) => (
-              <li key={m.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ color: "var(--muted)" }}>{m.kind ?? "-"}</span>
-                {m.url ? <a href={m.url} target="_blank" className="link-btn">{m.file_name}</a> : m.file_name}
-                <form action={deleteAdmFile.bind(null, patientId, a.id, "media", m.id, m.storage_path)}>
-                  <button className="link-btn danger">삭제</button>
-                </form>
-              </li>
-            ))}
-            {mediaLinks.length === 0 && <li style={{ color: "var(--muted)" }}>없음</li>}
-          </ul>
+          <div className="card-head">
+            <h2 className="section-title">사진 / 영상</h2>
+            <span className="pill muted">이 입원 {mediaLinks.length}건</span>
+          </div>
+          {mediaLinks.length === 0 ? (
+            <div className="empty-state">등록된 사진·영상이 없습니다.</div>
+          ) : (
+            <MediaGallery
+              patientId={patientId}
+              admissionId={a.id}
+              table="media"
+              items={mediaLinks.map((m) => ({
+                id: m.id, url: m.url, storagePath: m.storage_path,
+                label: isVideoFile(m.file_name) ? "동영상" : m.kind ?? "사진",
+                isVideo: isVideoFile(m.file_name), fileName: m.file_name ?? "",
+              }))}
+            />
+          )}
           <AdmMediaUpload patientId={patientId} admissionId={a.id} />
         </div>
       </div>

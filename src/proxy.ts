@@ -31,7 +31,8 @@ export async function proxy(request: NextRequest) {
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    // portal (보호자·1차병원 앱) has its own login screen
+    url.pathname = path.startsWith("/portal") ? "/login/portal" : "/login";
     return NextResponse.redirect(url);
   }
   return response;

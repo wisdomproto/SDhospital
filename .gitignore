@@ -27,3 +27,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local data dumps & design request archives (never commit — data/ is multi-GB)
+data/
+*.zip

@@ -635,4 +635,15 @@ Using the account created in Task 4 (owner of a patient with data — issue the 
 - RLS test still passes; no external user can reach another patient's rows or files.
 
 ## MVP complete
-Plans 01–05 deliver the full MVP: staff EMR (patients, visits, prescriptions, images/media, admissions, vitals) plus the read-only external portal for owners and referring hospitals. Post-MVP candidates: notifications, DICOM viewer, appointments/billing, audit logging, native app wrapper.
+Plans 01–05 deliver the full MVP: staff EMR (patients, visits, prescriptions, images/media, admissions, vitals) plus the read-only external portal for owners and referring hospitals. Post-MVP candidates: medical image viewer (measure/annotate/segment, single-vs-multi-image series — deferred pending JPG-vs-DICOM decision), DICOM, notifications, appointments/billing, audit logging, native app wrapper.
+
+---
+
+## Update log — 2026-07-10: external portal split (owner mobile / vet desktop)
+
+The read-only external portal was split by role rather than sharing one mobile shell:
+
+- **Owner → `/portal`** (mobile app, unchanged).
+- **Referring vet → `/referral`** (new desktop portal). It **reuses the staff EMR shell/components read-only** (`app-shell`, `ReferralSidebar`, `card`, `DataTable`, `info-grid`) — the only difference from the staff pages is that edit/upload/create/delete controls are removed. Pages: patient list → overview → visit (`v/[visitId]`) → admission (`a/[admissionId]`).
+- Routing: login sends `referring_vet` to `/referral`; `/portal` layout redirects `referring_vet` → `/referral`; mobile login (`/login/portal`) is owner-only.
+- Demo: per-hospital vet accounts (`VET_ACCOUNTS` in `src/app/login/demo.ts`) — 애니컴 `2@example.com`, 아이원 `3@example.com`. Login page shows a hospital picker. All 10 seed patients assigned across the two hospitals; RLS scoping verified (each vet sees only their hospital's patients).

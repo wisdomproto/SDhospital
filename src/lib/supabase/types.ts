@@ -232,6 +232,7 @@ export type Database = {
         Row: {
           birth_date: string | null
           breed: string | null
+          chart_no: string | null
           created_at: string
           id: string
           name: string
@@ -244,6 +245,7 @@ export type Database = {
         Insert: {
           birth_date?: string | null
           breed?: string | null
+          chart_no?: string | null
           created_at?: string
           id?: string
           name: string
@@ -256,6 +258,7 @@ export type Database = {
         Update: {
           birth_date?: string | null
           breed?: string | null
+          chart_no?: string | null
           created_at?: string
           id?: string
           name?: string
@@ -428,42 +431,101 @@ export type Database = {
           },
         ]
       }
+      treatment: {
+        Row: {
+          admission_id: string
+          given_at: string
+          id: string
+          name: string
+          note: string | null
+        }
+        Insert: {
+          admission_id: string
+          given_at: string
+          id?: string
+          name: string
+          note?: string | null
+        }
+        Update: {
+          admission_id?: string
+          given_at?: string
+          id?: string
+          name?: string
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatment_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admission"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vital: {
         Row: {
           admission_id: string
+          defecation: string | null
           diastolic: number | null
+          feeding: string | null
+          fluid: string | null
+          glucose: number | null
           heart_rate: number | null
           id: string
           measured_at: string
           note: string | null
           recorded_by: string | null
           resp_rate: number | null
+          respiratory: string | null
           systolic: number | null
           temperature: number | null
+          tests: string | null
+          urination: string | null
+          vomit: string | null
+          weight: number | null
         }
         Insert: {
           admission_id: string
+          defecation?: string | null
           diastolic?: number | null
+          feeding?: string | null
+          fluid?: string | null
+          glucose?: number | null
           heart_rate?: number | null
           id?: string
           measured_at?: string
           note?: string | null
           recorded_by?: string | null
           resp_rate?: number | null
+          respiratory?: string | null
           systolic?: number | null
           temperature?: number | null
+          tests?: string | null
+          urination?: string | null
+          vomit?: string | null
+          weight?: number | null
         }
         Update: {
           admission_id?: string
+          defecation?: string | null
           diastolic?: number | null
+          feeding?: string | null
+          fluid?: string | null
+          glucose?: number | null
           heart_rate?: number | null
           id?: string
           measured_at?: string
           note?: string | null
           recorded_by?: string | null
           resp_rate?: number | null
+          respiratory?: string | null
           systolic?: number | null
           temperature?: number | null
+          tests?: string | null
+          urination?: string | null
+          vomit?: string | null
+          weight?: number | null
         }
         Relationships: [
           {

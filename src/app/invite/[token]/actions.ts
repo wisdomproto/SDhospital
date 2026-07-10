@@ -34,7 +34,7 @@ export async function redeemInvite(token: string, formData: FormData) {
   });
   if (signErr)
     redirect(
-      "/login?error=" +
+      "/login/portal?error=" +
         encodeURIComponent("가입은 됐지만 로그인에 실패했습니다. 로그인해 주세요.")
     );
   redirect("/portal");

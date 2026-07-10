@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { signOut } from "./logout";
 
 const NAV = [
@@ -33,6 +34,8 @@ function Icon({ name }: { name: string }) {
       return (<svg {...c}><path d="M4 21V6l8-3 8 3v15" /><path d="M12 9v6M9 12h6" /></svg>);
     case "pill":
       return (<svg {...c}><rect x="3" y="8" width="18" height="8" rx="4" /><path d="M12 8v8" /></svg>);
+    case "chevrons":
+      return (<svg {...c}><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>);
     default:
       return null;
   }
@@ -40,8 +43,19 @@ function Icon({ name }: { name: string }) {
 
 export function AppSidebar({ name }: { name: string }) {
   const pathname = usePathname();
-  const collapsed =
-    /^\/patients\/[^/]+/.test(pathname) && !pathname.startsWith("/patients/new");
+  const [collapsed, setCollapsed] = useState(false);
+
+  // restore persisted collapse state (default: expanded)
+  useEffect(() => {
+    if (localStorage.getItem("sidebar-collapsed") === "1") setCollapsed(true);
+  }, []);
+
+  const toggle = () =>
+    setCollapsed((c) => {
+      const next = !c;
+      localStorage.setItem("sidebar-collapsed", next ? "1" : "0");
+      return next;
+    });
 
   return (
     <aside className={`sidebar${collapsed ? " collapsed" : ""}`}>
@@ -55,7 +69,45 @@ export function AppSidebar({ name }: { name: string }) {
             <path d="M7 16.2c0-2.4 2.2-3.9 5-3.9s5 1.5 5 3.9c0 2.2-2.2 3.6-5 3.6s-5-1.4-5-3.6Z" />
           </svg>
         </span>
-        <span className="brand-text">SDhospital</span>
+        <span className="brand-text">
+          <span style={{ display: "block", lineHeight: 1.15 }}>SDhospital</span>
+          <span style={{ display: "block", fontSize: ".68rem", fontWeight: 400, color: "var(--muted-2)" }}>
+            2차 동물병원 EMR
+          </span>
+        </span>
+      </div>
+      <button
+        type="button"
+        className="nav-item sidebar-toggle"
+        onClick={toggle}
+        title={collapsed ? "사이드바 펴기" : "사이드바 접기"}
+        aria-label={collapsed ? "사이드바 펴기" : "사이드바 접기"}
+        aria-expanded={!collapsed}
+        style={{
+          width: "100%",
+          marginBottom: 10,
+          cursor: "pointer",
+          background: "var(--bg)",
+          border: "1px solid var(--line)",
+          font: "inherit",
+        }}
+      >
+        <span className="ico" style={{ transform: collapsed ? "rotate(180deg)" : "none", transition: "transform .15s" }}>
+          <Icon name="chevrons" />
+        </span>
+        <span className="label">접기</span>
+      </button>
+      <div
+        className="brand-text"
+        style={{
+          fontSize: ".7rem",
+          fontWeight: 600,
+          color: "var(--muted-2)",
+          letterSpacing: ".08em",
+          padding: "0 10px 8px",
+        }}
+      >
+        진료
       </div>
       <nav className="side-nav">
         {NAV.map((item) => {
@@ -78,10 +130,39 @@ export function AppSidebar({ name }: { name: string }) {
           );
         })}
       </nav>
-      <div className="role-panel">
-        <span className="role-badge">STAFF · {name}</span>
-        <form action={signOut}>
-          <button className="btn btn-ghost btn-sm">로그아웃</button>
+      <div className="role-panel" style={{ marginTop: "auto" }}>
+        <span
+          aria-hidden="true"
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: "50%",
+            background: "var(--primary)",
+            color: "#fff",
+            display: "grid",
+            placeItems: "center",
+            fontWeight: 600,
+            fontSize: ".85rem",
+            flexShrink: 0,
+          }}
+        >
+          {name.slice(0, 1)}
+        </span>
+        <div className="brand-text" style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: 600, fontSize: ".82rem" }}>{name}</div>
+          <div style={{ fontSize: ".68rem", color: "var(--muted-2)" }}>STAFF</div>
+        </div>
+        <form action={signOut} className="brand-text">
+          <button
+            className="portal-iconbtn"
+            aria-label="로그아웃"
+            style={{ width: 32, height: 32, background: "transparent" }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted-2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <path d="M16 17l5-5-5-5M21 12H9" />
+            </svg>
+          </button>
         </form>
       </div>
     </aside>

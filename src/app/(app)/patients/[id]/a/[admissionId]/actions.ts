@@ -182,3 +182,56 @@ export async function deleteVital(
   await supabase.from("vital").delete().eq("id", id);
   revalidatePath(apath(patientId, admissionId));
 }
+
+// Editable flowsheet: upsert one time-slot row (all fields).
+function numOrNull(v: FormDataEntryValue | null) {
+  const t = String(v ?? "").trim();
+  if (!t) return null;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
+function textOrNull(v: FormDataEntryValue | null) {
+  const t = String(v ?? "").trim();
+  return t || null;
+}
+
+export async function saveVitalSlot(
+  patientId: string,
+  admissionId: string,
+  measuredAtIso: string,
+  vitalId: string,
+  formData: FormData
+) {
+  const fields = {
+    temperature: numOrNull(formData.get("temperature")),
+    heart_rate: numOrNull(formData.get("heart_rate")),
+    resp_rate: numOrNull(formData.get("resp_rate")),
+    systolic: numOrNull(formData.get("systolic")),
+    glucose: numOrNull(formData.get("glucose")),
+    weight: numOrNull(formData.get("weight")),
+    urination: textOrNull(formData.get("urination")),
+    feeding: textOrNull(formData.get("feeding")),
+    tests: textOrNull(formData.get("tests")),
+  };
+  const supabase = await createClient();
+  if (vitalId) {
+    const { error } = await supabase.from("vital").update(fields).eq("id", vitalId);
+    if (error) redirect(apath(patientId, admissionId) + "?error=" + encodeURIComponent(error.message));
+  } else {
+    // new row: use bound iso, or build from day + time inputs (add-row)
+    let iso = measuredAtIso;
+    if (!iso) {
+      const day = String(formData.get("day") ?? "").trim();
+      const time = String(formData.get("time") ?? "").trim();
+      if (day && time) iso = `${day}T${time}:00+09:00`;
+    }
+    const allEmpty = Object.values(fields).every((x) => x === null);
+    if (iso && !allEmpty) {
+      const { error } = await supabase
+        .from("vital")
+        .insert({ admission_id: admissionId, measured_at: iso, ...fields });
+      if (error) redirect(apath(patientId, admissionId) + "?error=" + encodeURIComponent(error.message));
+    }
+  }
+  revalidatePath(apath(patientId, admissionId));
+}

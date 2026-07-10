@@ -1,4 +1,8 @@
-// ⚠️ DEMO ONLY — remove before production. Test accounts for one-click login.
+// ⚠️ DEMO ONLY. One-click login is gated behind an env flag so it never ships
+// enabled by accident. Set NEXT_PUBLIC_ENABLE_DEMO=1 to expose the buttons.
+export const DEMO_ENABLED = process.env.NEXT_PUBLIC_ENABLE_DEMO === "1";
+
+// Test accounts for one-click login.
 export const DEMO_ACCOUNTS = {
   staff: { email: "staff@sdhospital.test", password: "sdhospital123!", dest: "/" },
   owner: { email: "1@example.com", password: "1234", dest: "/portal" },

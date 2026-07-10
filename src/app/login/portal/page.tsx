@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { signInPortal, quickOwner } from "./actions";
+import { DEMO_ENABLED } from "../demo";
 
 export default async function PortalLoginPage({
   searchParams,
@@ -61,16 +62,19 @@ export default async function PortalLoginPage({
             </button>
           </form>
 
-          <div className="login-divider">테스트 계정 · 클릭하면 바로 입장</div>
-
-          {/* ⚠️ DEMO ONLY — remove before production */}
-          <form action={quickOwner}>
-            <button className="login-demo-btn" style={{ width: "100%" }}>
-              <span className="ic" style={{ fontSize: 16 }}>🐶</span>
-              <span style={{ fontWeight: 600, fontSize: ".82rem", color: "var(--text)" }}>보호자</span>
-              <span style={{ fontSize: ".68rem", color: "var(--muted-2)" }}>포털 입장</span>
-            </button>
-          </form>
+          {DEMO_ENABLED && (
+            <>
+              <div className="login-divider">테스트 계정 · 클릭하면 바로 입장</div>
+              {/* ⚠️ DEMO ONLY — gated by NEXT_PUBLIC_ENABLE_DEMO */}
+              <form action={quickOwner}>
+                <button className="login-demo-btn" style={{ width: "100%" }}>
+                  <span className="ic" style={{ fontSize: 16 }}>🐶</span>
+                  <span style={{ fontWeight: 600, fontSize: ".82rem", color: "var(--text)" }}>보호자</span>
+                  <span style={{ fontSize: ".68rem", color: "var(--muted-2)" }}>포털 입장</span>
+                </button>
+              </form>
+            </>
+          )}
 
           <Link href="/login" className="muted" style={{ textAlign: "center", fontSize: ".8rem", textDecoration: "none" }}>
             직원 · 1차병원 원장이신가요? PC 로그인 →

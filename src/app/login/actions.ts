@@ -1,7 +1,11 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { DEMO_ACCOUNTS, VET_ACCOUNTS } from "./demo";
+import { DEMO_ACCOUNTS, VET_ACCOUNTS, DEMO_ENABLED } from "./demo";
+
+function assertDemo() {
+  if (!DEMO_ENABLED) redirect("/login?error=" + encodeURIComponent("데모 로그인이 비활성화되어 있습니다."));
+}
 
 export async function signIn(formData: FormData) {
   const email = String(formData.get("email"));
@@ -14,6 +18,7 @@ export async function signIn(formData: FormData) {
 
 // ⚠️ DEMO ONLY — remove before production. One-click login with test accounts.
 async function quickLogin(kind: keyof typeof DEMO_ACCOUNTS) {
+  assertDemo();
   const { email, password, dest } = DEMO_ACCOUNTS[kind];
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -31,6 +36,7 @@ export async function quickLoginOwner() {
 
 // 원장 계정 선택 로그인 → 데스크탑 포털. email is bound per hospital button.
 export async function quickLoginVet(email: string) {
+  assertDemo();
   const acct = VET_ACCOUNTS.find((a) => a.email === email);
   if (!acct) redirect("/login?error=" + encodeURIComponent("알 수 없는 계정"));
   const supabase = await createClient();

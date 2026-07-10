@@ -1,5 +1,5 @@
 import { signIn, quickLoginStaff, quickLoginOwner, quickLoginVet } from "./actions";
-import { DEMO_ACCOUNTS, VET_ACCOUNTS } from "./demo";
+import { DEMO_ACCOUNTS, VET_ACCOUNTS, DEMO_ENABLED } from "./demo";
 
 function Check() {
   return (
@@ -99,9 +99,11 @@ export default async function LoginPage({
             </button>
           </form>
 
+          {DEMO_ENABLED && (
+          <>
           <div className="login-divider">테스트 계정 · 클릭하면 바로 입장</div>
 
-          {/* ⚠️ DEMO ONLY — remove before production */}
+          {/* ⚠️ DEMO ONLY — gated by NEXT_PUBLIC_ENABLE_DEMO */}
           <div className="login-demo-grid">
             <form action={quickLoginStaff}>
               <button className="login-demo-btn" title={DEMO_ACCOUNTS.staff.email} style={{ width: "100%" }}>
@@ -144,6 +146,8 @@ export default async function LoginPage({
               </form>
             ))}
           </div>
+          </>
+          )}
         </div>
       </section>
     </main>

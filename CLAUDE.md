@@ -48,9 +48,14 @@
 
 스펙: `docs/superpowers/specs/2026-07-07-vet-emr-design.md`
 
+## 배포 (Railway)
+- `railway.json`(Nixpacks, start `npm run start`, healthcheck `/login`) + `.nvmrc`(Node 22). GitHub 리포 연결 → env 2개(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) → Generate Domain. DB는 이미 Supabase 클라우드라 앱만 배포.
+- **데모 로그인 게이트**: 원클릭 로그인 버튼·서버액션은 `NEXT_PUBLIC_ENABLE_DEMO=1`일 때만 동작. 로컬 `.env.local`엔 켜둠, 프로덕션(Railway)엔 **넣지 말 것** → 자동 비활성화.
+- 배포 후 Supabase Auth → URL Configuration에 배포 도메인 등록.
+
 ## 로컬 개발 메모
 - Docker 미설치 → 로컬 Supabase 스택 대신 클라우드 프로젝트 사용 중
-- 테스트 계정 (⚠️ DEMO ONLY, `src/app/login/demo.ts`):
+- 테스트 계정 (⚠️ DEMO ONLY, `NEXT_PUBLIC_ENABLE_DEMO=1`일 때만 노출, `src/app/login/demo.ts`):
   - 직원: `staff@sdhospital.test` / `sdhospital123!`
   - 보호자: `1@example.com` / `1234`
   - 원장(애니컴): `2@example.com` / `1234`, 원장(아이원): `3@example.com` / `1234`

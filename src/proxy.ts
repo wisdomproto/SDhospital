@@ -23,13 +23,19 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
   const isPublic = path.startsWith("/login") || path.startsWith("/invite");
 
-  if (!user && !isPublic) {
+  // Public pages need no session — skip the Supabase getUser() round trip
+  // entirely so the login screen (and its post-login redirects) don't each
+  // pay an auth network call.
+  if (isPublic) return response;
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
     const url = request.nextUrl.clone();
     // portal (보호자·1차병원 앱) has its own login screen
     url.pathname = path.startsWith("/portal") ? "/login/portal" : "/login";

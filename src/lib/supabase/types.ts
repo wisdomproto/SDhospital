@@ -22,6 +22,7 @@ export type Database = {
           note: string | null
           patient_id: string
           status: string
+          visit_id: string
         }
         Insert: {
           admitted_at?: string
@@ -30,6 +31,7 @@ export type Database = {
           note?: string | null
           patient_id: string
           status?: string
+          visit_id: string
         }
         Update: {
           admitted_at?: string
@@ -38,6 +40,7 @@ export type Database = {
           note?: string | null
           patient_id?: string
           status?: string
+          visit_id?: string
         }
         Relationships: [
           {
@@ -45,6 +48,54 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patient"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admission_visit_fk"
+            columns: ["visit_id", "patient_id"]
+            isOneToOne: false
+            referencedRelation: "visit"
+            referencedColumns: ["id", "patient_id"]
+          },
+        ]
+      }
+      admission_report: {
+        Row: {
+          admission_id: string
+          comment: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          read_at: string | null
+          report_date: string
+          sent_at: string | null
+        }
+        Insert: {
+          admission_id: string
+          comment?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          read_at?: string | null
+          report_date?: string
+          sent_at?: string | null
+        }
+        Update: {
+          admission_id?: string
+          comment?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          read_at?: string | null
+          report_date?: string
+          sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admission_report_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admission"
             referencedColumns: ["id"]
           },
         ]
@@ -129,6 +180,7 @@ export type Database = {
       }
       media: {
         Row: {
+          admission_id: string | null
           file_name: string | null
           id: string
           kind: string | null
@@ -138,6 +190,7 @@ export type Database = {
           visit_id: string | null
         }
         Insert: {
+          admission_id?: string | null
           file_name?: string | null
           id?: string
           kind?: string | null
@@ -147,6 +200,7 @@ export type Database = {
           visit_id?: string | null
         }
         Update: {
+          admission_id?: string | null
           file_name?: string | null
           id?: string
           kind?: string | null
@@ -156,6 +210,13 @@ export type Database = {
           visit_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "media_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admission"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "media_patient_id_fkey"
             columns: ["patient_id"]
@@ -174,30 +235,40 @@ export type Database = {
       }
       medical_image: {
         Row: {
+          admission_id: string | null
           file_name: string | null
           id: string
           modality: string | null
           storage_path: string
           uploaded_at: string
-          visit_id: string
+          visit_id: string | null
         }
         Insert: {
+          admission_id?: string | null
           file_name?: string | null
           id?: string
           modality?: string | null
           storage_path: string
           uploaded_at?: string
-          visit_id: string
+          visit_id?: string | null
         }
         Update: {
+          admission_id?: string | null
           file_name?: string | null
           id?: string
           modality?: string | null
           storage_path?: string
           uploaded_at?: string
-          visit_id?: string
+          visit_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "medical_image_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admission"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "medical_image_visit_id_fkey"
             columns: ["visit_id"]
@@ -395,29 +466,41 @@ export type Database = {
       }
       visit: {
         Row: {
+          closed_at: string | null
           created_at: string
           created_by: string | null
           id: string
           note: string | null
           patient_id: string
+          report_comment: string | null
+          report_read_at: string | null
+          report_sent_at: string | null
           visit_date: string
           visit_no: number | null
         }
         Insert: {
+          closed_at?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
           note?: string | null
           patient_id: string
+          report_comment?: string | null
+          report_read_at?: string | null
+          report_sent_at?: string | null
           visit_date?: string
           visit_no?: number | null
         }
         Update: {
+          closed_at?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
           note?: string | null
           patient_id?: string
+          report_comment?: string | null
+          report_read_at?: string | null
+          report_sent_at?: string | null
           visit_date?: string
           visit_no?: number | null
         }
@@ -542,9 +625,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_read_patient_file: { Args: { object_name: string }; Returns: boolean }
       current_hospital_id: { Args: never; Returns: string }
       current_owner_id: { Args: never; Returns: string }
       current_role_name: { Args: never; Returns: string }
+      mark_admission_report_read: { Args: { p_report_id: string }; Returns: undefined }
+      mark_visit_report_read: { Args: { p_visit_id: string }; Returns: undefined }
+      invite_target: {
+        Args: { p_token: string }
+        Returns: {
+          label: string
+          role: string
+          valid: boolean
+        }[]
+      }
+      redeem_invite: {
+        Args: { p_email: string; p_password: string; p_token: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

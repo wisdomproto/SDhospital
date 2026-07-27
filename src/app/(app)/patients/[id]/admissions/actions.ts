@@ -4,20 +4,23 @@ import { validateAdmissionInput } from "@/lib/validation/admission";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function createAdmission(patientId: string, formData: FormData) {
+// 입원은 진료 회차에서 시작한다 (입원하러 온 환자도 진료 기록이 먼저 생긴다).
+export async function createAdmission(patientId: string, visitId: string, formData: FormData) {
+  const back = `/patients/${patientId}/v/${visitId}`;
   const v = validateAdmissionInput({
     patient_id: patientId,
+    visit_id: visitId,
     admitted_at: String(formData.get("admitted_at") ?? ""),
     note: String(formData.get("note") ?? ""),
   });
-  if (!v.ok) redirect(`/patients/${patientId}?error=` + encodeURIComponent(v.error));
+  if (!v.ok) redirect(`${back}?error=` + encodeURIComponent(v.error));
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("admission")
     .insert(v.value)
     .select("id")
     .single();
-  if (error) redirect(`/patients/${patientId}?error=` + encodeURIComponent(error.message));
+  if (error) redirect(`${back}?error=` + encodeURIComponent(error.message));
   revalidatePath(`/patients/${patientId}`, "layout");
   redirect(`/patients/${patientId}/a/${data!.id}`);
 }

@@ -6,6 +6,7 @@ import { signOut } from "./logout";
 
 const NAV = [
   { href: "/", label: "대시보드", icon: "home", exact: true },
+  { href: "/today", label: "오늘 할 일", icon: "check" },
   { href: "/patients", label: "환자", icon: "paw" },
   { href: "/owners", label: "보호자", icon: "user" },
   { href: "/hospitals", label: "1차병원", icon: "hospital" },
@@ -34,6 +35,8 @@ function Icon({ name }: { name: string }) {
       return (<svg {...c}><path d="M4 21V6l8-3 8 3v15" /><path d="M12 9v6M9 12h6" /></svg>);
     case "pill":
       return (<svg {...c}><rect x="3" y="8" width="18" height="8" rx="4" /><path d="M12 8v8" /></svg>);
+    case "check":
+      return (<svg {...c}><path d="M4 6h16M4 12h16M4 18h9" /><path d="m16 17 2 2 4-4" /></svg>);
     case "chevrons":
       return (<svg {...c}><path d="m11 17-5-5 5-5" /><path d="m18 17-5-5 5-5" /></svg>);
     default:

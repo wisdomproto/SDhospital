@@ -1,7 +1,9 @@
 # SDhospital — 동물병원 EMR
 
-2차(의뢰) 동물병원용 웹 EMR. 진료 기록·처방·의료영상·입원 바이털을 관리하고,
+2차(의뢰) 동물병원용 웹 EMR + **보호자 리포팅 앱**. 진료 기록·처방·의료영상·입원 바이털을 관리하고,
 의뢰한 1차 병원과 보호자에게 **읽기 전용**으로 공유한다.
+현재 목표는 **보호자 앱 MVP** — 매 진료마다 보호자에게 리포트를 보내 재방문·바이럴·레퍼를 늘린다.
+사업 기획서: `docs/proposal/2026-07-26-sd-platform-proposal.md` (+ 같은 이름 `.html`)
 
 ## 기술 스택
 - **Next.js 16** (App Router, TS, Tailwind v4) — EMR 웹 + 외부 포털 한 코드베이스
@@ -29,10 +31,21 @@
 - `src/app/referral/` — **1차병원 원장 데스크탑 포털** (읽기 전용). 직원 EMR과 동일한 셸/클래스(`app-shell`·`sidebar`·`DataTable`·`card`)를 재사용하고 편집(폼·업로드·수정/삭제)만 제거. `ReferralSidebar.tsx` + 목록/개요/회차(`v/[visitId]`)/입원(`a/[admissionId]`) 페이지
 - `src/app/portal/` — 보호자 모바일 앱 (원장이 오면 `/referral`로 리다이렉트)
 - `src/app/login/` — 직원 로그인 (데모: 병원별 원장 버튼 → `VET_ACCOUNTS`), `src/app/login/portal/` — 보호자 모바일 로그인, `src/proxy.ts` — 세션 갱신 + 라우트 가드
-- `src/lib/supabase/` — 브라우저/서버 클라이언트 + 생성된 타입, `src/lib/auth/roles.ts` — 역할 모델
+- `src/app/(app)/today/` — **오늘 할 일**: 리포트 미발송 목록(밀린 것 우선). 로직은 `src/lib/worklist.ts`
+- `src/lib/supabase/` — 브라우저/서버 클라이언트 + 생성된 타입. **세 클라이언트 모두 `createXClient<Database>` 제네릭 필수** (안 붙이면 모든 쿼리가 `any`가 되어 컬럼 오타가 안 잡힌다)
+- `src/lib/validation/report.ts` — 리포트 공통 규칙, `src/lib/auth/roles.ts` — 역할 모델
 - `supabase/migrations/` — 스키마·RLS, `supabase/tests/` — RLS 테스트
 
 ## 설계 결정
+- **기본 단위는 진료 회차(`visit`).** 입원하러 온 환자도 진료 기록이 먼저 생기고,
+  **입원(`admission`)은 그 회차에 딸린 별도 기록**(`admission.visit_id` 필수).
+  `patient_id`도 남아 있지만 복합 FK `(visit_id, patient_id) → visit(id, patient_id)`로
+  DB가 정합성을 강제한다. 입원 생성은 **회차 화면에서만** 한다.
+- **보호자 리포트는 두 종류.** 회차 리포트(`visit.report_comment/sent_at/read_at`)가 기본이고 모든 진료에 발생,
+  입원 일일 리포트(`admission_report`, `unique(admission_id, report_date)`)는 입원한 회차에만 매일.
+  수의사가 넣는 건 **코멘트 한 줄**뿐 — 나머지는 조립한다. 발송 시 코멘트 필수(임시저장은 빈 값 허용).
+- 보호자는 읽기 전용이라 **열람 표시는 DEFINER 함수로만** (`mark_visit_report_read`, `mark_admission_report_read`).
+- `visit.closed_at` = 진료 종료. "오늘 할 일"은 **종료됐는데 미발송**인 회차를 올린다. 리포트를 보내면 종료도 같이 찍는다.
 - 구조화 데이터 = Postgres, 큰 파일(X-ray/MRI/CT·사진·영상) = Supabase Storage
 - 권한은 앱이 아니라 **RLS**로 강제 (의료정보 유출 방지)
 - 외부 공유 UI 분리: **보호자 = 모바일(`/portal`)**, **원장 = 데스크탑(`/referral`)**. 원장 화면은 직원 EMR과 "수정 가능 여부"만 다르게 (동일 레이아웃·컴포넌트, 읽기 전용)
@@ -44,7 +57,9 @@
 - **04 입원·바이털** ✅ — 입원 생애주기·바이털 입력·Recharts 시계열 그래프
 - **05 초대·외부 포털** ✅ — 초대 발급/수락(DEFINER 함수), 읽기전용 보호자 모바일 포털 + **1차병원 원장 데스크탑 포털(`/referral`)**
 
-**MVP 완성** (Plan 01–05). 이후 후보: 의료영상 뷰어(측정·주석·세그멘테이션·시리즈 구분 — 보류), DICOM, 알림, 예약/청구, 감사 로그, 네이티브 앱.
+- **06 보호자 앱 MVP** 🚧 — `2026-07-26-mvp-owner-app.md`. M-0 스키마 정정·M-1 회차 리포트·M-1b 입원 일일 리포트·M-2 오늘 할 일 완료. 다음 M-3(퇴원 종합 리포트)
+
+EMR 자체(Plan 01–05)는 완성. 이후 후보: 알림 채널(문자/알림톡/푸시) 연결, 의료영상 뷰어·DICOM, 1차병원 EMR+PACS, AI, 예약/청구, 감사 로그, 네이티브 앱.
 
 스펙: `docs/superpowers/specs/2026-07-07-vet-emr-design.md`
 

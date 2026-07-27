@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git init *)",
       "Bash(git remote *)",
-      "Bash(git ls-remote *)"
+      "Bash(git ls-remote *)",
+      "WebFetch(domain:sdamc.co.kr)"
     ]
   }
 }

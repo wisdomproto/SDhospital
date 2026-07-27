@@ -17,10 +17,14 @@ export default async function PortalVisitDetail({
   const supabase = await createClient();
   const { data: v } = await supabase
     .from("visit")
-    .select("id, visit_date, visit_no, note")
+    .select("id, visit_date, visit_no, note, report_comment, report_sent_at")
     .eq("id", visitId)
     .single();
   if (!v) notFound();
+
+  // 열람 표시 — 보호자는 visit 에 쓰기 권한이 없으므로 DEFINER 함수로만 기록한다.
+  // 최초 1회만 기록되고, 실패해도 화면은 그대로 보여준다.
+  if (v.report_sent_at) await supabase.rpc("mark_visit_report_read", { p_visit_id: visitId });
 
   const [{ data: rxs }, { data: images }, { data: media }] = await Promise.all([
     supabase.from("prescription").select("dose, frequency, duration, drug:drug_id(name)").eq("visit_id", visitId),
@@ -37,6 +41,15 @@ export default async function PortalVisitDetail({
         <div style={{ fontSize: "1.25rem", fontWeight: 900 }}>{v.visit_date}</div>
         <div className="portal-tile-sub">{v.visit_no != null ? `${v.visit_no}회차` : ""}</div>
       </div>
+
+      {v.report_sent_at && v.report_comment && (
+        <div className="portal-card" style={{ borderLeft: "4px solid var(--brand, #2f7d6a)" }}>
+          <div style={{ fontWeight: 800, marginBottom: 6 }}>담당의 코멘트</div>
+          <p style={{ margin: 0, fontSize: ".95rem", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+            {v.report_comment}
+          </p>
+        </div>
+      )}
 
       <div className="portal-card">
         <div style={{ fontWeight: 800, marginBottom: 6 }}>진료 내용</div>

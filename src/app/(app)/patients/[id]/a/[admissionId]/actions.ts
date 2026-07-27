@@ -1,7 +1,9 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { validateVitalInput } from "@/lib/validation/vital";
-import { validateAdmissionInput } from "@/lib/validation/admission";
+import { validateAdmissionEdit } from "@/lib/validation/admission";
+import { validateReportInput } from "@/lib/validation/report";
+import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 import { BUCKET, imagePath, mediaPath } from "@/lib/storage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -70,13 +72,39 @@ export async function deleteAdmFile(
   revalidatePath(apath(patientId, admissionId));
 }
 
+// 입원 일일 리포트 — 입원 1건에 하루 1건. 같은 날 다시 저장하면 그날 것을 갱신한다.
+export async function saveAdmissionReport(
+  patientId: string,
+  admissionId: string,
+  reportDate: string,
+  formData: FormData
+) {
+  const v = validateReportInput({
+    comment: String(formData.get("comment") ?? ""),
+    send: formData.get("send") as string | null,
+  });
+  if (!v.ok) redirect(apath(patientId, admissionId) + "?error=" + encodeURIComponent(v.error));
+  const supabase = await createClient();
+  const { error } = await supabase.from("admission_report").upsert(
+    {
+      admission_id: admissionId,
+      report_date: reportDate,
+      comment: v.value.comment,
+      ...(v.value.send ? { sent_at: new Date().toISOString() } : {}),
+    },
+    { onConflict: "admission_id,report_date" }
+  );
+  if (error) redirect(apath(patientId, admissionId) + "?error=" + encodeURIComponent(error.message));
+  revalidatePath(apath(patientId, admissionId));
+  revalidatePath(`/patients/${patientId}`, "layout");
+}
+
 export async function updateAdmission(
   patientId: string,
   admissionId: string,
   formData: FormData
 ) {
-  const v = validateAdmissionInput({
-    patient_id: patientId,
+  const v = validateAdmissionEdit({
     admitted_at: String(formData.get("admitted_at") ?? ""),
     note: String(formData.get("note") ?? ""),
   });
@@ -108,7 +136,7 @@ export async function updateVital(
   if (!v.ok) redirect(apath(patientId, admissionId) + "?error=" + encodeURIComponent(v.error));
 
   const measuredRaw = String(formData.get("measured_at") ?? "").trim();
-  const patch: Record<string, unknown> = {
+  const patch: TablesUpdate<"vital"> = {
     temperature: v.value.temperature,
     heart_rate: v.value.heart_rate,
     resp_rate: v.value.resp_rate,
@@ -164,7 +192,7 @@ export async function addVital(
   if (!v.ok) redirect(apath(patientId, admissionId) + "?error=" + encodeURIComponent(v.error));
 
   const measuredRaw = String(formData.get("measured_at") ?? "").trim();
-  const row: Record<string, unknown> = { ...v.value };
+  const row: TablesInsert<"vital"> = { ...v.value };
   if (measuredRaw) row.measured_at = new Date(measuredRaw).toISOString();
 
   const supabase = await createClient();

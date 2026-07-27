@@ -2,6 +2,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { validatePrescriptionInput } from "@/lib/validation/prescription";
 import { validateVisitInput } from "@/lib/validation/visit";
+import { validateReportInput } from "@/lib/validation/report";
 import { BUCKET, imagePath, mediaPath } from "@/lib/storage";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -25,6 +26,49 @@ export async function updateVisit(
   const { error } = await supabase
     .from("visit")
     .update({ visit_date: v.value.visit_date, visit_no: v.value.visit_no, note: v.value.note })
+    .eq("id", visitId);
+  if (error) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(error.message));
+  revalidatePath(vpath(patientId, visitId));
+  revalidatePath(`/patients/${patientId}`, "layout");
+}
+
+// 회차 리포트 저장 / 보호자에게 보내기 (같은 폼의 버튼 두 개)
+export async function saveVisitReport(
+  patientId: string,
+  visitId: string,
+  formData: FormData
+) {
+  const v = validateReportInput({
+    comment: String(formData.get("comment") ?? ""),
+    send: formData.get("send") as string | null,
+  });
+  if (!v.ok) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(v.error));
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("visit")
+    .update({
+      report_comment: v.value.comment,
+      // 리포트를 보내면 진료도 끝난 것으로 본다 (버튼을 두 번 누르게 하지 않는다)
+      ...(v.value.send
+        ? { report_sent_at: new Date().toISOString(), closed_at: new Date().toISOString() }
+        : {}),
+    })
+    .eq("id", visitId);
+  if (error) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(error.message));
+  revalidatePath(vpath(patientId, visitId));
+  revalidatePath(`/patients/${patientId}`, "layout");
+}
+
+// 진료 종료 / 종료 취소 — "오늘 할 일" 목록에 리포트 보낼 회차로 올라오는 기준
+export async function toggleVisitClosed(
+  patientId: string,
+  visitId: string,
+  close: boolean
+) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("visit")
+    .update({ closed_at: close ? new Date().toISOString() : null })
     .eq("id", visitId);
   if (error) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(error.message));
   revalidatePath(vpath(patientId, visitId));

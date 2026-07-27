@@ -35,6 +35,16 @@ export default async function PortalAdmissionDetail({
   const imageLinks = await signAll((images as Omit<SignedFile, "url">[]) ?? []);
   const mediaLinks = await signAll((media as Omit<SignedFile, "url">[]) ?? []);
 
+  // 발송된 일일 리포트만 보여주고, 최신 것을 열람 처리한다 (DEFINER 함수로만 기록 가능)
+  const { data: reportRows } = await supabase
+    .from("admission_report")
+    .select("id, report_date, comment, sent_at")
+    .eq("admission_id", admissionId)
+    .not("sent_at", "is", null)
+    .order("report_date", { ascending: false });
+  const reports = reportRows ?? [];
+  if (reports[0]) await supabase.rpc("mark_admission_report_read", { p_report_id: reports[0].id });
+
   return (
     <>
       <Link href={`/portal/patients/${id}/admissions`} className="portal-tile-sub" style={{ textDecoration: "none" }}>← 입원 목록</Link>
@@ -49,6 +59,30 @@ export default async function PortalAdmissionDetail({
           {a.status === "admitted" ? "입원중" : "퇴원"}
         </span>
       </div>
+
+      {reports.length > 0 && (
+        <div className="portal-card" style={{ borderLeft: "4px solid var(--brand, #2f7d6a)" }}>
+          <div style={{ fontWeight: 800, marginBottom: 10 }}>하루하루 경과</div>
+          <div style={{ display: "grid", gap: 12 }}>
+            {reports.map((r, i) => (
+              <div
+                key={r.id}
+                style={{
+                  paddingBottom: 10,
+                  borderBottom: i < reports.length - 1 ? "1px solid var(--line)" : 0,
+                }}
+              >
+                <div style={{ fontWeight: 700, fontSize: ".82rem", color: "var(--muted)" }}>
+                  {r.report_date}
+                </div>
+                <p style={{ margin: "4px 0 0", fontSize: ".95rem", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+                  {r.comment}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {a.note && (
         <div className="portal-card">

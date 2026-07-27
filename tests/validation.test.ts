@@ -6,6 +6,8 @@ import { validateDrugInput } from "@/lib/validation/drug";
 import { validateVisitInput } from "@/lib/validation/visit";
 import { validatePrescriptionInput } from "@/lib/validation/prescription";
 import { validateAdmissionInput } from "@/lib/validation/admission";
+import { validateReportInput } from "@/lib/validation/report";
+import { daysBetween, admittedDay, sortWorkItems } from "@/lib/worklist";
 import { validateVitalInput } from "@/lib/validation/vital";
 import { validateRedeemInput } from "@/lib/validation/invite";
 
@@ -97,15 +99,53 @@ describe("validatePrescriptionInput", () => {
   });
 });
 
+describe("worklist", () => {
+  it("counts overdue days from the visit date", () => {
+    expect(daysBetween("2026-07-24", "2026-07-27")).toBe(3);
+    expect(daysBetween("2026-07-27", "2026-07-27")).toBe(0);
+  });
+  it("counts the admission day as day 1 on arrival", () => {
+    expect(admittedDay("2026-07-27", "2026-07-27")).toBe(1);
+    expect(admittedDay("2026-07-25", "2026-07-27")).toBe(3);
+  });
+  it("puts the most overdue item first", () => {
+    const mk = (n: string, d: number, kind: "visit" | "admission" = "visit") =>
+      ({ kind, href: "/" + n, patientName: n, species: null, date: "", overdueDays: d, subtitle: "" });
+    const sorted = sortWorkItems([mk("a", 0), mk("b", 5), mk("c", 2)]);
+    expect(sorted.map((i) => i.patientName)).toEqual(["b", "c", "a"]);
+  });
+});
+
+describe("validateReportInput", () => {
+  it("allows an empty draft", () => {
+    const r = validateReportInput({ comment: "  ", send: null });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value).toEqual({ comment: null, send: false });
+  });
+  it("refuses to send without a comment", () => {
+    expect(validateReportInput({ comment: "", send: "1" }).ok).toBe(false);
+  });
+  it("sends with a comment", () => {
+    const r = validateReportInput({ comment: " 경과 양호합니다 ", send: "1" });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value).toEqual({ comment: "경과 양호합니다", send: true });
+  });
+});
+
 describe("validateAdmissionInput", () => {
   it("requires patient_id", () => {
-    expect(validateAdmissionInput({ patient_id: "" }).ok).toBe(false);
+    expect(validateAdmissionInput({ patient_id: "", visit_id: "v1" }).ok).toBe(false);
+  });
+  // 입원은 진료 회차에 딸린 기록 — 회차 없이는 만들 수 없다
+  it("requires visit_id", () => {
+    expect(validateAdmissionInput({ patient_id: "p1", visit_id: "" }).ok).toBe(false);
   });
   it("defaults admitted_at when blank, nulls note", () => {
-    const r = validateAdmissionInput({ patient_id: "p1", admitted_at: "", note: "" });
+    const r = validateAdmissionInput({ patient_id: "p1", visit_id: "v1", admitted_at: "", note: "" });
     expect(r.ok).toBe(true);
     if (r.ok) {
       expect(r.value.patient_id).toBe("p1");
+      expect(r.value.visit_id).toBe("v1");
       expect(typeof r.value.admitted_at).toBe("string");
       expect(r.value.note).toBeNull();
     }

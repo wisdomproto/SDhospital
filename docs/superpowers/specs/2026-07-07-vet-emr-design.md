@@ -1,8 +1,11 @@
 # 동물병원 EMR 시스템 — 설계 문서
 
 - 작성일: 2026-07-07
-- 상태: 설계 승인 대기 (사용자 리뷰 중)
+- 상태: **구현 완료** (Plan 01–05). 데이터 모델은 2026-07-26 정정 반영됨
 - 성격: 실병원 도입 전제의 MVP
+- ⚠️ 이 문서는 **EMR 자체**의 설계다. 이후 사업 방향(보호자 앱 중심 플랫폼)은
+  `docs/proposal/2026-07-26-sd-platform-proposal.md`, 구현 계획은
+  `docs/superpowers/plans/2026-07-26-mvp-owner-app.md`를 본다.
 
 ## 1. 개요
 
@@ -52,14 +55,18 @@
 referring_hospital (1차 병원)
     └─< patient (반려동물) >── owner (보호자)
                 │
-                ├─< visit (진료 회차) ──< prescription >── drug (약품 마스터)
-                │        ├─< medical_image  (X-ray/MRI/CT)
-                │        └─< media          (일반 사진/영상)
-                │
-                └─< admission (입원) ──< vital (바이털 시계열)
+                └─< visit (진료 회차)  ← 항상 생성. 모든 기록의 기준점
+                         ├─< prescription >── drug (약품 마스터)
+                         ├─< medical_image  (X-ray/MRI/CT)
+                         ├─< media          (일반 사진/영상)
+                         └─< admission (입원)  ← 그 회차에 필요할 때만
+                                  └─< vital (바이털 시계열)
 
 profile (사용자 + 역할)      invite (초대 코드/링크)
 ```
+
+**입원은 "다른 종류의 방문"이 아니다.** 입원하러 온 환자도 진료 기록(visit)이 먼저 생기고,
+입원은 그 회차에 딸린 별도 기록으로 붙는다. (2026-07-26 정정, 마이그레이션 `0007`)
 
 ### 테이블 정의 (초안)
 
@@ -75,8 +82,10 @@ profile (사용자 + 역할)      invite (초대 코드/링크)
   파일명, 업로드시각
 - **media** — id, visit_id(FK, nullable), patient_id(FK), 타입(보행/치료전후 등),
   storage_path, 파일명, 업로드시각
-- **admission** — id, patient_id(FK), 입원일, 퇴원일(nullable),
+- **admission** — id, **visit_id(FK, 필수)**, patient_id(FK), 입원일, 퇴원일(nullable),
   상태(admitted/discharged), 비고
+  - `patient_id`는 조회·RLS 편의를 위해 남겨 두되, 복합 외래키
+    `(visit_id, patient_id) → visit(id, patient_id)`로 **회차의 환자와 항상 일치하도록 DB가 강제**한다.
 - **vital** — id, admission_id(FK), 측정시각, 체온, 심박수, 호흡수, 혈압,
   기타(확장 가능), 기록자
 - **profile** — id(= auth.users.id), role(staff/referring_vet/owner),

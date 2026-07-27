@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { deletePatient } from "../actions";
 import { createVisit } from "./visits/actions";
-import { createAdmission } from "./admissions/actions";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DataTable } from "@/components/DataTable";
@@ -129,14 +128,9 @@ export default async function PatientOverview({
             <Link key="o" href={`/patients/${p.id}/a/${a.id}`} className="link-btn">열기 →</Link>,
           ])}
         />
-        <details style={{ marginTop: 12 }}>
-          <summary><span className="btn btn-secondary btn-sm">+ 입원 등록</span></summary>
-          <form action={createAdmission.bind(null, p.id)} style={{ display: "grid", gap: 12, maxWidth: 460, marginTop: 12 }}>
-            <FormField label="입원일"><input type="date" name="admitted_at" className={inputClass} /></FormField>
-            <FormField label="비고"><input name="note" className={inputClass} /></FormField>
-            <SubmitButton>입원 등록</SubmitButton>
-          </form>
-        </details>
+        <p className="muted" style={{ marginTop: 12, fontSize: 13 }}>
+          입원은 진료 회차에서 시작합니다. 위 회차를 열어 <b>입원 시작</b>을 누르세요.
+        </p>
       </div>
     </div>
   );

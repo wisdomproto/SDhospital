@@ -2,9 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DataTable } from "@/components/DataTable";
-import { discharge, reopenAdmission, updateAdmission } from "./actions";
+import { discharge, reopenAdmission, updateAdmission, saveAdmissionReport } from "./actions";
 import { AdmImageUpload, AdmMediaUpload } from "./FileUpload";
-import { AdmissionFlowsheet } from "./AdmissionFlowsheet";
+import { AdmissionFlowsheet, type FlowRow } from "./AdmissionFlowsheet";
 import { MediaGallery } from "./MediaGallery";
 import { VitalChart } from "@/components/VitalChart";
 import { signedUrl, isVideoFile } from "@/lib/storage";
@@ -41,6 +41,16 @@ export default async function AdmissionDetail({
     supabase.from("media").select("id, kind, file_name, storage_path").eq("admission_id", admissionId),
   ]);
 
+  // 입원 일일 리포트 — 오늘 것은 편집용, 나머지는 이력으로 (KST 기준 날짜)
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+  const { data: reports } = await supabase
+    .from("admission_report")
+    .select("id, report_date, comment, sent_at, read_at")
+    .eq("admission_id", admissionId)
+    .order("report_date", { ascending: false });
+  const todayReport = (reports ?? []).find((r) => r.report_date === today) ?? null;
+  const pastReports = (reports ?? []).filter((r) => r.report_date !== today);
+
   // ---- build day-by-day flowsheet: admission → discharge/today (KST) ----
   const dayKey = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
   const timeLabel = (iso: string) =>
@@ -76,7 +86,7 @@ export default async function AdmissionDetail({
 
   // every day shows all 24 hourly slots; existing records fill their hour, the rest are empty & editable
   const HOURS = Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, "0")}:00`);
-  const emptyRow = (day: string, t: string) => ({
+  const emptyRow = (day: string, t: string): FlowRow => ({
     vitalId: null, time: t, iso: `${day}T${t}:00+09:00`,
     temperature: null, heart_rate: null, resp_rate: null, systolic: null,
     glucose: null, weight: null, urination: null, feeding: null, tests: null,
@@ -87,7 +97,7 @@ export default async function AdmissionDetail({
       const hh = timeLabel(v.measured_at).slice(0, 2) + ":00";
       (byHour.get(hh) ?? byHour.set(hh, []).get(hh)!).push(v);
     }
-    const rows = HOURS.flatMap((hh) => {
+    const rows: FlowRow[] = HOURS.flatMap((hh): FlowRow[] => {
       const at = byHour.get(hh) ?? [];
       if (at.length === 0) return [emptyRow(day, hh)];
       return at.map((v) => ({
@@ -134,6 +144,60 @@ export default async function AdmissionDetail({
           </form>
         )}
       </div>
+
+      {a.status === "admitted" && (
+        <div className="card">
+          <div className="card-head">
+            <h2 className="section-title">오늘 보호자 리포트</h2>
+            {todayReport?.sent_at ? (
+              todayReport.read_at ? (
+                <span className="pill success">읽음</span>
+              ) : (
+                <span className="pill">발송됨</span>
+              )
+            ) : (
+              <span className="pill warning">미발송</span>
+            )}
+          </div>
+          <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
+            {today} · 오늘 바이털과 사진은 자동으로 함께 나갑니다. 한 줄만 적어주세요.
+          </p>
+          <form
+            action={saveAdmissionReport.bind(null, patientId, a.id, today)}
+            style={{ display: "grid", gap: 12 }}
+          >
+            <FormField label="담당의 코멘트">
+              <textarea
+                name="comment"
+                rows={2}
+                defaultValue={todayReport?.comment ?? ""}
+                placeholder="예) 식욕 돌아왔습니다. 내일 드레싱 후 경과 봅니다."
+                className={inputClass}
+              />
+            </FormField>
+            <div style={{ display: "flex", gap: 8 }}>
+              <SubmitButton>임시 저장</SubmitButton>
+              <button name="send" value="1" className="btn btn-primary">
+                {todayReport?.sent_at ? "다시 보내기" : "보호자에게 보내기"}
+              </button>
+            </div>
+          </form>
+          {pastReports.length > 0 && (
+            <details style={{ marginTop: 14 }}>
+              <summary><span className="btn btn-ghost btn-sm">지난 리포트 {pastReports.length}건</span></summary>
+              <div style={{ display: "grid", gap: 8, marginTop: 10 }}>
+                {pastReports.map((r) => (
+                  <div key={r.id} style={{ fontSize: 13, borderBottom: "1px solid var(--line)", paddingBottom: 6 }}>
+                    <b>{r.report_date}</b>{" "}
+                    <span className="muted">{r.sent_at ? (r.read_at ? "읽음" : "발송됨") : "미발송"}</span>
+                    <div style={{ whiteSpace: "pre-wrap" }}>{r.comment ?? "-"}</div>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
+        </div>
+      )}
 
       <div className="card">
         <div className="card-head"><h2 className="section-title">입원 정보 · 메모</h2></div>

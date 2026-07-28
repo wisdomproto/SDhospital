@@ -100,6 +100,71 @@ export type Database = {
           },
         ]
       }
+      consent: {
+        Row: {
+          answers: Json | null
+          body_snapshot: string | null
+          created_at: string
+          created_by: string | null
+          fields: Json
+          form_code: string
+          form_title: string
+          id: string
+          patient_id: string
+          signature_png: string | null
+          signed_at: string | null
+          signed_ip: string | null
+          signed_ua: string | null
+          signer_name: string | null
+          signer_rrn_enc: string | null
+          visit_id: string
+        }
+        Insert: {
+          answers?: Json | null
+          body_snapshot?: string | null
+          created_at?: string
+          created_by?: string | null
+          fields?: Json
+          form_code: string
+          form_title: string
+          id?: string
+          patient_id: string
+          signature_png?: string | null
+          signed_at?: string | null
+          signed_ip?: string | null
+          signed_ua?: string | null
+          signer_name?: string | null
+          signer_rrn_enc?: string | null
+          visit_id: string
+        }
+        Update: {
+          answers?: Json | null
+          body_snapshot?: string | null
+          created_at?: string
+          created_by?: string | null
+          fields?: Json
+          form_code?: string
+          form_title?: string
+          id?: string
+          patient_id?: string
+          signature_png?: string | null
+          signed_at?: string | null
+          signed_ip?: string | null
+          signed_ua?: string | null
+          signer_name?: string | null
+          signer_rrn_enc?: string | null
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consent_visit_id_patient_id_fkey"
+            columns: ["visit_id", "patient_id"]
+            isOneToOne: false
+            referencedRelation: "visit"
+            referencedColumns: ["id", "patient_id"]
+          },
+        ]
+      }
       drug: {
         Row: {
           created_at: string
@@ -633,6 +698,19 @@ export type Database = {
       current_owner_id: { Args: never; Returns: string }
       current_role_name: { Args: never; Returns: string }
       mark_admission_report_read: { Args: { p_report_id: string }; Returns: undefined }
+      sign_consent: {
+        Args: {
+          p_answers: Json
+          p_body: string
+          p_consent_id: string
+          p_ip: string | null
+          p_name: string
+          p_rrn_enc: string | null
+          p_signature: string
+          p_ua: string | null
+        }
+        Returns: boolean
+      }
       mark_visit_report_read: { Args: { p_visit_id: string }; Returns: undefined }
       invite_target: {
         Args: { p_token: string }

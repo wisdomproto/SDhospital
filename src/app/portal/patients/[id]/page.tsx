@@ -26,6 +26,13 @@ export default async function PortalPatientOverview({
       supabase.from("admission").select("id").eq("patient_id", id).eq("status", "admitted").limit(1).maybeSingle(),
     ]);
 
+  const { data: pendingConsents } = await supabase
+    .from("consent")
+    .select("id, form_title")
+    .eq("patient_id", id)
+    .is("signed_at", null)
+    .order("created_at", { ascending: true });
+
   const feed = await ownerReportFeed(supabase, id, `/portal/patients/${id}`, 3);
   const unread = feed.filter((f) => f.unread).length;
 
@@ -50,6 +57,24 @@ export default async function PortalPatientOverview({
           </div>
         )}
       </div>
+
+      {(pendingConsents ?? []).length > 0 && (
+        <div className="portal-card" style={{ borderLeft: "4px solid #b4541f" }}>
+          <div style={{ fontWeight: 800, marginBottom: 8 }}>서명이 필요합니다</div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {(pendingConsents ?? []).map((c) => (
+              <Link
+                key={c.id}
+                href={`/portal/patients/${id}/consents/${c.id}`}
+                style={{ display: "flex", justifyContent: "space-between", gap: 10, fontWeight: 700, fontSize: ".92rem" }}
+              >
+                <span>{c.form_title}</span>
+                <span>서명하기 →</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {feed.length > 0 && (
         <div className="portal-card" style={{ borderLeft: "4px solid var(--brand, #2f7d6a)" }}>

@@ -35,6 +35,8 @@
 - `src/lib/supabase/` — 브라우저/서버 클라이언트 + 생성된 타입. **세 클라이언트 모두 `createXClient<Database>` 제네릭 필수** (안 붙이면 모든 쿼리가 `any`가 되어 컬럼 오타가 안 잡힌다)
 - `src/lib/validation/report.ts` — 리포트 공통 규칙, `src/lib/reports.ts` — 보호자 리포트 피드/안읽음
 - `src/lib/image.ts` + `src/components/PhotoInput.tsx` — **업로드 전 브라우저 축소**(1600px+WebP)
+- `src/lib/consent/forms.ts` — **동의서 양식 5종(본문 포함)**. 양식은 DB 아닌 코드에 둔다(git = 버전관리)
+- `src/components/ConsentSheet.tsx` + `SignaturePad.tsx` — 보호자앱·병원태블릿·직원이 공유하는 동의서 화면
 - `src/lib/crypto.ts` — 주민등록번호 등 고유식별정보 AES-256-GCM (키: `CONSENT_ENC_KEY`)
 - `src/app/manifest.ts` · `public/sw.js` · `public/offline.html` — PWA. `src/app/portal/InstallApp.tsx`가 등록+설치 안내
 - `src/lib/auth/roles.ts` — 역할 모델
@@ -56,6 +58,8 @@
 - 서비스워커는 **진료 기록을 캐시하지 않는다** (가족 공용 폰·로그아웃 후 잔존). 껍데기만 캐시.
   `sw.js`/`offline.html`/`manifest.webmanifest`는 `proxy.ts` 인증 가드에서 제외되어 있어야 한다.
 - `visit.closed_at` = 진료 종료. "오늘 할 일"은 **종료됐는데 미발송**인 회차를 올린다. 리포트를 보내면 종료도 같이 찍는다.
+- **동의서는 서명 시점 본문을 통째로 보관**(`consent.body_snapshot`). 양식 문구가 바뀌어도 과거 서명은 그대로 —
+  증빙에서 중요한 건 서명 그림이 아니라 "무엇에 동의했는지"다. 서명은 DEFINER 함수 `sign_consent`로만(두 번 서명 불가).
 - 구조화 데이터 = Postgres, 큰 파일(X-ray/MRI/CT·사진·영상) = Supabase Storage
 - 권한은 앱이 아니라 **RLS**로 강제 (의료정보 유출 방지)
 - 외부 공유 UI 분리: **보호자 = 모바일(`/portal`)**, **원장 = 데스크탑(`/referral`)**. 원장 화면은 직원 EMR과 "수정 가능 여부"만 다르게 (동일 레이아웃·컴포넌트, 읽기 전용)
@@ -69,7 +73,7 @@
 
 - **06 보호자 앱 MVP** 🚧 — `2026-07-26-mvp-owner-app.md`.
   M-0 스키마·M-1/M-1b 리포트·M-2 오늘 할 일·병동 입력 화면·M-3 종합 리포트·사진 최적화·PWA 완료.
-  대기: 알림(발신번호), M-8 FAQ(10년치 상담 데이터), M-4 검진(샘플). 다음 M-5 전자 동의서.
+  M-5 전자 동의서 완료. 대기: 알림(발신번호), M-8 FAQ(10년치 상담 데이터), M-4 검진(샘플). 다음 M-6/M-7 또는 레퍼럴 브릿지.
 
 EMR 자체(Plan 01–05)는 완성. 이후 후보: 알림 채널(문자/알림톡/푸시) 연결, 의료영상 뷰어·DICOM, 1차병원 EMR+PACS, AI, 예약/청구, 감사 로그, 네이티브 앱.
 
@@ -78,6 +82,8 @@ EMR 자체(Plan 01–05)는 완성. 이후 후보: 알림 채널(문자/알림�
 ## 배포 (Railway)
 - `railway.json`(Nixpacks, start `npm run start`, healthcheck `/login`) + `.nvmrc`(Node 22). GitHub 리포 연결 → env 2개(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) → Generate Domain. DB는 이미 Supabase 클라우드라 앱만 배포.
 - **데모 로그인 게이트**: 원클릭 로그인 버튼·서버액션은 `NEXT_PUBLIC_ENABLE_DEMO=1`일 때만 동작. 로컬 `.env.local`엔 켜둠, 프로덕션(Railway)엔 **넣지 말 것** → 자동 비활성화.
+- ⚠️ **`CONSENT_ENC_KEY` 필수** (주민등록번호 암호화). Railway 에 로컬과 다른 값으로 넣고 **별도 백업** —
+  잃어버리면 저장된 주민번호를 복구할 수 없다.
 - 배포 후 Supabase Auth → URL Configuration에 배포 도메인 등록.
 
 ## 로컬 개발 메모

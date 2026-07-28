@@ -4,6 +4,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { updateVisit, updatePrescription, deletePrescription, deleteFile, saveVisitReport, toggleVisitClosed } from "./actions";
 import { PrescriptionForm } from "./PrescriptionForm";
 import { SoapTemplate } from "./SoapTemplate";
+import { ConsentIssue } from "./ConsentIssue";
 import { ImageUpload, MediaUpload } from "./FileUpload";
 import { createAdmission } from "../../admissions/actions";
 import { DataTable } from "@/components/DataTable";
@@ -25,7 +26,7 @@ export default async function VisitDetail({
     .single();
   if (!v) notFound();
 
-  const [{ data: drugs }, { data: rxs }, { data: images }, { data: mediaRows }, { data: admissions }] =
+  const [{ data: drugs }, { data: rxs }, { data: images }, { data: mediaRows }, { data: admissions }, { data: consents }] =
     await Promise.all([
       supabase.from("drug").select("id, name").order("name"),
       supabase
@@ -39,6 +40,11 @@ export default async function VisitDetail({
         .select("id, admitted_at, discharged_at, status")
         .eq("visit_id", visitId)
         .order("admitted_at", { ascending: false }),
+      supabase
+        .from("consent")
+        .select("id, form_title, signed_at, signer_name")
+        .eq("visit_id", visitId)
+        .order("created_at", { ascending: false }),
     ]);
 
   const drugList = drugs ?? [];
@@ -129,6 +135,30 @@ export default async function VisitDetail({
             </button>
           </div>
         </form>
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <h2 className="section-title">동의서</h2>
+          <span className="pill muted">{(consents ?? []).length}건</span>
+        </div>
+        <DataTable
+          headers={["양식", "상태", "서명자", ""]}
+          empty="발행한 동의서가 없습니다."
+          rows={(consents ?? []).map((c) => [
+            c.form_title,
+            c.signed_at ? (
+              <span key="s" className="pill success">서명 완료</span>
+            ) : (
+              <span key="s" className="pill warning">서명 대기</span>
+            ),
+            c.signer_name ?? "-",
+            <Link key="o" href={`/patients/${patientId}/c/${c.id}`} className="link-btn">
+              {c.signed_at ? "열기 →" : "서명받기 →"}
+            </Link>,
+          ])}
+        />
+        <ConsentIssue patientId={patientId} visitId={v.id} />
       </div>
 
       <div className="card">

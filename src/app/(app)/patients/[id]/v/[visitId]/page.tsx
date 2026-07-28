@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
-import { updateVisit, updatePrescription, deletePrescription, deleteFile, saveVisitReport, toggleVisitClosed } from "./actions";
+import { updateVisit, updatePrescription, deletePrescription, deleteFile, saveVisitReport, toggleVisitClosed, referBack, saveReferralDraft } from "./actions";
 import { PrescriptionForm } from "./PrescriptionForm";
 import { SoapTemplate } from "./SoapTemplate";
 import { ConsentIssue } from "./ConsentIssue";
@@ -21,7 +21,7 @@ export default async function VisitDetail({
   const supabase = await createClient();
   const { data: v } = await supabase
     .from("visit")
-    .select("id, visit_date, visit_no, note, closed_at, report_comment, report_sent_at, report_read_at")
+    .select("id, visit_date, visit_no, note, closed_at, report_comment, report_sent_at, report_read_at, referral_note, referred_back_at, patient:patient_id(hospital:referring_hospital_id(name))")
     .eq("id", visitId)
     .single();
   if (!v) notFound();
@@ -49,6 +49,8 @@ export default async function VisitDetail({
 
   const drugList = drugs ?? [];
   const admissionList = admissions ?? [];
+  const hospitalName =
+    ((v.patient as unknown as { hospital: { name: string } | null } | null)?.hospital?.name) ?? null;
   const fmt = (iso: string) => new Date(iso).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" });
   const imageLinks = await Promise.all(
     (images ?? []).map(async (i) => ({ ...i, url: await signedUrl(i.storage_path) }))
@@ -136,6 +138,40 @@ export default async function VisitDetail({
           </div>
         </form>
       </div>
+
+      {hospitalName && (
+        <div className="card">
+          <div className="card-head">
+            <h2 className="section-title">1차 병원 회신 · 환송</h2>
+            {v.referred_back_at ? (
+              <span className="pill success">환송 완료 · {fmt(v.referred_back_at)}</span>
+            ) : (
+              <span className="pill warning">미환송</span>
+            )}
+          </div>
+          <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
+            <b>{hospitalName}</b> 원장님께 보내는 소견입니다. 진료 원문·처방을 포함해 전부 열람하실 수 있고,
+            여기 적는 내용은 그 위에 붙는 <b>회신 요약</b>입니다.
+          </p>
+          <form action={referBack.bind(null, patientId, v.id)} style={{ display: "grid", gap: 12 }}>
+            <FormField label="회신 소견">
+              <textarea
+                name="referral_note"
+                rows={4}
+                defaultValue={v.referral_note ?? ""}
+                placeholder="예) 슬개골 3기로 확인되어 교정술 시행했습니다. 경과 양호하며 2주 뒤 실밥 제거 부탁드립니다. 재활은 4주차부터 권장합니다."
+                className={inputClass}
+              />
+            </FormField>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button formAction={saveReferralDraft.bind(null, patientId, v.id)} className="btn btn-secondary">
+                임시 저장
+              </button>
+              <SubmitButton>{v.referred_back_at ? "회신 다시 보내기" : "환송하기"}</SubmitButton>
+            </div>
+          </form>
+        </div>
+      )}
 
       <div className="card">
         <div className="card-head">

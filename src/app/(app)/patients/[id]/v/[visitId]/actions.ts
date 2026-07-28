@@ -59,6 +59,35 @@ export async function saveVisitReport(
   revalidatePath(`/patients/${patientId}`, "layout");
 }
 
+/**
+ * 환송 — 의뢰한 1차 병원에 회신 소견을 보낸다.
+ * 치료가 끝나면 1차로 돌려보내는 것이 레퍼럴 에티켓이고, 그게 다음 의뢰를 만든다.
+ * 그래서 "환송"을 제품의 기본 흐름으로 둔다.
+ */
+export async function referBack(patientId: string, visitId: string, formData: FormData) {
+  const note = String(formData.get("referral_note") ?? "").trim();
+  if (!note) {
+    redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent("1차 병원에 보낼 소견을 적어주세요."));
+  }
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("visit")
+    .update({ referral_note: note, referred_back_at: new Date().toISOString() })
+    .eq("id", visitId);
+  if (error) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(error.message));
+  revalidatePath(vpath(patientId, visitId));
+  revalidatePath("/referrals");
+}
+
+export async function saveReferralDraft(patientId: string, visitId: string, formData: FormData) {
+  const supabase = await createClient();
+  await supabase
+    .from("visit")
+    .update({ referral_note: String(formData.get("referral_note") ?? "").trim() || null })
+    .eq("id", visitId);
+  revalidatePath(vpath(patientId, visitId));
+}
+
 // 진료 종료 / 종료 취소 — "오늘 할 일" 목록에 리포트 보낼 회차로 올라오는 기준
 export async function toggleVisitClosed(
   patientId: string,

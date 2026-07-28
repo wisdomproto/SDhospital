@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { DataTable } from "@/components/DataTable";
+import { referralStage, STAGE_LABEL, STAGE_TONE } from "@/lib/referral";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -19,9 +20,16 @@ export default async function ReferralPatientOverview({
   const hospital = p.hospital as unknown as { name: string; contact: string | null } | null;
 
   const [{ data: visits }, { data: admissions }] = await Promise.all([
-    supabase.from("visit").select("id, visit_date, visit_no, note").eq("patient_id", id).order("visit_date", { ascending: false }),
-    supabase.from("admission").select("id, admitted_at, discharged_at, status").eq("patient_id", id).order("admitted_at", { ascending: false }),
+    supabase
+      .from("visit")
+      .select("id, visit_date, visit_no, note, closed_at, referred_back_at")
+      .eq("patient_id", id)
+      .order("visit_date", { ascending: false }),
+    supabase.from("admission").select("id, visit_id, admitted_at, discharged_at, status").eq("patient_id", id).order("admitted_at", { ascending: false }),
+    // 열람 기록 — 1차병원에 기록을 열어주는 조건이다. 실패해도 화면은 그대로 뜬다.
+    supabase.rpc("log_access", { p_patient_id: id, p_target: "patient", p_target_id: id }),
   ]);
+  const admissionsOf = (visitId: string) => (admissions ?? []).filter((a) => a.visit_id === visitId);
 
   const info: [string, string][] = [
     ["종", p.species ?? "-"],
@@ -64,12 +72,16 @@ export default async function ReferralPatientOverview({
           <span className="pill muted">{(visits ?? []).length}건</span>
         </div>
         <DataTable
-          headers={["날짜", "회차", "진료 요약", ""]}
+          headers={["날짜", "회차", "진료 요약", "상태", ""]}
           empty="진료 회차가 없습니다."
           rows={(visits ?? []).map((v) => [
             v.visit_date,
             v.visit_no ?? "-",
             (v.note ?? "").slice(0, 40) || "-",
+            (() => {
+              const stage = referralStage({ ...v, admissions: admissionsOf(v.id) });
+              return <span key="s" className={`pill ${STAGE_TONE[stage]}`}>{STAGE_LABEL[stage]}</span>;
+            })(),
             <Link key="o" href={`/referral/patients/${p.id}/v/${v.id}`} className="link-btn">열기 →</Link>,
           ])}
         />

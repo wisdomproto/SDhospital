@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { DataTable } from "@/components/DataTable";
+import { referralStage, STAGE_LABEL, STAGE_TONE } from "@/lib/referral";
 import Link from "next/link";
 
 export default async function ReferralHome() {
@@ -12,14 +13,24 @@ export default async function ReferralHome() {
     .order("created_at", { ascending: false });
   const list = patients ?? [];
 
-  const [{ data: admitted }, { data: visits }] = await Promise.all([
-    supabase.from("admission").select("patient_id").eq("status", "admitted"),
-    supabase.from("visit").select("patient_id, visit_date").order("visit_date", { ascending: false }),
+  const [{ data: admissions }, { data: visits }] = await Promise.all([
+    supabase.from("admission").select("visit_id, status"),
+    supabase
+      .from("visit")
+      .select("id, patient_id, visit_date, closed_at, referred_back_at")
+      .order("visit_date", { ascending: false }),
   ]);
-  const admittedSet = new Set((admitted ?? []).map((a) => a.patient_id));
-  const lastVisit = new Map<string, string>();
+  const byVisit = new Map<string, { status: string }[]>();
+  for (const a of admissions ?? []) {
+    if (!a.visit_id) continue;
+    const list = byVisit.get(a.visit_id) ?? [];
+    list.push({ status: a.status });
+    byVisit.set(a.visit_id, list);
+  }
+  // 환자 상태 = 가장 최근 회차의 상태. 원장이 알고 싶은 건 "내 환자 지금 어떻게 됐나" 하나다.
+  const latest = new Map<string, NonNullable<typeof visits>[number]>();
   for (const v of visits ?? []) {
-    if (v.patient_id && !lastVisit.has(v.patient_id)) lastVisit.set(v.patient_id, v.visit_date);
+    if (v.patient_id && !latest.has(v.patient_id)) latest.set(v.patient_id, v);
   }
 
   return (
@@ -48,12 +59,13 @@ export default async function ReferralHome() {
             {p.name}
           </Link>,
           [p.species, p.breed].filter(Boolean).join(" / ") || "-",
-          <span key="d" style={{ color: "var(--muted)" }}>{lastVisit.get(p.id) ?? "-"}</span>,
-          admittedSet.has(p.id) ? (
-            <span key="s" className="pill warning">입원중</span>
-          ) : (
-            <span key="s" className="pill success">외래</span>
-          ),
+          <span key="d" style={{ color: "var(--muted)" }}>{latest.get(p.id)?.visit_date ?? "-"}</span>,
+          (() => {
+            const v = latest.get(p.id);
+            if (!v) return <span key="s" className="pill muted">-</span>;
+            const stage = referralStage({ ...v, admissions: byVisit.get(v.id) ?? [] });
+            return <span key="s" className={`pill ${STAGE_TONE[stage]}`}>{STAGE_LABEL[stage]}</span>;
+          })(),
         ])}
       />
     </div>

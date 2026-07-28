@@ -5,6 +5,8 @@ import { DataTable } from "@/components/DataTable";
 import { createHospital, deleteHospital } from "./actions";
 import { issueVetInvite, revokeVetInvite } from "./invites/actions";
 import { inviteUrl } from "@/lib/invites";
+import { hospitalStats } from "@/lib/referral";
+import { kstToday } from "@/lib/worklist";
 import { headers } from "next/headers";
 import Link from "next/link";
 
@@ -27,7 +29,7 @@ export default async function HospitalsPage({
   const supabase = await createClient();
   const host = (await headers()).get("host") ?? "localhost:3000";
 
-  const [{ data: hospitals }, { data: patients }, { data: invites }] = await Promise.all([
+  const [{ data: hospitals }, { data: patients }, { data: invites }, { data: visits }] = await Promise.all([
     supabase.from("referring_hospital").select("id, name, contact").order("name"),
     supabase
       .from("patient")
@@ -38,6 +40,7 @@ export default async function HospitalsPage({
       .select("id, token, used, referring_hospital_id")
       .eq("role", "referring_vet")
       .order("created_at", { ascending: false }),
+    supabase.from("visit").select("patient_id, visit_date, closed_at, referred_back_at"),
   ]);
 
   const petsByHosp = new Map<string, HospPatient[]>();
@@ -56,6 +59,13 @@ export default async function HospitalsPage({
   }
 
   const hospitalList = hospitals ?? [];
+  // 의뢰 흐름 — "어느 병원이 조용해졌나" 가 영업의 시작점이다.
+  const patientHospital = new Map(
+    (patients ?? []).filter((p) => p.referring_hospital_id).map((p) => [p.id, p.referring_hospital_id!])
+  );
+  const statOf = new Map(
+    hospitalStats(hospitalList, visits ?? [], patientHospital, kstToday()).map((s) => [s.hospitalId, s])
+  );
 
   return (
     <div style={{ maxWidth: 960, display: "grid", gap: 20 }}>
@@ -80,6 +90,7 @@ export default async function HospitalsPage({
           const ownerCount = new Set(pets.map((p) => p.owner?.name).filter(Boolean)).size;
           const myInvites = invitesByHosp.get(h.id) ?? [];
           const pending = myInvites.filter((iv) => !iv.used).length;
+          const stat = statOf.get(h.id);
           return (
             <div key={h.id} className="card" style={{ display: "grid", gap: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -97,6 +108,8 @@ export default async function HospitalsPage({
                   <div style={{ fontSize: ".8rem", color: "var(--muted)" }}>{h.contact ?? "연락처 없음"}</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  {stat?.wentQuiet && <span className="pill warning" title="최근 90일 의뢰가 끊겼습니다">의뢰 끊김</span>}
+                  {!!stat?.pendingReferBack && <span className="pill warning">미환송 {stat.pendingReferBack}</span>}
                   {pending > 0 && <span className="pill success">가입 대기 {pending}</span>}
                   <form action={issueVetInvite.bind(null, h.id)}>
                     <SubmitButton variant="secondary">＋ 원장 초대</SubmitButton>
@@ -107,6 +120,17 @@ export default async function HospitalsPage({
                   </form>
                 </div>
               </div>
+
+              {stat && stat.total > 0 && (
+                <div style={{ display: "flex", gap: 18, flexWrap: "wrap", fontSize: ".82rem", paddingTop: 2 }}>
+                  <span>
+                    최근 90일 <b style={{ fontVariantNumeric: "tabular-nums" }}>{stat.last90}</b>건
+                    <span className="muted"> (직전 {stat.prev90})</span>
+                  </span>
+                  <span className="muted">누적 {stat.total}건</span>
+                  <span className="muted">최근 의뢰 {stat.lastReferralAt ?? "-"}</span>
+                </div>
+              )}
 
               {/* connected patients / owners — expandable */}
               <details>

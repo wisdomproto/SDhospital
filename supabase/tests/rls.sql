@@ -120,6 +120,33 @@ begin
   if unsent is not null then raise exception 'unsent daily report must not be markable as read'; end if;
 end $$;
 
+-- 접근 로그 — 외부 역할은 남길 수만 있고, 읽지도 고치지도 못한다
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}', true);
+select log_access('cccccccc-0000-0000-0000-000000000001', 'visit', 'dddddddd-0000-0000-0000-000000000001');
+
+do $$
+declare n int;
+begin
+  select count(*) into n from access_log;
+  if n <> 0 then raise exception 'vetA must not read access_log, saw %', n; end if;
+  begin
+    insert into access_log (actor_role, target) values ('staff', 'forged');
+    raise exception 'vetA must not insert into access_log directly';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
+reset role;
+do $$
+declare r text;
+begin
+  select actor_role into r from access_log
+   where patient_id = 'cccccccc-0000-0000-0000-000000000001' order by at desc limit 1;
+  if r is distinct from 'referring_vet' then raise exception 'log_access must stamp the real role, got %', r; end if;
+end $$;
+
 reset role;
 select 'RLS TESTS PASSED' as result;
 rollback;

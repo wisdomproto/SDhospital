@@ -7,6 +7,12 @@ import { DataTable } from "@/components/DataTable";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+const ACTOR_LABEL: Record<string, string> = {
+  staff: "직원",
+  referring_vet: "1차병원 원장",
+  owner: "보호자",
+};
+
 export default async function PatientOverview({
   params,
 }: {
@@ -26,7 +32,7 @@ export default async function PatientOverview({
   const owner = p.owner as unknown as { name: string; contact: string | null } | null;
   const hospital = p.hospital as unknown as { name: string; contact: string | null } | null;
 
-  const [{ data: visits }, { data: admissions }] = await Promise.all([
+  const [{ data: visits }, { data: admissions }, { data: accessLog }] = await Promise.all([
     supabase
       .from("visit")
       .select("id, visit_date, visit_no, note")
@@ -37,6 +43,12 @@ export default async function PatientOverview({
       .select("id, admitted_at, discharged_at, status")
       .eq("patient_id", id)
       .order("admitted_at", { ascending: false }),
+    supabase
+      .from("access_log")
+      .select("id, actor_role, target, at")
+      .eq("patient_id", id)
+      .order("at", { ascending: false })
+      .limit(20),
   ]);
 
   const info: [string, string][] = [
@@ -131,6 +143,25 @@ export default async function PatientOverview({
         <p className="muted" style={{ marginTop: 12, fontSize: 13 }}>
           입원은 진료 회차에서 시작합니다. 위 회차를 열어 <b>입원 시작</b>을 누르세요.
         </p>
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <h2 className="section-title">열람 기록</h2>
+          <span className="pill muted">최근 {(accessLog ?? []).length}건</span>
+        </div>
+        <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
+          외부(1차병원·보호자)에서 이 환자 기록을 연 내역입니다.
+        </p>
+        <DataTable
+          headers={["시각", "열람자", "대상"]}
+          empty="열람 기록이 없습니다."
+          rows={(accessLog ?? []).map((l) => [
+            new Date(l.at).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" }),
+            ACTOR_LABEL[l.actor_role] ?? l.actor_role,
+            l.target,
+          ])}
+        />
       </div>
     </div>
   );

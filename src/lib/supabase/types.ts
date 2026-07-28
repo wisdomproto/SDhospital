@@ -100,6 +100,44 @@ export type Database = {
           },
         ]
       }
+      access_log: {
+        Row: {
+          actor_id: string | null
+          actor_role: string
+          at: string
+          id: string
+          patient_id: string | null
+          target: string
+          target_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_role: string
+          at?: string
+          id?: string
+          patient_id?: string | null
+          target: string
+          target_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          actor_role?: string
+          at?: string
+          id?: string
+          patient_id?: string | null
+          target?: string
+          target_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_log_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consent: {
         Row: {
           answers: Json | null
@@ -540,6 +578,8 @@ export type Database = {
           id: string
           note: string | null
           patient_id: string
+          referral_note: string | null
+          referred_back_at: string | null
           report_comment: string | null
           report_read_at: string | null
           report_sent_at: string | null
@@ -553,6 +593,8 @@ export type Database = {
           id?: string
           note?: string | null
           patient_id: string
+          referral_note?: string | null
+          referred_back_at?: string | null
           report_comment?: string | null
           report_read_at?: string | null
           report_sent_at?: string | null
@@ -566,6 +608,8 @@ export type Database = {
           id?: string
           note?: string | null
           patient_id?: string
+          referral_note?: string | null
+          referred_back_at?: string | null
           report_comment?: string | null
           report_read_at?: string | null
           report_sent_at?: string | null
@@ -697,6 +741,10 @@ export type Database = {
       current_hospital_id: { Args: never; Returns: string }
       current_owner_id: { Args: never; Returns: string }
       current_role_name: { Args: never; Returns: string }
+      log_access: {
+        Args: { p_patient_id: string; p_target: string; p_target_id: string | null }
+        Returns: undefined
+      }
       mark_admission_report_read: { Args: { p_report_id: string }; Returns: undefined }
       sign_consent: {
         Args: {

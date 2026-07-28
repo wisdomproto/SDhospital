@@ -13,14 +13,17 @@ export default async function ReferralVisitDetail({
 }: {
   params: Promise<{ id: string; visitId: string }>;
 }) {
-  const { visitId } = await params;
+  const { id: patientId, visitId } = await params;
   const supabase = await createClient();
   const { data: v } = await supabase
     .from("visit")
-    .select("id, visit_date, visit_no, note, report_comment, report_sent_at")
+    .select("id, visit_date, visit_no, note, report_comment, report_sent_at, referral_note, referred_back_at")
     .eq("id", visitId)
     .single();
   if (!v) notFound();
+
+  // 열람 기록 — 1차병원에 기록을 열어주는 조건이다.
+  await supabase.rpc("log_access", { p_patient_id: patientId, p_target: "visit", p_target_id: visitId });
 
   const [{ data: rxs }, { data: images }, { data: media }] = await Promise.all([
     supabase.from("prescription").select("dose, frequency, duration, drug:drug_id(name)").eq("visit_id", visitId),
@@ -38,6 +41,18 @@ export default async function ReferralVisitDetail({
           {v.visit_date} {v.visit_no != null ? `· ${v.visit_no}회차` : ""}
         </h1>
       </div>
+
+      {v.referred_back_at && v.referral_note && (
+        <div className="card" style={{ borderLeft: "4px solid var(--success, #2e9e6b)" }}>
+          <div className="card-head">
+            <h2 className="section-title">환송 소견서</h2>
+            <span className="pill success">{new Date(v.referred_back_at).toLocaleDateString("ko-KR")} 환송</span>
+          </div>
+          <p style={{ margin: 0, fontSize: ".95rem", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>
+            {v.referral_note}
+          </p>
+        </div>
+      )}
 
       {v.report_sent_at && v.report_comment && (
         <div className="card" style={{ borderLeft: "4px solid var(--primary)" }}>

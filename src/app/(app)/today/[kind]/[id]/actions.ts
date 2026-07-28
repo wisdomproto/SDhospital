@@ -72,10 +72,13 @@ export async function sendWardReport(
     if (error) fail(error.message);
   } else {
     const now = new Date().toISOString();
+    const weight = parseFloat(String(formData.get("weight_kg") ?? ""));
     const { error } = await supabase
       .from("visit")
       .update({
         report_comment: report.ok ? report.value.comment : null,
+        chief_complaint: String(formData.get("chief_complaint") ?? "").trim() || null,
+        weight_kg: Number.isFinite(weight) ? weight : null,
         report_sent_at: now,
         closed_at: now,
       })

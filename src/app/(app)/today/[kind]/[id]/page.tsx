@@ -2,8 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { sendWardReport } from "./actions";
 import { PhotoPicker } from "./PhotoPicker";
 import { kstToday, admittedDay } from "@/lib/worklist";
+import { OwnerPreview } from "@/app/(app)/patients/[id]/v/[visitId]/OwnerPreview";
+import type { ReportVisit } from "@/lib/owner-report";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+type PrevVisit = ReportVisit | null;
 
 const petEmoji = (s: string | null) => (s === "고양이" ? "🐱" : "🐶");
 type Pet = { id: string; name: string; species: string | null } | null;
@@ -27,11 +31,18 @@ export default async function WardEntry({
   let patientId = "";
   let lastVital: { temperature: number | null; heart_rate: number | null; resp_rate: number | null } | null = null;
   let draft = "";
+  let previewCtx: {
+    patient: { name: string; species: string | null; breed: string | null; birth_date: string | null };
+    visitDate: string;
+    chiefComplaint: string;
+    weight: string;
+    prev: PrevVisit;
+  } | null = null;
 
   if (kind === "v") {
     const { data: v } = await supabase
       .from("visit")
-      .select("id, visit_date, report_comment, patient:patient_id(id, name, species)")
+      .select("id, visit_date, report_comment, chief_complaint, weight_kg, patient:patient_id(id, name, species)")
       .eq("id", id)
       .single();
     if (!v) notFound();
@@ -40,6 +51,27 @@ export default async function WardEntry({
     heading = "진료 리포트";
     subtitle = v.visit_date;
     draft = v.report_comment ?? "";
+
+    const [{ data: full }, { data: prev }] = await Promise.all([
+      supabase.from("patient").select("name, species, breed, birth_date").eq("id", patientId).single(),
+      supabase
+        .from("visit")
+        .select("visit_date, chief_complaint, weight_kg, report_comment, report_notice")
+        .eq("patient_id", patientId)
+        .lt("visit_date", v.visit_date)
+        .order("visit_date", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    if (full) {
+      previewCtx = {
+        patient: full,
+        visitDate: v.visit_date,
+        chiefComplaint: v.chief_complaint ?? "",
+        weight: v.weight_kg != null ? String(v.weight_kg) : "",
+        prev: prev ?? null,
+      };
+    }
   } else {
     const { data: a } = await supabase
       .from("admission")
@@ -123,6 +155,19 @@ export default async function WardEntry({
           </div>
         )}
 
+        {kind === "v" && previewCtx && (
+          <div className="ward-vitals" style={{ gridTemplateColumns: "2fr 1fr" }}>
+            <label>
+              주 증상 (C.C.)
+              <input name="chief_complaint" defaultValue={previewCtx.chiefComplaint} placeholder="보행 시 균형 불균형" />
+            </label>
+            <label>
+              체중 kg
+              <input name="weight_kg" inputMode="decimal" defaultValue={previewCtx.weight} />
+            </label>
+          </div>
+        )}
+
         <div>
           <div style={{ fontWeight: 700, fontSize: ".88rem", marginBottom: 8 }}>보호자에게 한 줄</div>
           <textarea
@@ -138,10 +183,26 @@ export default async function WardEntry({
           />
         </div>
 
-        <button className="ward-send">보내기</button>
-        <p className="ward-prefill" style={{ textAlign: "center", margin: 0 }}>
-          누르는 즉시 보호자에게 발송됩니다
-        </p>
+        {previewCtx ? (
+          <div style={{ display: "grid", gap: 8 }}>
+            <OwnerPreview
+              patient={previewCtx.patient}
+              visitDate={previewCtx.visitDate}
+              prev={previewCtx.prev}
+              alreadySent={false}
+              className="ward-send"
+              label="보호자가 볼 화면 확인하고 보내기"
+            />
+            <button className="btn btn-ghost" style={{ justifySelf: "center" }}>미리보기 없이 바로 보내기</button>
+          </div>
+        ) : (
+          <>
+            <button className="ward-send">보내기</button>
+            <p className="ward-prefill" style={{ textAlign: "center", margin: 0 }}>
+              누르는 즉시 보호자에게 발송됩니다
+            </p>
+          </>
+        )}
       </form>
     </div>
   );

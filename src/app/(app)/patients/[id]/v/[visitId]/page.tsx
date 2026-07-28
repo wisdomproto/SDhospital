@@ -5,6 +5,7 @@ import { updateVisit, updatePrescription, deletePrescription, deleteFile, saveVi
 import { PrescriptionForm } from "./PrescriptionForm";
 import { SoapTemplate } from "./SoapTemplate";
 import { ConsentIssue } from "./ConsentIssue";
+import { OwnerPreview } from "./OwnerPreview";
 import { ImageUpload, MediaUpload } from "./FileUpload";
 import { createAdmission } from "../../admissions/actions";
 import { DataTable } from "@/components/DataTable";
@@ -21,7 +22,7 @@ export default async function VisitDetail({
   const supabase = await createClient();
   const { data: v } = await supabase
     .from("visit")
-    .select("id, visit_date, visit_no, note, closed_at, report_comment, report_sent_at, report_read_at, referral_note, referred_back_at, patient:patient_id(hospital:referring_hospital_id(name))")
+    .select("id, visit_date, visit_no, note, closed_at, report_comment, report_sent_at, report_read_at, referral_note, referred_back_at, chief_complaint, weight_kg, report_notice, patient:patient_id(name, species, breed, birth_date, hospital:referring_hospital_id(name))")
     .eq("id", visitId)
     .single();
   if (!v) notFound();
@@ -47,10 +48,23 @@ export default async function VisitDetail({
         .order("created_at", { ascending: false }),
     ]);
 
+  // 직전 회차 — "지난 방문 대비 변화" 를 만들 재료
+  const { data: prev } = await supabase
+    .from("visit")
+    .select("visit_date, chief_complaint, weight_kg, report_comment, report_notice")
+    .eq("patient_id", patientId)
+    .lt("visit_date", v.visit_date)
+    .order("visit_date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   const drugList = drugs ?? [];
   const admissionList = admissions ?? [];
-  const hospitalName =
-    ((v.patient as unknown as { hospital: { name: string } | null } | null)?.hospital?.name) ?? null;
+  const pat = v.patient as unknown as {
+    name: string; species: string | null; breed: string | null; birth_date: string | null;
+    hospital: { name: string } | null;
+  } | null;
+  const hospitalName = pat?.hospital?.name ?? null;
   const fmt = (iso: string) => new Date(iso).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" });
   const imageLinks = await Promise.all(
     (images ?? []).map(async (i) => ({ ...i, url: await signedUrl(i.storage_path) }))
@@ -121,20 +135,53 @@ export default async function VisitDetail({
           어떤 문제로 왔고 · 어떤 검사를 했고 · 어떤 치료를 받았는지를 적어주세요.
         </p>
         <form action={saveVisitReport.bind(null, patientId, v.id)} style={{ display: "grid", gap: 12 }}>
-          <FormField label="담당의 코멘트">
+          <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: 12 }}>
+            <FormField label="주 증상 (C.C.) · 리포트 제목이 됩니다">
+              <input
+                name="chief_complaint"
+                defaultValue={v.chief_complaint ?? ""}
+                placeholder="예) 보행 시 균형 불균형 및 안구 진탕"
+                className={inputClass}
+              />
+            </FormField>
+            <FormField label="체중 (kg)">
+              <input
+                name="weight_kg"
+                inputMode="decimal"
+                defaultValue={v.weight_kg ?? ""}
+                placeholder="6.36"
+                className={inputClass}
+              />
+            </FormField>
+          </div>
+          <FormField label="담당의 코멘트 · 한 줄에 하나씩 쓰면 항목으로 나갑니다">
             <textarea
               name="comment"
-              rows={3}
+              rows={4}
               defaultValue={v.report_comment ?? ""}
-              placeholder="예) 뒷다리를 절어 내원하셨고, X-ray로 슬개골 상태를 확인했습니다. 오늘은 소염 치료를 했고 다음 주 수술 상담 예정입니다. 당분간 계단은 피해주세요."
+              placeholder={"예)\n보행 시 균형을 잡지 못하는 증상이 있어요\n눈이 왔다 갔다 하는 안구 진탕 증상이 있어요\n타 병원에서 항경련제를 처방받은 과거력이 있어요"}
+              className={inputClass}
+            />
+          </FormField>
+          <FormField label="추가 안내 사항 (선택)">
+            <textarea
+              name="report_notice"
+              rows={2}
+              defaultValue={v.report_notice ?? ""}
+              placeholder="예) 당분간 계단과 미끄러운 바닥은 피해주세요. 증상이 심해지면 바로 연락 주세요."
               className={inputClass}
             />
           </FormField>
           <div style={{ display: "flex", gap: 8 }}>
             <SubmitButton>임시 저장</SubmitButton>
-            <button name="send" value="1" className="btn btn-primary">
-              {v.report_sent_at ? "다시 보내기" : "보호자에게 보내기"}
-            </button>
+            {pat && (
+              <OwnerPreview
+                patient={pat}
+                visitDate={v.visit_date}
+                prev={prev ?? null}
+                alreadySent={!!v.report_sent_at}
+              />
+            )}
           </div>
         </form>
       </div>

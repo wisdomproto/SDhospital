@@ -1253,3 +1253,36 @@ details[open] > summary .chev {
   .consent-sheet { border: 0; border-radius: 0; padding: 0; }
   .consent-form, [data-print="hide"] { display: none !important; }
 }
+
+/* 보호자 전송 미리보기 — 보호자 앱과 같은 폭(모바일)으로 띄운다 */
+.preview-dialog {
+  width: min(420px, calc(100vw - 32px));
+  max-height: 86vh;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .22);
+  color: var(--text);
+  background: var(--surface);
+  overflow: hidden;
+}
+.preview-dialog::backdrop { background: rgba(15, 23, 30, .45); }
+.preview-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 16px; border-bottom: 1px solid var(--line-soft);
+}
+.preview-body {
+  display: grid; gap: 16px; padding: 16px;
+  max-height: calc(86vh - 124px); overflow-y: auto;
+}
+.preview-box {
+  border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px;
+  background: var(--surface-soft);
+}
+.preview-box-title { font-weight: 800; font-size: .92rem; }
+.preview-list { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+.preview-list li { font-size: .92rem; line-height: 1.65; }
+.preview-foot {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 12px 16px; border-top: 1px solid var(--line-soft); background: var(--surface-soft);
+}

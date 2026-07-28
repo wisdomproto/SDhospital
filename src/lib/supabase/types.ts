@@ -578,6 +578,9 @@ export type Database = {
           id: string
           note: string | null
           patient_id: string
+          chief_complaint: string | null
+          weight_kg: number | null
+          report_notice: string | null
           referral_note: string | null
           referred_back_at: string | null
           report_comment: string | null
@@ -593,6 +596,9 @@ export type Database = {
           id?: string
           note?: string | null
           patient_id: string
+          chief_complaint?: string | null
+          weight_kg?: number | null
+          report_notice?: string | null
           referral_note?: string | null
           referred_back_at?: string | null
           report_comment?: string | null
@@ -608,6 +614,9 @@ export type Database = {
           id?: string
           note?: string | null
           patient_id?: string
+          chief_complaint?: string | null
+          weight_kg?: number | null
+          report_notice?: string | null
           referral_note?: string | null
           referred_back_at?: string | null
           report_comment?: string | null

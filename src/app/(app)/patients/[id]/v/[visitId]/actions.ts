@@ -44,10 +44,14 @@ export async function saveVisitReport(
   });
   if (!v.ok) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(v.error));
   const supabase = await createClient();
+  const weight = parseFloat(String(formData.get("weight_kg") ?? ""));
   const { error } = await supabase
     .from("visit")
     .update({
       report_comment: v.value.comment,
+      chief_complaint: String(formData.get("chief_complaint") ?? "").trim() || null,
+      weight_kg: Number.isFinite(weight) ? weight : null,
+      report_notice: String(formData.get("report_notice") ?? "").trim() || null,
       // 리포트를 보내면 진료도 끝난 것으로 본다 (버튼을 두 번 누르게 하지 않는다)
       ...(v.value.send
         ? { report_sent_at: new Date().toISOString(), closed_at: new Date().toISOString() }

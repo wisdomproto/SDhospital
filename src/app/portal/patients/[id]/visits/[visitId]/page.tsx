@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl, signMedicalImages } from "@/lib/storage";
 import { MediaGrid, type SignedFile } from "../../MediaGrid";
+import { buildOwnerReport } from "@/lib/owner-report";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -17,10 +18,24 @@ export default async function PortalVisitDetail({
   const supabase = await createClient();
   const { data: v } = await supabase
     .from("visit")
-    .select("id, visit_date, visit_no, note, report_comment, report_sent_at")
+    .select("id, patient_id, visit_date, visit_no, report_comment, report_sent_at, chief_complaint, weight_kg, report_notice")
     .eq("id", visitId)
     .single();
   if (!v) notFound();
+
+  const [{ data: patient }, { data: prev }] = await Promise.all([
+    supabase.from("patient").select("name, species, breed, birth_date").eq("id", v.patient_id).single(),
+    supabase
+      .from("visit")
+      .select("visit_date, chief_complaint, weight_kg, report_comment, report_notice")
+      .eq("patient_id", v.patient_id)
+      .lt("visit_date", v.visit_date)
+      .not("report_sent_at", "is", null)
+      .order("visit_date", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+  const report = patient ? buildOwnerReport(patient, v, prev) : null;
 
   // 열람 표시 — 보호자는 visit 에 쓰기 권한이 없으므로 DEFINER 함수로만 기록한다.
   // 최초 1회만 기록되고, 실패해도 화면은 그대로 보여준다.
@@ -47,22 +62,50 @@ export default async function PortalVisitDetail({
     <>
       <Link href={`/portal/patients/${id}/visits`} className="portal-tile-sub" style={{ textDecoration: "none" }}>← 진료 목록</Link>
       <div>
-        <div style={{ fontSize: "1.25rem", fontWeight: 900 }}>{v.visit_date}</div>
-        <div className="portal-tile-sub">{v.visit_no != null ? `${v.visit_no}회차` : ""}</div>
+        <div style={{ fontSize: "1.25rem", fontWeight: 900, lineHeight: 1.35 }}>
+          {report?.title ?? v.visit_date}
+        </div>
+        <div className="portal-tile-sub">
+          {[v.visit_date, v.visit_no != null ? `${v.visit_no}회차` : null, report?.profile]
+            .filter(Boolean)
+            .join(" · ")}
+        </div>
       </div>
 
-      {v.report_sent_at && v.report_comment && (
+      {report && report.changes.length > 0 && (
+        <div className="portal-card" style={{ background: "var(--surface-soft, #f7f5f0)" }}>
+          <div style={{ fontWeight: 800, marginBottom: 8 }}>지난 방문 대비 {patient!.name}의 변화</div>
+          <ul style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 6 }}>
+            {report.changes.map((c) => (
+              <li key={c} style={{ fontSize: ".92rem", lineHeight: 1.65 }}>{c}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {v.report_sent_at && report && report.states.length > 0 && (
         <div className="portal-card" style={{ borderLeft: "4px solid var(--brand, #2f7d6a)" }}>
-          <div style={{ fontWeight: 800, marginBottom: 6 }}>담당의 코멘트</div>
-          <p style={{ margin: 0, fontSize: ".95rem", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
-            {v.report_comment}
-          </p>
+          <div style={{ fontWeight: 800, marginBottom: 8 }}>{patient!.name}의 상태예요</div>
+          <ul style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 6 }}>
+            {report.states.map((s) => (
+              <li key={s} style={{ fontSize: ".95rem", lineHeight: 1.7 }}>{s}</li>
+            ))}
+          </ul>
           <Link
             href={`/portal/patients/${id}/visits/${visitId}/summary`}
             style={{ display: "inline-block", marginTop: 12, fontWeight: 700, fontSize: ".88rem" }}
           >
             전체 리포트 보기 · PDF 저장 →
           </Link>
+        </div>
+      )}
+
+      {v.report_sent_at && report?.notice && (
+        <div className="portal-card">
+          <div style={{ fontWeight: 800, marginBottom: 6 }}>추가 안내 사항이에요</div>
+          <p style={{ margin: 0, fontSize: ".95rem", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+            {report.notice}
+          </p>
         </div>
       )}
 

@@ -32,10 +32,20 @@ async function uploadAdmFile(
 
   if (kind === "image") {
     const modality = String(formData.get("modality") ?? "other");
+    const preview = formData.get("preview") as File | null;
+    let previewPath: string | null = null;
+    if (preview && preview.size > 0) {
+      previewPath = imagePath(patientId, admissionId, preview.name);
+      const { error } = await supabase.storage
+        .from(BUCKET)
+        .upload(previewPath, preview, { contentType: preview.type || undefined });
+      if (error) previewPath = null;
+    }
     await supabase.from("medical_image").insert({
       admission_id: admissionId,
       modality,
       storage_path: path,
+      preview_path: previewPath,
       file_name: file!.name,
     });
   } else {

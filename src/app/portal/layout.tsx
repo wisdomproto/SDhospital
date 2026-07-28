@@ -1,5 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { InstallApp } from "./InstallApp";
+import type { Metadata, Viewport } from "next";
+
+export const metadata: Metadata = {
+  title: "SD동물의료센터",
+  appleWebApp: { capable: true, title: "SD동물병원", statusBarStyle: "default" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0f9b8e",
+  // 노치·홈바 영역까지 앱처럼 쓰기 위해
+  viewportFit: "cover",
+};
 
 export default async function PortalLayout({
   children,
@@ -25,6 +38,7 @@ export default async function PortalLayout({
   return (
     <div className="portal-shell">
       <div className="portal-phone">{children}</div>
+      <InstallApp />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { signedUrl } from "@/lib/storage";
+import { signedUrl, signMedicalImages } from "@/lib/storage";
 import { MediaGrid, type SignedFile } from "../../MediaGrid";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -26,12 +26,21 @@ export default async function PortalVisitDetail({
   // 최초 1회만 기록되고, 실패해도 화면은 그대로 보여준다.
   if (v.report_sent_at) await supabase.rpc("mark_visit_report_read", { p_visit_id: visitId });
 
-  const [{ data: rxs }, { data: images }, { data: media }] = await Promise.all([
-    supabase.from("prescription").select("dose, frequency, duration, drug:drug_id(name)").eq("visit_id", visitId),
-    supabase.from("medical_image").select("id, modality, file_name, storage_path").eq("visit_id", visitId),
+  const [{ data: images }, { data: media }] = await Promise.all([
+    supabase.from("medical_image").select("id, modality, file_name, storage_path, preview_path").eq("visit_id", visitId),
     supabase.from("media").select("id, kind, file_name, storage_path").eq("visit_id", visitId),
   ]);
-  const imageLinks = await signAll((images as Omit<SignedFile, "url">[]) ?? []);
+  const imageLinks = await signMedicalImages(images ?? []);
+  // 보호자에게는 "무슨 검사를 했는지"만 보여준다.
+  // 약품·용량 같은 처방 상세는 분쟁 소지가 있어 내보내지 않는다.
+  const MODALITY_KO: Record<string, string> = { xray: "X-ray", ct: "CT", mri: "MRI", other: "영상 검사" };
+  const examSummary = Object.entries(
+    (images ?? []).reduce<Record<string, number>>((acc, i) => {
+      const k = MODALITY_KO[i.modality ?? "other"] ?? "영상 검사";
+      acc[k] = (acc[k] ?? 0) + 1;
+      return acc;
+    }, {})
+  ).map(([k, n]) => `${k} ${n}건`);
   const mediaLinks = await signAll((media as Omit<SignedFile, "url">[]) ?? []);
 
   return (
@@ -48,33 +57,25 @@ export default async function PortalVisitDetail({
           <p style={{ margin: 0, fontSize: ".95rem", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
             {v.report_comment}
           </p>
+          <Link
+            href={`/portal/patients/${id}/visits/${visitId}/summary`}
+            style={{ display: "inline-block", marginTop: 12, fontWeight: 700, fontSize: ".88rem" }}
+          >
+            전체 리포트 보기 · PDF 저장 →
+          </Link>
         </div>
       )}
 
-      <div className="portal-card">
-        <div style={{ fontWeight: 800, marginBottom: 6 }}>진료 내용</div>
-        <p style={{ margin: 0, fontSize: ".9rem", whiteSpace: "pre-wrap", color: "#33465e" }}>
-          {v.note || "기록 없음"}
-        </p>
-      </div>
-
-      <div className="portal-card">
-        <div style={{ fontWeight: 800, marginBottom: 8 }}>처방 · {(rxs ?? []).length}건</div>
-        {(rxs ?? []).length === 0 ? (
-          <p style={{ color: "var(--muted)", fontSize: ".85rem", margin: 0 }}>처방 없음</p>
-        ) : (
-          <div style={{ display: "grid", gap: 6 }}>
-            {(rxs ?? []).map((r, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: ".88rem", borderBottom: i < (rxs ?? []).length - 1 ? "1px solid var(--line)" : 0, paddingBottom: 6 }}>
-                <span style={{ fontWeight: 700 }}>{(r.drug as unknown as { name: string } | null)?.name ?? "-"}</span>
-                <span style={{ color: "var(--muted)" }}>
-                  {[r.dose, r.frequency, r.duration].filter(Boolean).join(" · ") || "-"}
-                </span>
-              </div>
+      {examSummary.length > 0 && (
+        <div className="portal-card">
+          <div style={{ fontWeight: 800, marginBottom: 8 }}>진행한 검사</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {examSummary.map((e) => (
+              <span key={e} className="pill muted">{e}</span>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="portal-card">
         <div style={{ fontWeight: 800, marginBottom: 8 }}>의료영상</div>

@@ -1,6 +1,7 @@
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass } from "@/components/FormField";
 import { uploadAdmImage, uploadAdmMedia } from "./actions";
+import { MedicalImageInput, ShrinkFileInput } from "@/components/PhotoInput";
 
 export function AdmImageUpload({
   patientId,
@@ -20,7 +21,7 @@ export function AdmImageUpload({
         <option value="ct">CT</option>
         <option value="other">기타</option>
       </select>
-      <input type="file" name="file" required accept="image/*,.dcm" />
+      <MedicalImageInput />
       <SubmitButton variant="secondary">영상 업로드</SubmitButton>
     </form>
   );
@@ -39,7 +40,7 @@ export function AdmMediaUpload({
       style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 10 }}
     >
       <input name="kind" placeholder="종류(예: 상처 경과, 보행)" className={inputClass} style={{ width: 180 }} />
-      <input type="file" name="file" required accept="image/*,video/*" />
+      <ShrinkFileInput required />
       <SubmitButton variant="secondary">사진/영상 업로드</SubmitButton>
     </form>
   );

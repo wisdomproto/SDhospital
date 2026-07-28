@@ -23,3 +23,20 @@ export function isVideoFile(fileName: string | null | undefined): boolean {
 export function isImageFile(fileName: string | null | undefined): boolean {
   return /\.(png|jpe?g|gif|webp|bmp|heic|svg)$/i.test(fileName ?? "");
 }
+
+/**
+ * 보호자 화면용 의료영상 링크.
+ * 기본은 가벼운 사본(preview_path), 원본은 "원본 받기"용으로 따로 준다.
+ * 사본이 없는 예전 자료는 원본 하나만 쓴다.
+ */
+export async function signMedicalImages<
+  T extends { storage_path: string; preview_path?: string | null }
+>(rows: T[]): Promise<(T & { url: string | null; originalUrl: string | null })[]> {
+  return Promise.all(
+    rows.map(async (r) => ({
+      ...r,
+      url: await signedUrl(r.preview_path ?? r.storage_path),
+      originalUrl: r.preview_path ? await signedUrl(r.storage_path) : null,
+    }))
+  );
+}

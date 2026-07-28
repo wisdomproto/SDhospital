@@ -25,7 +25,11 @@ export async function proxy(request: NextRequest) {
   );
 
   const path = request.nextUrl.pathname;
-  const isPublic = path.startsWith("/login") || path.startsWith("/invite");
+  // 앱 설치에 필요한 파일들은 로그인 전에도 받을 수 있어야 한다.
+  // (서비스 워커가 로그인 화면 HTML 을 받아버리면 등록 자체가 실패한다)
+  const isAppShell =
+    path === "/sw.js" || path === "/offline.html" || path === "/manifest.webmanifest";
+  const isPublic = isAppShell || path.startsWith("/login") || path.startsWith("/invite");
 
   // Public pages need no session — skip the Supabase getUser() round trip
   // entirely so the login screen (and its post-login redirects) don't each

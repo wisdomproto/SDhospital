@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { signedUrl } from "@/lib/storage";
+import { signedUrl, signMedicalImages } from "@/lib/storage";
 import { VitalChart } from "@/components/VitalChart";
 import { MediaGrid, type SignedFile } from "../../MediaGrid";
 import Link from "next/link";
@@ -29,10 +29,10 @@ export default async function PortalAdmissionDetail({
       .select("measured_at, temperature, heart_rate, resp_rate, systolic, diastolic")
       .eq("admission_id", admissionId)
       .order("measured_at", { ascending: true }),
-    supabase.from("medical_image").select("id, modality, file_name, storage_path").eq("admission_id", admissionId),
+    supabase.from("medical_image").select("id, modality, file_name, storage_path, preview_path").eq("admission_id", admissionId),
     supabase.from("media").select("id, kind, file_name, storage_path").eq("admission_id", admissionId),
   ]);
-  const imageLinks = await signAll((images as Omit<SignedFile, "url">[]) ?? []);
+  const imageLinks = await signMedicalImages(images ?? []);
   const mediaLinks = await signAll((media as Omit<SignedFile, "url">[]) ?? []);
 
   // 발송된 일일 리포트만 보여주고, 최신 것을 열람 처리한다 (DEFINER 함수로만 기록 가능)
@@ -81,13 +81,6 @@ export default async function PortalAdmissionDetail({
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {a.note && (
-        <div className="portal-card">
-          <div style={{ fontWeight: 800, marginBottom: 6 }}>경과 메모</div>
-          <p style={{ margin: 0, fontSize: ".88rem", whiteSpace: "pre-wrap", color: "#33465e" }}>{a.note}</p>
         </div>
       )}
 

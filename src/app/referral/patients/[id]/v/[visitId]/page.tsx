@@ -17,7 +17,7 @@ export default async function ReferralVisitDetail({
   const supabase = await createClient();
   const { data: v } = await supabase
     .from("visit")
-    .select("id, visit_date, visit_no, note")
+    .select("id, visit_date, visit_no, note, report_comment, report_sent_at")
     .eq("id", visitId)
     .single();
   if (!v) notFound();
@@ -38,6 +38,18 @@ export default async function ReferralVisitDetail({
           {v.visit_date} {v.visit_no != null ? `· ${v.visit_no}회차` : ""}
         </h1>
       </div>
+
+      {v.report_sent_at && v.report_comment && (
+        <div className="card" style={{ borderLeft: "4px solid var(--primary)" }}>
+          <div className="card-head">
+            <h2 className="section-title">보호자에게 안내된 내용</h2>
+            <span className="pill muted">{new Date(v.report_sent_at).toLocaleDateString("ko-KR")}</span>
+          </div>
+          <p style={{ margin: 0, fontSize: ".92rem", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+            {v.report_comment}
+          </p>
+        </div>
+      )}
 
       <div className="card">
         <div className="card-head"><h2 className="section-title">진료 내용</h2></div>

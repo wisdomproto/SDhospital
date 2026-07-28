@@ -1,6 +1,7 @@
 import { SubmitButton } from "@/components/SubmitButton";
 import { inputClass } from "@/components/FormField";
 import { uploadImage, uploadMedia } from "./actions";
+import { MedicalImageInput, ShrinkFileInput } from "@/components/PhotoInput";
 
 export function ImageUpload({
   patientId,
@@ -20,7 +21,7 @@ export function ImageUpload({
         <option value="ct">CT</option>
         <option value="other">기타</option>
       </select>
-      <input type="file" name="file" required accept="image/*,.dcm" />
+      <MedicalImageInput />
       <SubmitButton variant="secondary">영상 업로드</SubmitButton>
     </form>
   );
@@ -39,7 +40,7 @@ export function MediaUpload({
       style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 10 }}
     >
       <input name="kind" placeholder="종류(예: 보행영상)" className={inputClass} style={{ width: 160 }} />
-      <input type="file" name="file" required accept="image/*,video/*" />
+      <ShrinkFileInput required />
       <SubmitButton variant="secondary">사진/영상 업로드</SubmitButton>
     </form>
   );

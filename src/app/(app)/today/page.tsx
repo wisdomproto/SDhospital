@@ -33,7 +33,7 @@ export default async function TodayWorklist() {
       const p = v.patient as unknown as Pet;
       return {
         kind: "visit" as const,
-        href: `/patients/${p?.id}/v/${v.id}`,
+        href: `/today/v/${v.id}`,
         patientName: p?.name ?? "-",
         species: p?.species ?? null,
         date: v.visit_date,
@@ -47,7 +47,7 @@ export default async function TodayWorklist() {
         const p = a.patient as unknown as Pet;
         return {
           kind: "admission" as const,
-          href: `/patients/${p?.id}/a/${a.id}`,
+          href: `/today/a/${a.id}`,
           patientName: p?.name ?? "-",
           species: p?.species ?? null,
           date: today,

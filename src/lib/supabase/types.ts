@@ -239,6 +239,7 @@ export type Database = {
           file_name: string | null
           id: string
           modality: string | null
+          preview_path: string | null
           storage_path: string
           uploaded_at: string
           visit_id: string | null
@@ -248,6 +249,7 @@ export type Database = {
           file_name?: string | null
           id?: string
           modality?: string | null
+          preview_path?: string | null
           storage_path: string
           uploaded_at?: string
           visit_id?: string | null
@@ -257,6 +259,7 @@ export type Database = {
           file_name?: string | null
           id?: string
           modality?: string | null
+          preview_path?: string | null
           storage_path?: string
           uploaded_at?: string
           visit_id?: string | null

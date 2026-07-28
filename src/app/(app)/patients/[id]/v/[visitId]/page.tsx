@@ -3,6 +3,7 @@ import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
 import { updateVisit, updatePrescription, deletePrescription, deleteFile, saveVisitReport, toggleVisitClosed } from "./actions";
 import { PrescriptionForm } from "./PrescriptionForm";
+import { SoapTemplate } from "./SoapTemplate";
 import { ImageUpload, MediaUpload } from "./FileUpload";
 import { createAdmission } from "../../admissions/actions";
 import { DataTable } from "@/components/DataTable";
@@ -82,9 +83,14 @@ export default async function VisitDetail({
               <input name="visit_no" inputMode="numeric" defaultValue={v.visit_no ?? ""} className={inputClass} />
             </FormField>
           </div>
-          <FormField label="진료 내용">
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+              <span className="field-label" style={{ marginBottom: 0 }}>진료 내용</span>
+              <SoapTemplate target="note" />
+              <span className="muted" style={{ fontSize: 12 }}>보호자에게는 보이지 않습니다</span>
+            </div>
             <textarea name="note" rows={6} defaultValue={v.note ?? ""} className={inputClass} />
-          </FormField>
+          </div>
           <div><SubmitButton>저장</SubmitButton></div>
         </form>
       </div>
@@ -103,7 +109,8 @@ export default async function VisitDetail({
           )}
         </div>
         <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
-          진단·처방·영상은 이 회차 내용에서 자동으로 조립됩니다. 코멘트 한 줄만 적어주세요.
+          <b>보호자에게는 이 코멘트만 나갑니다.</b> 위 진료 내용과 처방 상세는 보이지 않습니다.
+          어떤 문제로 왔고 · 어떤 검사를 했고 · 어떤 치료를 받았는지를 적어주세요.
         </p>
         <form action={saveVisitReport.bind(null, patientId, v.id)} style={{ display: "grid", gap: 12 }}>
           <FormField label="담당의 코멘트">
@@ -111,7 +118,7 @@ export default async function VisitDetail({
               name="comment"
               rows={3}
               defaultValue={v.report_comment ?? ""}
-              placeholder="예) 오늘 촬영 결과 슬개골 3기입니다. 다음 주 수술 상담 예정이며 당분간 계단은 피해주세요."
+              placeholder="예) 뒷다리를 절어 내원하셨고, X-ray로 슬개골 상태를 확인했습니다. 오늘은 소염 치료를 했고 다음 주 수술 상담 예정입니다. 당분간 계단은 피해주세요."
               className={inputClass}
             />
           </FormField>

@@ -155,10 +155,21 @@ async function uploadTo(
 
   if (kind === "image") {
     const modality = String(formData.get("modality") ?? "other");
+    // 원본은 판독용이라 그대로 두고, 보호자에게 보낼 가벼운 사본만 따로 올린다
+    const preview = formData.get("preview") as File | null;
+    let previewPath: string | null = null;
+    if (preview && preview.size > 0) {
+      previewPath = imagePath(patientId, visitId, preview.name);
+      const { error } = await supabase.storage
+        .from(BUCKET)
+        .upload(previewPath, preview, { contentType: preview.type || undefined });
+      if (error) previewPath = null; // 사본 실패는 업로드를 막지 않는다
+    }
     await supabase.from("medical_image").insert({
       visit_id: visitId,
       modality,
       storage_path: path,
+      preview_path: previewPath,
       file_name: file!.name,
     });
   } else {

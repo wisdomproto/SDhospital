@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { ownerReportFeed } from "@/lib/reports";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -25,6 +26,9 @@ export default async function PortalPatientOverview({
       supabase.from("admission").select("id").eq("patient_id", id).eq("status", "admitted").limit(1).maybeSingle(),
     ]);
 
+  const feed = await ownerReportFeed(supabase, id, `/portal/patients/${id}`, 3);
+  const unread = feed.filter((f) => f.unread).length;
+
   return (
     <>
       <div className="portal-hero">
@@ -46,6 +50,64 @@ export default async function PortalPatientOverview({
           </div>
         )}
       </div>
+
+      {feed.length > 0 && (
+        <div className="portal-card" style={{ borderLeft: "4px solid var(--brand, #2f7d6a)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+            <span style={{ fontWeight: 800 }}>병원에서 온 소식</span>
+            {unread > 0 && (
+              <span
+                style={{
+                  background: "#ef4444",
+                  color: "#fff",
+                  fontSize: ".7rem",
+                  fontWeight: 800,
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                }}
+              >
+                새 소식 {unread}
+              </span>
+            )}
+          </div>
+          <div style={{ display: "grid", gap: 10 }}>
+            {feed.map((f, i) => (
+              <Link
+                key={f.key}
+                href={f.href}
+                style={{
+                  display: "block",
+                  textDecoration: "none",
+                  color: "inherit",
+                  paddingBottom: 10,
+                  borderBottom: i < feed.length - 1 ? "1px solid var(--line)" : 0,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: ".78rem", color: "var(--muted)" }}>
+                  {f.unread && (
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#ef4444", flexShrink: 0 }} />
+                  )}
+                  <span style={{ fontWeight: 700 }}>{f.title}</span>
+                  <span>· {f.date}</span>
+                </div>
+                <p
+                  style={{
+                    margin: "4px 0 0",
+                    fontSize: ".92rem",
+                    lineHeight: 1.6,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }}
+                >
+                  {f.comment}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <Link href={`/portal/patients/${p.id}/visits`} className="portal-stat" style={{ background: "linear-gradient(140deg,#3b82f6,#2563eb)" }}>

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { unreadCounts } from "@/lib/reports";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "../(app)/logout";
@@ -30,6 +31,7 @@ export default async function PortalHome() {
     .select("patient_id")
     .eq("status", "admitted");
   const admittedSet = new Set((admitted ?? []).map((a) => a.patient_id));
+  const unread = await unreadCounts(supabase, (patients ?? []).map((p) => p.id));
 
   return (
     <>
@@ -69,6 +71,20 @@ export default async function PortalHome() {
               <div className="portal-tile-title">{p.name}</div>
               <div className="portal-tile-sub">{[p.species, p.breed].filter(Boolean).join(" / ") || "-"}</div>
             </div>
+            {(unread.get(p.id) ?? 0) > 0 && (
+              <span
+                style={{
+                  background: "#ef4444",
+                  color: "#fff",
+                  fontSize: ".7rem",
+                  fontWeight: 800,
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                }}
+              >
+                새 소식 {unread.get(p.id)}
+              </span>
+            )}
             {admittedSet.has(p.id) ? (
               <span className="pill warning">입원중</span>
             ) : (

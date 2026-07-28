@@ -31,9 +31,13 @@
 - `src/app/referral/` — **1차병원 원장 데스크탑 포털** (읽기 전용). 직원 EMR과 동일한 셸/클래스(`app-shell`·`sidebar`·`DataTable`·`card`)를 재사용하고 편집(폼·업로드·수정/삭제)만 제거. `ReferralSidebar.tsx` + 목록/개요/회차(`v/[visitId]`)/입원(`a/[admissionId]`) 페이지
 - `src/app/portal/` — 보호자 모바일 앱 (원장이 오면 `/referral`로 리다이렉트)
 - `src/app/login/` — 직원 로그인 (데모: 병원별 원장 버튼 → `VET_ACCOUNTS`), `src/app/login/portal/` — 보호자 모바일 로그인, `src/proxy.ts` — 세션 갱신 + 라우트 가드
-- `src/app/(app)/today/` — **오늘 할 일**: 리포트 미발송 목록(밀린 것 우선). 로직은 `src/lib/worklist.ts`
+- `src/app/(app)/today/` — **오늘 할 일**(미발송 목록, 밀린 것 우선) + `[kind]/[id]` **병동 입력 화면**(카메라 즉시·바이털 프리필·한 화면 발송). 로직은 `src/lib/worklist.ts`
 - `src/lib/supabase/` — 브라우저/서버 클라이언트 + 생성된 타입. **세 클라이언트 모두 `createXClient<Database>` 제네릭 필수** (안 붙이면 모든 쿼리가 `any`가 되어 컬럼 오타가 안 잡힌다)
-- `src/lib/validation/report.ts` — 리포트 공통 규칙, `src/lib/auth/roles.ts` — 역할 모델
+- `src/lib/validation/report.ts` — 리포트 공통 규칙, `src/lib/reports.ts` — 보호자 리포트 피드/안읽음
+- `src/lib/image.ts` + `src/components/PhotoInput.tsx` — **업로드 전 브라우저 축소**(1600px+WebP)
+- `src/lib/crypto.ts` — 주민등록번호 등 고유식별정보 AES-256-GCM (키: `CONSENT_ENC_KEY`)
+- `src/app/manifest.ts` · `public/sw.js` · `public/offline.html` — PWA. `src/app/portal/InstallApp.tsx`가 등록+설치 안내
+- `src/lib/auth/roles.ts` — 역할 모델
 - `supabase/migrations/` — 스키마·RLS, `supabase/tests/` — RLS 테스트
 
 ## 설계 결정
@@ -45,6 +49,12 @@
   입원 일일 리포트(`admission_report`, `unique(admission_id, report_date)`)는 입원한 회차에만 매일.
   수의사가 넣는 건 **코멘트 한 줄**뿐 — 나머지는 조립한다. 발송 시 코멘트 필수(임시저장은 빈 값 허용).
 - 보호자는 읽기 전용이라 **열람 표시는 DEFINER 함수로만** (`mark_visit_report_read`, `mark_admission_report_read`).
+- ⚠️ **보호자에게 진료 원문·처방 상세를 보여주지 않는다** (분쟁 소지). 담당의 코멘트 + 검사 요약 + 사진/영상만.
+  보호자 쿼리에서 `visit.note` 컬럼 자체를 뺐다. **1차병원(`/referral`)은 전부 본다** — 의료진이다.
+- 사진은 **업로드 전 브라우저에서** 1600px+WebP로 줄인다(서버 변환 없음). 의료영상만 원본 보존 +
+  보호자용 사본(`medical_image.preview_path`)을 따로 올린다.
+- 서비스워커는 **진료 기록을 캐시하지 않는다** (가족 공용 폰·로그아웃 후 잔존). 껍데기만 캐시.
+  `sw.js`/`offline.html`/`manifest.webmanifest`는 `proxy.ts` 인증 가드에서 제외되어 있어야 한다.
 - `visit.closed_at` = 진료 종료. "오늘 할 일"은 **종료됐는데 미발송**인 회차를 올린다. 리포트를 보내면 종료도 같이 찍는다.
 - 구조화 데이터 = Postgres, 큰 파일(X-ray/MRI/CT·사진·영상) = Supabase Storage
 - 권한은 앱이 아니라 **RLS**로 강제 (의료정보 유출 방지)
@@ -57,7 +67,9 @@
 - **04 입원·바이털** ✅ — 입원 생애주기·바이털 입력·Recharts 시계열 그래프
 - **05 초대·외부 포털** ✅ — 초대 발급/수락(DEFINER 함수), 읽기전용 보호자 모바일 포털 + **1차병원 원장 데스크탑 포털(`/referral`)**
 
-- **06 보호자 앱 MVP** 🚧 — `2026-07-26-mvp-owner-app.md`. M-0 스키마 정정·M-1 회차 리포트·M-1b 입원 일일 리포트·M-2 오늘 할 일 완료. 다음 M-3(퇴원 종합 리포트)
+- **06 보호자 앱 MVP** 🚧 — `2026-07-26-mvp-owner-app.md`.
+  M-0 스키마·M-1/M-1b 리포트·M-2 오늘 할 일·병동 입력 화면·M-3 종합 리포트·사진 최적화·PWA 완료.
+  대기: 알림(발신번호), M-8 FAQ(10년치 상담 데이터), M-4 검진(샘플). 다음 M-5 전자 동의서.
 
 EMR 자체(Plan 01–05)는 완성. 이후 후보: 알림 채널(문자/알림톡/푸시) 연결, 의료영상 뷰어·DICOM, 1차병원 EMR+PACS, AI, 예약/청구, 감사 로그, 네이티브 앱.
 

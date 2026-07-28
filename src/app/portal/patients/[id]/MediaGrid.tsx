@@ -7,6 +7,8 @@ export type SignedFile = {
   modality?: string | null;
   kind?: string | null;
   url: string | null;
+  /** 보호자는 가벼운 사본을 보고, 필요할 때만 원본을 받는다 (의료영상 전용) */
+  originalUrl?: string | null;
 };
 
 export function MediaGrid({ files }: { files: SignedFile[] }) {
@@ -31,7 +33,14 @@ export function MediaGrid({ files }: { files: SignedFile[] }) {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={f.url} alt={f.file_name ?? ""} />
               </a>
-              {tag && <div className="portal-tile-sub" style={{ marginTop: 4 }}>{tag}</div>}
+              <div className="portal-tile-sub" style={{ marginTop: 4, display: "flex", gap: 8, alignItems: "center" }}>
+                {tag && <span>{tag}</span>}
+                {f.originalUrl && (
+                  <a href={f.originalUrl} target="_blank" download style={{ fontWeight: 700 }}>
+                    원본 받기
+                  </a>
+                )}
+              </div>
             </div>
           );
         }

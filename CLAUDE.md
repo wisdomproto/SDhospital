@@ -92,4 +92,7 @@ EMR 자체(Plan 01–05)는 완성. 이후 후보: 알림 채널(문자/알림�
   - 직원: `staff@sdhospital.test` / `sdhospital123!`
   - 보호자: `1@example.com` / `1234`
   - 원장(애니컴): `2@example.com` / `1234`, 원장(아이원): `3@example.com` / `1234`
+- **시연용 데이터**: `supabase/seed/demo_history.sql` — 환자 12명 × 3~8년치 회차(236건)·과거 입원·바이털·일일 리포트.
+  환자별 "질환 스토리"(주 증상 배열·체중 시작/끝·방문 횟수)만 적고 DB가 펼친다. 시드 행은 전부 id 가 `d0000000-` 로 시작하고
+  `demo_history_rollback.sql` 로 되돌린다. **운영 DB에 넣지 말 것.**
 - `.env.local`은 gitignore (Supabase URL + publishable 키)

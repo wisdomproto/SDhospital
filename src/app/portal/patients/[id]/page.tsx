@@ -13,19 +13,19 @@ export default async function PortalPatientOverview({
   const supabase = await createClient();
   const { data: p } = await supabase
     .from("patient")
-    .select("id, name, species, breed, sex, birth_date, hospital:referring_hospital_id(name)")
+    .select("id, name, species, breed, sex")
     .eq("id", id)
     .single();
   if (!p) notFound();
-  const hospital = p.hospital as unknown as { name: string } | null;
 
-  const [{ count: visitCount }, { count: admCount }, { data: lastVisit }, { data: openAdm }] =
-    await Promise.all([
-      supabase.from("visit").select("id", { count: "exact", head: true }).eq("patient_id", id),
-      supabase.from("admission").select("id", { count: "exact", head: true }).eq("patient_id", id),
-      supabase.from("visit").select("visit_date").eq("patient_id", id).order("visit_date", { ascending: false }).limit(1).maybeSingle(),
-      supabase.from("admission").select("id").eq("patient_id", id).eq("status", "admitted").limit(1).maybeSingle(),
-    ]);
+  // 회차 수·기본 정보는 "진료 기록" 탭이 맡는다. 여기는 병원 소식 화면이다.
+  const { data: openAdm } = await supabase
+    .from("admission")
+    .select("id")
+    .eq("patient_id", id)
+    .eq("status", "admitted")
+    .limit(1)
+    .maybeSingle();
 
   const { data: pendingConsents } = await supabase
     .from("consent")
@@ -181,27 +181,6 @@ export default async function PortalPatientOverview({
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <Link href={`/portal/patients/${p.id}/visits`} className="portal-stat" style={{ background: "linear-gradient(140deg,#3b82f6,#2563eb)" }}>
-          <div className="num">{visitCount ?? 0}</div>
-          <div className="lbl">진료 회차 →</div>
-        </Link>
-        <Link href={`/portal/patients/${p.id}/admissions`} className="portal-stat" style={{ background: "linear-gradient(140deg,#ff9d5c,#f97316)" }}>
-          <div className="num">{admCount ?? 0}</div>
-          <div className="lbl">입원 기록 →</div>
-        </Link>
-      </div>
-
-      <div className="portal-card">
-        <div style={{ fontWeight: 800, marginBottom: 8 }}>기본 정보</div>
-        <div className="info-row"><span className="k">생일</span><span className="v">{p.birth_date ?? "-"}</span></div>
-        <div className="info-row" style={{ borderBottom: 0 }}><span className="k">의뢰 병원</span><span className="v">{hospital?.name ?? "-"}</span></div>
-        {lastVisit?.visit_date && (
-          <p style={{ margin: "10px 0 0", fontSize: ".82rem", color: "var(--muted)" }}>
-            최근 진료: {lastVisit.visit_date}
-          </p>
-        )}
-      </div>
     </>
   );
 }

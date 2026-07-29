@@ -2,7 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { signedUrl, signMedicalImages } from "@/lib/storage";
 import { MediaGrid, type SignedFile } from "../../MediaGrid";
 import { buildOwnerReport } from "@/lib/owner-report";
+import { dailyLines } from "@/lib/admission-report";
 import { matchCaseStories, type CaseStory } from "@/lib/case-stories";
+import { ReportActions } from "./ReportActions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -50,6 +52,20 @@ export default async function PortalVisitDetail({
   // 열람 표시 — 보호자는 visit 에 쓰기 권한이 없으므로 DEFINER 함수로만 기록한다.
   // 최초 1회만 기록되고, 실패해도 화면은 그대로 보여준다.
   if (v.report_sent_at) await supabase.rpc("mark_visit_report_read", { p_visit_id: visitId });
+
+  const { data: admissions } = await supabase
+    .from("admission")
+    .select("id, admitted_at, discharged_at, status")
+    .eq("visit_id", visitId);
+  const admIds = (admissions ?? []).map((a) => a.id);
+  const { data: dailyReports } = admIds.length
+    ? await supabase
+        .from("admission_report")
+        .select("id, report_date, comment, feeding, elimination, special")
+        .in("admission_id", admIds)
+        .not("sent_at", "is", null)
+        .order("report_date", { ascending: false })
+    : { data: [] as { id: string; report_date: string; comment: string | null; feeding: string | null; elimination: string | null; special: string | null }[] };
 
   const [{ data: images }, { data: media }] = await Promise.all([
     supabase.from("medical_image").select("id, modality, file_name, storage_path, preview_path").eq("visit_id", visitId),
@@ -101,12 +117,6 @@ export default async function PortalVisitDetail({
               <li key={s} style={{ fontSize: ".95rem", lineHeight: 1.7 }}>{s}</li>
             ))}
           </ul>
-          <Link
-            href={`/portal/patients/${id}/visits/${visitId}/summary`}
-            style={{ display: "inline-block", marginTop: 12, fontWeight: 700, fontSize: ".88rem" }}
-          >
-            전체 리포트 보기 · PDF 저장 →
-          </Link>
         </div>
       )}
 
@@ -150,6 +160,40 @@ export default async function PortalVisitDetail({
         </div>
       )}
 
+      {(admissions ?? []).map((a) => (
+        <div className="portal-card" key={a.id}>
+          <div style={{ fontWeight: 800, marginBottom: 2 }}>입원 경과</div>
+          <div className="portal-tile-sub" style={{ marginBottom: 10 }}>
+            {a.admitted_at} ~ {a.discharged_at ?? "입원 중"}
+          </div>
+          {dailyReports && dailyReports.length > 0 ? (
+            <div style={{ display: "grid", gap: 12 }}>
+              {dailyReports.map((d, i) => (
+                <div
+                  key={d.id}
+                  style={{
+                    paddingBottom: 10,
+                    borderBottom: i < dailyReports.length - 1 ? "1px solid var(--line)" : 0,
+                  }}
+                >
+                  <div style={{ fontWeight: 700, fontSize: ".82rem", color: "var(--muted)" }}>{d.report_date}</div>
+                  <div style={{ display: "grid", gap: 6, marginTop: 6 }}>
+                    {dailyLines(d).map((l) => (
+                      <div key={l.label} className={`daily-line ${l.tone}`}>
+                        <span className="k">{l.label}</span>
+                        <span className="v">{l.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="portal-tile-sub" style={{ margin: 0 }}>도착한 경과가 없어요.</p>
+          )}
+        </div>
+      ))}
+
       <div className="portal-card">
         <div style={{ fontWeight: 800, marginBottom: 8 }}>의료영상</div>
         <MediaGrid files={imageLinks} />
@@ -159,6 +203,15 @@ export default async function PortalVisitDetail({
         <div style={{ fontWeight: 800, marginBottom: 8 }}>사진 / 영상</div>
         <MediaGrid files={mediaLinks} />
       </div>
+
+      {v.report_sent_at && (
+        <>
+          <ReportActions title={`${patient?.name ?? ""} 진료 리포트`} />
+          <p className="portal-tile-sub no-print" style={{ margin: 0, textAlign: "center" }}>
+            SD동물의료센터가 발행한 진료 안내 자료입니다. 궁금하신 점은 병원으로 문의해 주세요.
+          </p>
+        </>
+      )}
     </>
   );
 }

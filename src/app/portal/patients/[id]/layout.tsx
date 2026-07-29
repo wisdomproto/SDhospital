@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "../../../(app)/logout";
 import { PortalTabBar } from "./PortalTabBar";
+import { InstallApp } from "../../InstallApp";
 
 export default async function PortalPatientLayout({
   params,
@@ -33,6 +34,7 @@ export default async function PortalPatientLayout({
           <span style={{ fontSize: 20 }}>{patient.species === "고양이" ? "🐱" : "🐶"}</span>
         )}
         <span className="title">{patient.name}</span>
+        <InstallApp />
         <form action={signOut}>
           <button className="portal-iconbtn" aria-label="로그아웃">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

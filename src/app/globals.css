@@ -31,8 +31,8 @@
   --color-text: var(--text);
   --color-muted: var(--muted);
   --color-primary: var(--primary);
-  --font-sans: "IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
 * {
@@ -47,6 +47,11 @@ body {
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 한글은 자간을 조금 좁혀야 덩어리로 읽힌다. 숫자는 표에서 자리가 흔들리지 않게 고정폭 */
+  letter-spacing: -0.011em;
+  font-feature-settings: "tnum";
+  word-break: keep-all;
 }
 
 /* ---- Typography helpers ---- */
@@ -628,7 +633,11 @@ summary:focus-visible {
   width: min(440px, 100%);
   margin: 0 auto;
   background: var(--bg);
-  min-height: calc(100vh - 28px);
+  /* min-height 였을 때는 내용이 길어지면 이 상자가 같이 늘어나서 **페이지 전체**가 스크롤됐다.
+     그러면 하단 탭이 화면 밖으로 밀려 끝까지 내려야 보였다. 높이를 화면에 고정해
+     안쪽 .portal-body 만 스크롤시킨다 — 앱이면 탭은 늘 떠 있어야 한다.
+     dvh 를 쓰는 이유: 모바일 브라우저 주소창이 접혔다 펴지면 vh 가 튄다. */
+  height: calc(100dvh - 28px);
   border-radius: 34px;
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -701,6 +710,7 @@ summary:focus-visible {
   background: rgba(255, 255, 255, 0.14);
 }
 .portal-tabbar {
+  flex: none;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   background: #fff;
@@ -1167,6 +1177,18 @@ details[open] > summary .chev {
   .report-sheet { border: 0; border-radius: 0; padding: 0; }
   .report-block { page-break-inside: avoid; }
   a { color: inherit; text-decoration: none; }
+}
+
+/* 진짜 폰에서는 액자 테두리가 의미 없다 — 화면을 꽉 채우고 탭만 아래에 고정 */
+@media (max-width: 640px) {
+  .portal-shell { padding: 0; }
+  .portal-phone {
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
+  }
 }
 
 /* ---- 병동 입력: 폰/태블릿에서 서서 쓰는 화면 ---- */

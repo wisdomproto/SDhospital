@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { InstallApp } from "./InstallApp";
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
@@ -38,7 +37,6 @@ export default async function PortalLayout({
   return (
     <div className="portal-shell">
       <div className="portal-phone">{children}</div>
-      <InstallApp />
     </div>
   );
 }

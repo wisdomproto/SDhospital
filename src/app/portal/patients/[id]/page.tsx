@@ -65,9 +65,9 @@ export default async function PortalPatientOverview({
       )}
 
       {(notices ?? []).length > 0 && (
-        <div style={{ display: "grid", gap: 10 }}>
+        <div className="notice-list">
           {(notices ?? []).map((n) => (
-            <div key={n.id} className={`portal-card notice-card${n.coupon_label ? " coupon" : ""}${n.image_url ? " has-image" : ""}`}>
+            <div key={n.id} className={`portal-card notice-card${n.coupon_label ? " coupon" : ""}`}>
               {n.image_url && (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img className="notice-image" src={n.image_url} alt="" loading="lazy" />

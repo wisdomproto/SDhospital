@@ -1845,14 +1845,19 @@ button.media-thumb.media-open {
   background: #fff7f6;
 }
 
-/* 소식 이미지 — 글만 있는 첫 화면은 삭막하다 */
-.notice-card.has-image { padding-top: 0; overflow: hidden; }
+/* 소식 이미지 — 글만 있는 첫 화면은 삭막하다.
+   카드 밖으로 흘리지 않고 안쪽에 여백을 두고 넣는다. 가장자리까지 채우면
+   사진 비율이 제각각일 때(세로 포스터·가로 배너) 잘린 티가 그대로 드러난다. */
 .notice-image {
   display: block;
-  width: calc(100% + 32px);
-  margin: 0 -16px 12px;
+  width: 100%;
+  margin: 0 auto 12px;
   aspect-ratio: 16 / 9;
   object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
   background: var(--surface-soft, #f4fbf9);
 }
-.notice-card.coupon.has-image .coupon-strip { margin-top: 0; }
+/* 소식 묶음은 위쪽에 숨 쉴 자리를 준다 — 카드가 연달아 붙으면 어디서 끊기는지 안 보인다 */
+.notice-list { display: grid; gap: 12px; margin-top: 6px; }
+.notice-card { padding: 14px; }

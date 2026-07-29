@@ -1546,10 +1546,13 @@ button.media-thumb.media-open {
   border: 0;
   background: #0b0d10;
   color: #fff;
-  display: grid;
   /* 위/아래 막대는 고정, 가운데가 남는 만큼 전부 이미지 */
   grid-template-rows: auto minmax(0, 1fr) auto;
 }
+/* ⚠️ display 는 반드시 [open] 에만 준다.
+   닫힌 <dialog> 의 기본값은 display:none 인데, 여기서 display:grid 를 주면 그걸 덮어써서
+   화면 아래에 검은 사각형이 그대로 깔린다. */
+.viewer[open] { display: grid; }
 .viewer::backdrop { background: #000; }
 .viewer-top,
 .viewer-bottom {

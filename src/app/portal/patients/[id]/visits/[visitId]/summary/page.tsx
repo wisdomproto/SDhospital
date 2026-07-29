@@ -30,7 +30,7 @@ export default async function VisitSummary({
 
   const { data: v } = await supabase
     .from("visit")
-    .select("id, visit_date, visit_no, note, report_comment, report_sent_at, patient:patient_id(name, species, breed, sex, birth_date)")
+    .select("id, visit_date, visit_no, report_comment, report_sent_at, patient:patient_id(name, species, breed, sex, birth_date)")
     .eq("id", visitId)
     .single();
   if (!v) notFound();

@@ -18,7 +18,7 @@ export default async function PortalAdmissionDetail({
   const supabase = await createClient();
   const { data: a } = await supabase
     .from("admission")
-    .select("id, admitted_at, discharged_at, status, note")
+    .select("id, admitted_at, discharged_at, status")
     .eq("id", admissionId)
     .single();
   if (!a) notFound();

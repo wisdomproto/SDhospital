@@ -19,6 +19,7 @@ export async function createNotice(formData: FormData) {
     link_url: String(formData.get("link_url") ?? "").trim() || null,
     link_label: String(formData.get("link_label") ?? "").trim() || null,
     coupon_label: String(formData.get("coupon_label") ?? "").trim() || null,
+    image_url: String(formData.get("image_url") ?? "").trim() || null,
     starts_on: String(formData.get("starts_on") ?? "").trim() || undefined,
     ends_on: String(formData.get("ends_on") ?? "").trim() || null,
     pinned: formData.get("pinned") === "1",

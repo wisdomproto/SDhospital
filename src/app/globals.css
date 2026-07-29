@@ -1844,3 +1844,15 @@ button.media-thumb.media-open {
   border-color: #fca5a5;
   background: #fff7f6;
 }
+
+/* 소식 이미지 — 글만 있는 첫 화면은 삭막하다 */
+.notice-card.has-image { padding-top: 0; overflow: hidden; }
+.notice-image {
+  display: block;
+  width: calc(100% + 32px);
+  margin: 0 -16px 12px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--surface-soft, #f4fbf9);
+}
+.notice-card.coupon.has-image .coupon-strip { margin-top: 0; }

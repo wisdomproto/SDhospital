@@ -15,7 +15,7 @@ export default async function NoticesPage({
   const today = kstToday();
   const { data: notices } = await supabase
     .from("notice")
-    .select("id, title, body, link_url, coupon_label, starts_on, ends_on, pinned")
+    .select("id, title, body, link_url, coupon_label, image_url, starts_on, ends_on, pinned")
     .order("pinned", { ascending: false })
     .order("starts_on", { ascending: false });
 
@@ -44,7 +44,12 @@ export default async function NoticesPage({
           headers={["제목", "기간", "상태", ""]}
           empty="등록된 소식이 없습니다."
           rows={(notices ?? []).map((n) => [
-            <span key="t" style={{ display: "grid", gap: 2 }}>
+            <span key="t" style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              {n.image_url && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={n.image_url} alt="" style={{ width: 52, height: 36, objectFit: "cover", borderRadius: 6, flex: "none" }} />
+              )}
+              <span style={{ display: "grid", gap: 2, minWidth: 0 }}>
               <b>
                 {n.pinned && "📌 "}
                 {n.coupon_label && "🎟 "}
@@ -52,6 +57,7 @@ export default async function NoticesPage({
               </b>
               <span className="muted" style={{ fontSize: ".8rem" }}>
                 {(n.body ?? "").slice(0, 46) || "-"}
+              </span>
               </span>
             </span>,
             <span key="d" style={{ whiteSpace: "nowrap" }}>
@@ -107,6 +113,9 @@ export default async function NoticesPage({
               <input name="link_label" placeholder="자세히 보기" className={inputClass} />
             </FormField>
           </div>
+          <FormField label="이미지 주소 (선택) · 글만 있으면 첫 화면이 삭막합니다">
+            <input name="image_url" placeholder="https://cdn.imweb.me/..." className={inputClass} />
+          </FormField>
           <FormField label="쿠폰 문구 (선택) · 적으면 쿠폰 카드로 나갑니다">
             <input name="coupon_label" placeholder="예) 건강검진 20% 할인" className={inputClass} />
           </FormField>
@@ -118,6 +127,9 @@ export default async function NoticesPage({
         </form>
         <p className="muted" style={{ fontSize: 13, marginTop: 12, marginBottom: 0 }}>
           종료일이 지나면 <b>보호자 화면에서 자동으로 사라집니다.</b> 내리는 걸 사람이 기억해야 하는 구조는 반드시 실패합니다.
+          <br />
+          이미지는 <b>병원 홈페이지에 올린 사진 주소를 그대로</b> 붙여 넣으시면 됩니다
+          (사진 위에서 마우스 오른쪽 → 이미지 주소 복사).
           <br />
           쿠폰은 <b>코드도 사용 처리도 없습니다</b> — 보호자가 앱 화면을 보여주면 접수에서 눈으로 확인하시면 됩니다.
         </p>

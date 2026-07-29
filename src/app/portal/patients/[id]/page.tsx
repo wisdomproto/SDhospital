@@ -36,7 +36,7 @@ export default async function PortalPatientOverview({
   // 병원 소식. 기간이 지난 것은 RLS 가 감추므로 여기서 날짜를 다시 따지지 않는다.
   const { data: notices } = await supabase
     .from("notice")
-    .select("id, title, body, link_url, link_label, coupon_label, ends_on, pinned")
+    .select("id, title, body, link_url, link_label, coupon_label, image_url, ends_on, pinned")
     .order("pinned", { ascending: false })
     .order("starts_on", { ascending: false })
     .limit(5);
@@ -67,7 +67,11 @@ export default async function PortalPatientOverview({
       {(notices ?? []).length > 0 && (
         <div style={{ display: "grid", gap: 10 }}>
           {(notices ?? []).map((n) => (
-            <div key={n.id} className={`portal-card notice-card${n.coupon_label ? " coupon" : ""}`}>
+            <div key={n.id} className={`portal-card notice-card${n.coupon_label ? " coupon" : ""}${n.image_url ? " has-image" : ""}`}>
+              {n.image_url && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img className="notice-image" src={n.image_url} alt="" loading="lazy" />
+              )}
               {n.coupon_label && (
                 <div className="coupon-strip">
                   <div className="coupon-label">{n.coupon_label}</div>

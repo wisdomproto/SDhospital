@@ -4,6 +4,7 @@ import { signOut } from "../../../(app)/logout";
 import { PortalTabBar } from "./PortalTabBar";
 import { InstallApp } from "../../InstallApp";
 import { PetSwitcher, type Pet } from "./PetSwitcher";
+import { RememberPet } from "../../RememberPet";
 import { unreadCounts } from "@/lib/reports";
 
 export default async function PortalPatientLayout({
@@ -29,6 +30,7 @@ export default async function PortalPatientLayout({
 
   return (
     <>
+      <RememberPet patientId={patient.id} />
       <header className="portal-appbar">
         <span className="portal-head-av">
           {patient.photo ? (

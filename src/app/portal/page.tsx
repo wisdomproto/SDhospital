@@ -1,103 +1,34 @@
 import { createClient } from "@/lib/supabase/server";
-import { unreadCounts } from "@/lib/reports";
-import { EnableNotifications } from "@/components/EnableNotifications";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { signOut } from "../(app)/logout";
+import { LAST_PET_COOKIE } from "@/lib/last-pet";
 
+/**
+ * 보호자 홈 = 화면이 아니라 갈림길이다.
+ *
+ * 반려동물 목록 화면을 따로 두지 않는다. 앱을 열 때마다 고르게 하면 군더더기이고,
+ * 바꿀 일은 헤더에서 한다. 마지막에 보던 아이로 바로 들어간다.
+ * 푸시 알림의 기본 주소(`/portal`)도 여기로 들어오므로 이 판단이 한 곳에 있어야 한다.
+ */
 export default async function PortalHome() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const { data: profile } = await supabase
-    .from("profile")
-    .select("role, name")
-    .eq("id", user!.id)
-    .single();
-  const isOwner = profile?.role === "owner";
 
-  const { data: patients } = await supabase
-    .from("patient")
-    .select("id, name, species, breed")
-    .order("name");
+  // RLS 상 자기 반려동물만 조회된다 — 쿠키 값이 남의 아이여도 여기서 걸러진다
+  const { data: patients } = await supabase.from("patient").select("id").order("name");
+  const mine = patients ?? [];
+  if (mine.length === 0) redirect("/login");
 
-  // Owner with a single pet → jump straight into it
-  if (isOwner && patients && patients.length === 1) {
-    redirect(`/portal/patients/${patients[0].id}`);
-  }
+  const last = (await cookies()).get(LAST_PET_COOKIE)?.value;
+  if (last && mine.some((p) => p.id === last)) redirect(`/portal/patients/${last}`);
 
-  const { data: admitted } = await supabase
-    .from("admission")
+  // 처음 들어온 보호자 — 최근에 진료받은 아이가 궁금할 확률이 가장 높다
+  const { data: recent } = await supabase
+    .from("visit")
     .select("patient_id")
-    .eq("status", "admitted");
-  const admittedSet = new Set((admitted ?? []).map((a) => a.patient_id));
-  const unread = await unreadCounts(supabase, (patients ?? []).map((p) => p.id));
+    .in("patient_id", mine.map((p) => p.id))
+    .order("visit_date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  return (
-    <>
-      <header className="portal-appbar">
-        <span className="title">진료 기록</span>
-        <form action={signOut}>
-          <button className="portal-iconbtn" aria-label="로그아웃">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <path d="M16 17l5-5-5-5M21 12H9" />
-            </svg>
-          </button>
-        </form>
-      </header>
-      <div className="portal-body">
-        <EnableNotifications />
-        <div className="portal-hero">
-          <div style={{ fontSize: ".72rem", fontWeight: 600, letterSpacing: ".08em", opacity: 0.9 }}>
-            {isOwner ? "보호자 · 읽기 전용" : "의뢰 병원 · 읽기 전용"}
-          </div>
-          <div style={{ fontSize: "1.35rem", fontWeight: 700, marginTop: 4 }}>
-            {profile?.name ? `${profile.name} 님` : "내 반려동물"}
-          </div>
-          <p style={{ margin: "8px 0 0", fontSize: ".85rem", opacity: 0.92 }}>
-            SDhospital 진료·입원 기록을 확인하세요.
-          </p>
-        </div>
-
-        <div style={{ fontWeight: 800, fontSize: ".95rem", padding: "4px 2px" }}>
-          {isOwner ? "내 반려동물" : "의뢰 환자"}
-        </div>
-        {(patients ?? []).map((p) => (
-          <Link key={p.id} href={`/portal/patients/${p.id}`} className="portal-tile">
-            <span className="portal-chip" style={{ fontSize: 24 }}>
-              {p.species === "고양이" ? "🐱" : "🐶"}
-            </span>
-            <div style={{ flex: 1 }}>
-              <div className="portal-tile-title">{p.name}</div>
-              <div className="portal-tile-sub">{[p.species, p.breed].filter(Boolean).join(" / ") || "-"}</div>
-            </div>
-            {(unread.get(p.id) ?? 0) > 0 && (
-              <span
-                style={{
-                  background: "#ef4444",
-                  color: "#fff",
-                  fontSize: ".7rem",
-                  fontWeight: 800,
-                  padding: "2px 8px",
-                  borderRadius: 999,
-                }}
-              >
-                새 소식 {unread.get(p.id)}
-              </span>
-            )}
-            {admittedSet.has(p.id) ? (
-              <span className="pill warning">입원중</span>
-            ) : (
-              <span style={{ color: "var(--muted-2)", fontSize: "1.2rem" }}>›</span>
-            )}
-          </Link>
-        ))}
-        {(patients ?? []).length === 0 && (
-          <div className="empty-state">열람 가능한 환자가 없습니다.</div>
-        )}
-      </div>
-    </>
-  );
+  redirect(`/portal/patients/${recent?.patient_id ?? mine[0].id}`);
 }

@@ -6,6 +6,7 @@ import { matchCaseStories, type CaseStory } from "@/lib/case-stories";
 import { ReportActions } from "./ReportActions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { RefreshOnRead } from "@/app/portal/RefreshOnRead";
 
 async function signAll(rows: Omit<SignedFile, "url">[]): Promise<SignedFile[]> {
   return Promise.all(rows.map(async (r) => ({ ...r, url: await signedUrl(r.storage_path) })));
@@ -20,7 +21,7 @@ export default async function PortalVisitDetail({
   const supabase = await createClient();
   const { data: v } = await supabase
     .from("visit")
-    .select("id, patient_id, visit_date, visit_no, report_comment, report_sent_at, chief_complaint, weight_kg, report_notice")
+    .select("id, patient_id, visit_date, visit_no, report_comment, report_sent_at, report_read_at, chief_complaint, weight_kg, report_notice")
     .eq("id", visitId)
     .single();
   if (!v) notFound();
@@ -50,7 +51,9 @@ export default async function PortalVisitDetail({
 
   // 열람 표시 — 보호자는 visit 에 쓰기 권한이 없으므로 DEFINER 함수로만 기록한다.
   // 최초 1회만 기록되고, 실패해도 화면은 그대로 보여준다.
-  if (v.report_sent_at) await supabase.rpc("mark_visit_report_read", { p_visit_id: visitId });
+  // 이번에 처음 읽은 것인지 기억해 둔다 — 그때만 레이아웃(탭 배지)을 다시 그린다
+  const justRead = Boolean(v.report_sent_at && v.report_read_at == null);
+  if (justRead) await supabase.rpc("mark_visit_report_read", { p_visit_id: visitId });
 
   const { data: admissions } = await supabase
     .from("admission")
@@ -86,6 +89,7 @@ export default async function PortalVisitDetail({
 
   return (
     <>
+      <RefreshOnRead when={justRead} />
       <Link href={`/portal/patients/${id}/visits`} className="portal-tile-sub" style={{ textDecoration: "none" }}>← 진료 목록</Link>
       <div>
         <div style={{ fontSize: "1.25rem", fontWeight: 900, lineHeight: 1.35 }}>

@@ -125,6 +125,10 @@ export function MediaGrid({ files }: { files: SignedFile[] }) {
 
             <div
               className={`viewer-stage${zoom ? " zoomed" : ""}`}
+              // 확대 안 한 상태에서 이미지 바깥을 누르면 닫는다 — 폰에서 가장 먼저 시도하는 동작
+              onClick={(e) => {
+                if (!zoom && e.target === e.currentTarget) dialog.current?.close();
+              }}
               onDoubleClick={() => {
                 setZoom((z) => !z);
                 setPan({ x: 0, y: 0 });

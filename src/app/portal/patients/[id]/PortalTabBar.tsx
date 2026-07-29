@@ -27,7 +27,11 @@ function Icon({ name }: { name: string }) {
   }
 }
 
-export function PortalTabBar({ patientId }: { patientId: string }) {
+/**
+ * 새 리포트가 왔는데 탭에 표시가 없으면, 알림을 못 본 보호자는 영영 모른다.
+ * 배지는 "진료 기록" 에만 붙인다 — 회차 리포트와 입원 경과가 전부 그 안에 있다.
+ */
+export function PortalTabBar({ patientId, unread = 0 }: { patientId: string; unread?: number }) {
   const pathname = usePathname();
   const base = `/portal/patients/${patientId}`;
   // 입원은 따로 두지 않는다 — 입원은 진료 회차에 딸린 기록이라 "진료 기록" 안에서 이어 보는 게 맞다.
@@ -37,6 +41,7 @@ export function PortalTabBar({ patientId }: { patientId: string }) {
       href: `${base}/visits`,
       label: "진료 기록",
       icon: "visit",
+      badge: unread,
       match: (p: string) => p.startsWith(`${base}/visits`) || p.startsWith(`${base}/admissions`),
     },
     { href: `${base}/chat`, label: "AI 채팅", icon: "chat", match: (p: string) => p.startsWith(`${base}/chat`) },
@@ -46,7 +51,14 @@ export function PortalTabBar({ patientId }: { patientId: string }) {
     <nav className="portal-tabbar">
       {tabs.map((t) => (
         <Link key={t.href} href={t.href} className={`portal-tab${t.match(pathname) ? " active" : ""}`}>
-          <Icon name={t.icon} />
+          <span className="portal-tab-ic">
+            <Icon name={t.icon} />
+            {!!t.badge && (
+              <span className="tab-badge" aria-label={`새 소식 ${t.badge}`}>
+                {t.badge > 99 ? "99+" : t.badge}
+              </span>
+            )}
+          </span>
           {t.label}
         </Link>
       ))}

@@ -52,7 +52,7 @@ export default async function PortalPatientLayout({
 
       <div className="portal-body">{children}</div>
 
-      <PortalTabBar patientId={patient.id} />
+      <PortalTabBar patientId={patient.id} unread={current.unread} />
     </>
   );
 }

@@ -4,6 +4,7 @@ import { dailyLines } from "@/lib/admission-report";
 import { MediaGrid, type SignedFile } from "../../MediaGrid";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { RefreshOnRead } from "@/app/portal/RefreshOnRead";
 
 async function signAll(rows: Omit<SignedFile, "url">[]): Promise<SignedFile[]> {
   return Promise.all(rows.map(async (r) => ({ ...r, url: await signedUrl(r.storage_path) })));
@@ -49,6 +50,7 @@ export default async function PortalAdmissionDetail({
 
   return (
     <>
+      <RefreshOnRead when={wasUnread.size > 0} />
       <Link href={`/portal/patients/${id}/admissions`} className="portal-tile-sub" style={{ textDecoration: "none" }}>← 입원 목록</Link>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div>

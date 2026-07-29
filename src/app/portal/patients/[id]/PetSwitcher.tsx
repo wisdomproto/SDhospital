@@ -47,15 +47,14 @@ export function PetSwitcher({ pets, current }: { pets: Pet[]; current: Pet }) {
     router.push(`/portal/patients/${pet.id}${keep}`);
   };
 
-  const others = pets.filter((p) => p.id !== current.id);
-  const otherUnread = others.reduce((n, p) => n + p.unread, 0);
+  // 헤더에는 점을 찍지 않는다 — 하단 탭 배지가 이미 같은 말을 하고 있고,
+  // 표시가 둘이면 어느 쪽을 봐야 하는지 헷갈린다. 다른 아이 소식은 시트 안에서 숫자로 보여준다.
 
   return (
     <>
       <button type="button" className="pet-switch" onClick={() => dialog.current?.showModal()}>
         <span className="title">{current.name}</span>
-        <span aria-hidden style={{ fontSize: ".7rem", color: "var(--muted-2)" }}>▾</span>
-        {otherUnread > 0 && <span className="dot-new" aria-label="다른 아이 새 소식" />}
+        <span aria-hidden className="pet-switch-caret">▾</span>
       </button>
 
       <dialog ref={dialog} className="pet-sheet" onClick={() => dialog.current?.close()}>

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { unreadFeed } from "@/lib/reports";
 import Link from "next/link";
 
 export default async function PortalVisits({
@@ -33,8 +34,32 @@ export default async function PortalVisits({
     unreadByAdmission.set(r.admission_id, (unreadByAdmission.get(r.admission_id) ?? 0) + 1);
   }
 
+  // 배지가 "3건 있다"고만 말하고 어디 있는지 안 알려주면 보호자가 목록을 뒤져야 한다.
+  // 안 읽은 것만 위에 모아 준다 — 아래 목록은 시간순 그대로 둔다.
+  const fresh = await unreadFeed(supabase, id, `/portal/patients/${id}`);
+
   return (
     <>
+      {fresh.length > 0 && (
+        <div className="portal-card fresh-card">
+          <div style={{ fontWeight: 800, marginBottom: 8 }}>새로 온 리포트 {fresh.length}건</div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {fresh.map((f) => (
+              <Link key={f.key} href={f.href} className="fresh-row">
+                <span className="dot-new" />
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ fontWeight: 700, fontSize: ".9rem" }}>
+                    {f.title} · {f.date}
+                  </span>
+                  <span className="portal-tile-sub portal-tile-clamp">{f.comment}</span>
+                </span>
+                <span style={{ color: "var(--muted)" }}>›</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div style={{ fontWeight: 800, fontSize: "1.05rem", padding: "2px 2px 4px" }}>진료 회차</div>
       {(visits ?? []).length === 0 && <div className="empty-state">진료 기록이 없습니다.</div>}
       {(visits ?? []).map((v) => (
@@ -74,7 +99,7 @@ export default async function PortalVisits({
             <Link
               key={a.id}
               href={`/portal/patients/${id}/admissions/${a.id}`}
-              className="portal-tile portal-subtile"
+              className={`portal-tile portal-subtile${(unreadByAdmission.get(a.id) ?? 0) > 0 ? " tile-new" : ""}`}
             >
               <span aria-hidden style={{ fontSize: 15 }}>🏥</span>
               <div style={{ flex: 1, minWidth: 0 }}>

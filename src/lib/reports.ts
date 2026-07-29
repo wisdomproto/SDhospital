@@ -69,6 +69,60 @@ export async function ownerReportFeed(
   return items.sort((x, y) => (x.date < y.date ? 1 : x.date > y.date ? -1 : 0)).slice(0, limit);
 }
 
+/**
+ * 안 읽은 리포트만. 피드에서 걸러 쓰면 안 된다 —
+ * 피드는 최신 N건을 자르므로 오래된 안 읽은 건이 빠지고,
+ * 그러면 배지 숫자와 목록 개수가 어긋나 보호자가 못 찾는 항목이 생긴다.
+ */
+export async function unreadFeed(
+  supabase: Client,
+  patientId: string,
+  base: string
+): Promise<FeedItem[]> {
+  const [{ data: visits }, { data: admReports }] = await Promise.all([
+    supabase
+      .from("visit")
+      .select("id, visit_date, report_comment")
+      .eq("patient_id", patientId)
+      .not("report_sent_at", "is", null)
+      .is("report_read_at", null)
+      .order("visit_date", { ascending: false }),
+    supabase
+      .from("admission_report")
+      .select("id, report_date, comment, admission:admission_id!inner(id, patient_id)")
+      .eq("admission.patient_id", patientId)
+      .not("sent_at", "is", null)
+      .is("read_at", null)
+      .order("report_date", { ascending: false }),
+  ]);
+
+  const items: FeedItem[] = [
+    ...(visits ?? []).map((v) => ({
+      key: `v-${v.id}`,
+      kind: "visit" as const,
+      href: `${base}/visits/${v.id}`,
+      date: v.visit_date,
+      title: "진료 리포트",
+      comment: v.report_comment ?? "",
+      unread: true,
+    })),
+    ...(admReports ?? []).map((r) => {
+      const a = r.admission as unknown as { id: string } | null;
+      return {
+        key: `a-${r.id}`,
+        kind: "admission" as const,
+        href: `${base}/admissions/${a?.id}`,
+        date: r.report_date,
+        title: "입원 경과",
+        comment: r.comment ?? "",
+        unread: true,
+      };
+    }),
+  ];
+
+  return items.sort((x, y) => (x.date < y.date ? 1 : x.date > y.date ? -1 : 0));
+}
+
 /** 반려동물별 안 읽은 리포트 수 — 목록 화면의 배지용 */
 export async function unreadCounts(
   supabase: Client,

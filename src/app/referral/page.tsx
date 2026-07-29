@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { DataTable } from "@/components/DataTable";
 import { referralStage, STAGE_LABEL, STAGE_TONE } from "@/lib/referral";
+import { EnableNotifications } from "@/components/EnableNotifications";
 import Link from "next/link";
 
 export default async function ReferralHome() {
@@ -42,6 +43,8 @@ export default async function ReferralHome() {
         </div>
         <span className="muted" style={{ fontSize: ".78rem" }}>전체 {list.length}명</span>
       </div>
+
+      <EnableNotifications audience="vet" className="card" />
 
       <DataTable
         headers={["차트번호", "이름", "종 / 품종", "최근 진료", "상태"]}

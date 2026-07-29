@@ -792,6 +792,10 @@ export type Database = {
       current_hospital_id: { Args: never; Returns: string }
       current_owner_id: { Args: never; Returns: string }
       current_role_name: { Args: never; Returns: string }
+      push_targets_for_hospital: {
+        Args: { p_patient_id: string }
+        Returns: { id: string; endpoint: string; p256dh: string; auth: string }[]
+      }
       push_targets_for_patient: {
         Args: { p_patient_id: string }
         Returns: { id: string; endpoint: string; p256dh: string; auth: string }[]

@@ -6,6 +6,7 @@ import { validateReportInput } from "@/lib/validation/report";
 import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 import { BUCKET, imagePath, mediaPath } from "@/lib/storage";
 import { revalidatePath } from "next/cache";
+import { notifyReferringVet } from "@/lib/push";
 import { redirect } from "next/navigation";
 
 const apath = (patientId: string, admissionId: string) =>
@@ -173,6 +174,15 @@ export async function discharge(
     .from("admission")
     .update({ discharged_at, status: "discharged" })
     .eq("id", admissionId);
+
+  // 퇴원은 원장이 후속 관리를 시작하는 시점이다 — 이걸 모르면 환자가 붕 뜬다
+  const { data: p } = await supabase.from("patient").select("name").eq("id", patientId).single();
+  await notifyReferringVet(supabase, patientId, {
+    title: `${p?.name ?? "의뢰 환자"} 퇴원했습니다`,
+    body: "환송 소견은 준비되는 대로 회신드리겠습니다.",
+    url: `/referral/patients/${patientId}/a/${admissionId}`,
+  });
+
   revalidatePath(apath(patientId, admissionId));
 }
 

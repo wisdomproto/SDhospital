@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { savePushSubscription, removePushSubscription } from "./push-actions";
+import { savePushSubscription, removePushSubscription } from "@/app/push-actions";
 
 type State = "loading" | "unsupported" | "needs-install" | "off" | "on" | "denied";
 
@@ -25,7 +25,25 @@ const isStandalone = () =>
  * 브라우저 권한, 그리고 **iOS 는 홈 화면에 추가된 상태**여야 한다는 것.
  * 안 되는 이유를 뭉뚱그리면 보호자는 그냥 포기하므로, 상태마다 다른 안내를 준다.
  */
-export function EnableNotifications() {
+export function EnableNotifications({
+  audience = "owner",
+  className = "portal-card",
+}: {
+  audience?: "owner" | "vet";
+  className?: string;
+} = {}) {
+  const copy =
+    audience === "vet"
+      ? {
+          title: "의뢰 환자 알림 받기",
+          off: "입원·퇴원·환송 소견이 나오면 바로 알려드립니다.",
+          on: "의뢰 환자 상태가 바뀌면 알려드립니다.",
+        }
+      : {
+          title: "새 리포트 알림 받기",
+          off: "진료·입원 리포트가 도착하면 바로 알려드려요.",
+          on: "리포트가 도착하면 바로 알려드려요.",
+        };
   const [state, setState] = useState<State>("loading");
   const [busy, setBusy] = useState(false);
   const key = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
@@ -91,16 +109,16 @@ export function EnableNotifications() {
   if (state === "loading" || state === "unsupported") return null;
 
   return (
-    <div className="portal-card push-card">
+    <div className={`${className} push-card`}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <span aria-hidden style={{ fontSize: 20 }}>🔔</span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: 800, fontSize: ".95rem" }}>
-            {state === "on" ? "알림을 받고 있어요" : "새 리포트 알림 받기"}
+            {state === "on" ? "알림을 받고 있어요" : copy.title}
           </div>
           <p className="portal-tile-sub" style={{ margin: "2px 0 0" }}>
-            {state === "on" && "리포트가 도착하면 바로 알려드려요."}
-            {state === "off" && "진료·입원 리포트가 도착하면 바로 알려드려요."}
+            {state === "on" && copy.on}
+            {state === "off" && copy.off}
             {state === "denied" && "브라우저 설정에서 이 사이트의 알림을 허용해 주세요."}
             {state === "needs-install" && "먼저 공유 → 홈 화면에 추가를 해주세요. 그다음 알림을 켤 수 있어요."}
           </p>

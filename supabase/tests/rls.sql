@@ -184,6 +184,25 @@ begin
   end;
 end $$;
 
+-- 알림 대상은 소속으로만 잡힌다 — 남의 병원 환자 알림이 가면 그게 유출이다
+reset role;
+insert into push_subscription (user_id, endpoint, p256dh, auth)
+values ('11111111-1111-1111-1111-111111111111', 'https://example.test/ep-vet-a', 'k', 'a');
+
+do $$
+declare mine int; theirs int; owners int;
+begin
+  -- Pet-Referred-by-A 는 Hospital A 의뢰 → vetA 기기가 잡혀야 한다
+  select count(*) into mine from push_targets_for_hospital('cccccccc-0000-0000-0000-000000000001');
+  -- Pet-Referred-by-B 는 Hospital B 의뢰 → vetA 는 잡히면 안 된다
+  select count(*) into theirs from push_targets_for_hospital('cccccccc-0000-0000-0000-000000000002');
+  -- 원장 구독이 보호자 알림 대상으로 새어 나가면 안 된다
+  select count(*) into owners from push_targets_for_patient('cccccccc-0000-0000-0000-000000000001');
+  if mine <> 1 then raise exception 'vetA device must be a target for their referred patient, got %', mine; end if;
+  if theirs <> 0 then raise exception 'vetA must NOT be a target for Hospital B patient, got %', theirs; end if;
+  if owners <> 1 then raise exception 'owner targets should be ownerX only, got %', owners; end if;
+end $$;
+
 reset role;
 select 'RLS TESTS PASSED' as result;
 rollback;

@@ -1,6 +1,7 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { validateAdmissionInput } from "@/lib/validation/admission";
+import { notifyReferringVet } from "@/lib/push";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -21,6 +22,14 @@ export async function createAdmission(patientId: string, visitId: string, formDa
     .select("id")
     .single();
   if (error) redirect(`${back}?error=` + encodeURIComponent(error.message));
+
+  const { data: p } = await supabase.from("patient").select("name").eq("id", patientId).single();
+  await notifyReferringVet(supabase, patientId, {
+    title: `${p?.name ?? "의뢰 환자"} 입원했습니다`,
+    body: "입원 경과는 환자 화면에서 확인하실 수 있습니다.",
+    url: `/referral/patients/${patientId}/a/${data!.id}`,
+  });
+
   revalidatePath(`/patients/${patientId}`, "layout");
   redirect(`/patients/${patientId}/a/${data!.id}`);
 }

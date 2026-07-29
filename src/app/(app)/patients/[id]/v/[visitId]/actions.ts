@@ -4,7 +4,7 @@ import { validatePrescriptionInput } from "@/lib/validation/prescription";
 import { validateVisitInput } from "@/lib/validation/visit";
 import { validateReportInput } from "@/lib/validation/report";
 import { BUCKET, imagePath, mediaPath } from "@/lib/storage";
-import { notifyOwner } from "@/lib/push";
+import { notifyOwner, notifyReferringVet } from "@/lib/push";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -90,6 +90,14 @@ export async function referBack(patientId: string, visitId: string, formData: Fo
     .update({ referral_note: note, referred_back_at: new Date().toISOString() })
     .eq("id", visitId);
   if (error) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(error.message));
+
+  const { data: p } = await supabase.from("patient").select("name").eq("id", patientId).single();
+  await notifyReferringVet(supabase, patientId, {
+    title: `${p?.name ?? "의뢰 환자"} 환송 소견이 도착했습니다`,
+    body: "진료 경과와 회신 내용을 확인해 주세요.",
+    url: `/referral/patients/${patientId}/v/${visitId}`,
+  });
+
   revalidatePath(vpath(patientId, visitId));
   revalidatePath("/referrals");
 }

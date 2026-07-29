@@ -32,11 +32,30 @@ export async function notifyOwner(
   patientId: string,
   payload: PushPayload
 ): Promise<number> {
+  return send(supabase, "push_targets_for_patient", patientId, payload);
+}
+
+/**
+ * 의뢰한 1차 병원 원장에게. 원장이 매일 우리 사이트에 들어와서 확인할 리가 없다 —
+ * 화면을 아무리 잘 만들어도 안 들어오면 0이다. 밀어야 다음 의뢰가 온다.
+ */
+export async function notifyReferringVet(
+  supabase: SupabaseClient<Database>,
+  patientId: string,
+  payload: PushPayload
+): Promise<number> {
+  return send(supabase, "push_targets_for_hospital", patientId, payload);
+}
+
+async function send(
+  supabase: SupabaseClient<Database>,
+  fn: "push_targets_for_patient" | "push_targets_for_hospital",
+  patientId: string,
+  payload: PushPayload
+): Promise<number> {
   if (!pushConfigured) return 0;
 
-  const { data: targets } = await supabase.rpc("push_targets_for_patient", {
-    p_patient_id: patientId,
-  });
+  const { data: targets } = await supabase.rpc(fn, { p_patient_id: patientId });
   if (!targets?.length) return 0;
 
   const body = JSON.stringify(payload);

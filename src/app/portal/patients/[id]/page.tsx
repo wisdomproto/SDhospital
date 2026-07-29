@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ownerReportFeed } from "@/lib/reports";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { EnableNotifications } from "../../EnableNotifications";
+import { EnableNotifications } from "@/components/EnableNotifications";
 
 export default async function PortalPatientOverview({
   params,

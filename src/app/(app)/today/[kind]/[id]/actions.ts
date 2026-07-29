@@ -4,8 +4,8 @@ import { validateReportInput } from "@/lib/validation/report";
 import { validateVitalInput } from "@/lib/validation/vital";
 import { BUCKET, mediaPath } from "@/lib/storage";
 import { kstToday } from "@/lib/worklist";
-import { canSendDaily } from "@/lib/admission-report";
-import { notifyOwner } from "@/lib/push";
+import { canSendDaily, dailySummary } from "@/lib/admission-report";
+import { notifyOwner, notifyStaff } from "@/lib/push";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -18,6 +18,8 @@ export async function sendWardReport(
   kind: "v" | "a",
   targetId: string,
   patientId: string,
+  /** ready = 입력만 끝내고 수의사 확인 요청 · send = 보호자에게 발송 */
+  mode: "ready" | "send",
   formData: FormData
 ) {
   const back = `/today/${kind}/${targetId}`;
@@ -75,6 +77,10 @@ export async function sendWardReport(
     }
 
     // 3) 오늘 일일 리포트
+    const now = new Date().toISOString();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     const { error } = await supabase.from("admission_report").upsert(
       {
         admission_id: targetId,
@@ -83,7 +89,10 @@ export async function sendWardReport(
         feeding: daily.feeding,
         elimination: daily.elimination,
         special: daily.special,
-        sent_at: new Date().toISOString(),
+        ready_at: now,
+        ready_by: user?.id ?? null,
+        // 보호자에게 나가는 건 수의사가 확인한 뒤다. 병동 입력이 곧 발송이면 그 판단 단계가 없다.
+        ...(mode === "send" ? { sent_at: now } : {}),
       },
       { onConflict: "admission_id,report_date" }
     );
@@ -105,6 +114,18 @@ export async function sendWardReport(
   }
 
   const { data: pet } = await supabase.from("patient").select("name").eq("id", patientId).single();
+
+  if (kind === "a" && mode === "ready") {
+    // 보호자가 아니라 우리 수의사에게 간다 — "확인하고 보내주세요"
+    await notifyStaff(supabase, {
+      title: `${pet?.name ?? "입원 환자"} 입원 리포트 준비됐습니다`,
+      body: dailySummary(daily) || "확인 후 보호자에게 보내주세요.",
+      url: `/today/a/${targetId}`,
+    });
+    revalidatePath("/today");
+    redirect("/today?ready=1");
+  }
+
   await notifyOwner(supabase, patientId, {
     title:
       kind === "a"

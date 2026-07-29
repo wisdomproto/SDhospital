@@ -53,8 +53,12 @@
   그래야 미리보기가 곧 실제 발송물이다.
 - **의뢰 진행 상태는 컬럼으로 저장하지 않는다.** `closed_at`+`admission.status`+`referred_back_at`에서 전부 파생된다.
   저장하면 실제와 어긋나는 순간이 오고 그걸 맞추는 코드를 또 짜야 한다. 파생 불가능한 "환송했는가"만 컬럼이다.
+- **입원 리포트는 작성과 발송을 나눈다.** 병동에서 채우는 사람(간호사)과 보호자에게 내보낼지 정하는 사람(수의사)이 다르다.
+  `ready_at` = 준비 완료(수의사에게 알림) · `sent_at` = 발송. 수의사가 직접 입력하면 준비를 건너뛰고 바로 보낼 수 있다.
+  **회차 리포트는 수의사가 직접 쓰므로 이 단계가 없다.**
 - **알림은 웹 푸시(PWA)** — 발신번호·요금 불필요. 대상은 소속으로만 찾는다:
-  보호자 `push_targets_for_patient`(owner_id), 원장 `push_targets_for_hospital`(referring_hospital_id). 둘 다 **직원 전용 DEFINER**.
+  보호자 `push_targets_for_patient`(owner_id) · 1차병원 원장 `push_targets_for_hospital`(referring_hospital_id) ·
+  우리 직원 `push_targets_staff`. 전부 **직원 전용 DEFINER**.
   구독 테이블은 직원도 직접 못 읽는다 — 그건 "그 기기로 알림을 보낼 수 있는 열쇠"다.
   **알림 본문에는 이름과 "왔다"까지만.** 잠금화면은 누구나 본다.
 - **접근 로그는 외부 역할이 남길 수만 있다** (`log_access` DEFINER). 읽지도 고치지도 못한다 — 로그 자체가 감사 대상이다.

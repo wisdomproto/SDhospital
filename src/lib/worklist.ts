@@ -11,6 +11,8 @@ export type WorkItem = {
   /** 며칠 밀렸는지. 0이면 오늘 것 */
   overdueDays: number;
   subtitle: string;
+  /** 입원 리포트만: 간호사가 입력을 끝내 수의사 확인만 남은 상태 */
+  awaitingReview?: boolean;
 };
 
 export function kstToday(now: Date = new Date()): string {
@@ -29,8 +31,12 @@ export function admittedDay(admittedAt: string, today: string): number {
 }
 
 export function sortWorkItems(items: WorkItem[]): WorkItem[] {
-  // 가장 오래 밀린 것이 위로. 같으면 회차부터 (진료가 기본이므로)
+  // 확인만 남은 것이 맨 위 — 남이 이미 채워 놨고 누르기만 하면 끝난다.
+  // 그다음은 가장 오래 밀린 것, 같으면 회차부터 (진료가 기본이므로)
   return [...items].sort(
-    (a, b) => b.overdueDays - a.overdueDays || a.kind.localeCompare(b.kind)
+    (a, b) =>
+      Number(Boolean(b.awaitingReview)) - Number(Boolean(a.awaitingReview)) ||
+      b.overdueDays - a.overdueDays ||
+      a.kind.localeCompare(b.kind)
   );
 }

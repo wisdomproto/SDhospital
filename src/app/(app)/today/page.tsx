@@ -21,11 +21,15 @@ export default async function TodayWorklist() {
       .from("admission")
       .select("id, admitted_at, patient:patient_id(id, name, species)")
       .eq("status", "admitted"),
-    supabase.from("admission_report").select("admission_id, sent_at").eq("report_date", today),
+    supabase.from("admission_report").select("admission_id, ready_at, sent_at").eq("report_date", today),
   ]);
 
   const sentToday = new Set(
     (todayReports ?? []).filter((r) => r.sent_at).map((r) => r.admission_id)
+  );
+  // 간호사가 채워 두고 수의사 확인만 남은 것 — 목록 맨 위로 올린다
+  const readyToday = new Set(
+    (todayReports ?? []).filter((r) => r.ready_at && !r.sent_at).map((r) => r.admission_id)
   );
 
   const items: WorkItem[] = [
@@ -52,14 +56,18 @@ export default async function TodayWorklist() {
           species: p?.species ?? null,
           date: today,
           overdueDays: 0, // 입원 리포트는 그날 것만 할 일이다 (지난 날짜는 되돌아가 채우지 않는다)
-          subtitle: `입원 ${admittedDay(a.admitted_at, today)}일차`,
+          subtitle: readyToday.has(a.id)
+            ? `입원 ${admittedDay(a.admitted_at, today)}일차 · 확인 후 발송`
+            : `입원 ${admittedDay(a.admitted_at, today)}일차`,
+          awaitingReview: readyToday.has(a.id),
         };
       }),
   ];
 
   const list = sortWorkItems(items);
-  const overdue = list.filter((i) => i.overdueDays > 0);
-  const todayItems = list.filter((i) => i.overdueDays === 0);
+  const review = list.filter((i) => i.awaitingReview);
+  const overdue = list.filter((i) => !i.awaitingReview && i.overdueDays > 0);
+  const todayItems = list.filter((i) => !i.awaitingReview && i.overdueDays === 0);
 
   return (
     <div style={{ display: "grid", gap: 20 }}>
@@ -81,6 +89,7 @@ export default async function TodayWorklist() {
         </div>
       )}
 
+      {review.length > 0 && <WorkSection title="확인 후 발송" tone="warning" items={review} />}
       {overdue.length > 0 && <WorkSection title="밀린 것" tone="warning" items={overdue} />}
       {todayItems.length > 0 && <WorkSection title="오늘" tone="muted" items={todayItems} />}
     </div>

@@ -33,6 +33,7 @@ export default async function WardEntry({
   let lastVital: { temperature: number | null; heart_rate: number | null; resp_rate: number | null } | null = null;
   let draft = "";
   let daily: { feeding: string | null; elimination: string | null; special: string } | null = null;
+  let awaitingReview = false;  // 간호사가 준비를 끝냈고 아직 안 나간 상태
   let previewCtx: {
     patient: { name: string; species: string | null; breed: string | null; birth_date: string | null };
     visitDate: string;
@@ -97,7 +98,7 @@ export default async function WardEntry({
         .limit(50),
       supabase
         .from("admission_report")
-        .select("comment, feeding, elimination, special")
+        .select("comment, feeding, elimination, special, ready_at, sent_at")
         .eq("admission_id", id)
         .eq("report_date", today)
         .maybeSingle(),
@@ -110,6 +111,7 @@ export default async function WardEntry({
       resp_rate: firstNonNull("resp_rate"),
     };
     draft = todayReport?.comment ?? "";
+    awaitingReview = Boolean(todayReport?.ready_at && !todayReport?.sent_at);
     daily = {
       feeding: todayReport?.feeding ?? null,
       elimination: todayReport?.elimination ?? null,
@@ -133,8 +135,13 @@ export default async function WardEntry({
       {error && (
         <div className="pill warning" style={{ padding: "10px 14px" }}>{error}</div>
       )}
+      {awaitingReview && (
+        <div className="pill warning" style={{ padding: "10px 14px" }}>
+          입력이 끝났습니다 — 확인 후 보호자에게 보내주세요
+        </div>
+      )}
 
-      <form action={sendWardReport.bind(null, kind, id, patientId)} className="ward-form">
+      <form action={sendWardReport.bind(null, kind, id, patientId, "send")} className="ward-form">
         <PhotoPicker />
 
         {kind === "a" && (
@@ -240,13 +247,37 @@ export default async function WardEntry({
             />
             <button className="btn btn-ghost" style={{ justifySelf: "center" }}>미리보기 없이 바로 보내기</button>
           </div>
-        ) : (
-          <>
-            <button className="ward-send">보내기</button>
+        ) : awaitingReview ? (
+          // 준비된 리포트를 여는 사람은 "보낼지 판단하는" 쪽이다 — 발송이 기본 버튼
+          <div style={{ display: "grid", gap: 8 }}>
+            <button className="ward-send">확인했습니다 · 보호자에게 보내기</button>
+            <button
+              formAction={sendWardReport.bind(null, kind, id, patientId, "ready")}
+              className="btn btn-ghost"
+              style={{ justifySelf: "center" }}
+            >
+              고쳐서 다시 준비만 하기
+            </button>
             <p className="ward-prefill" style={{ textAlign: "center", margin: 0 }}>
-              누르는 즉시 보호자에게 발송됩니다
+              아직 보호자에게 나가지 않았습니다
             </p>
-          </>
+          </div>
+        ) : (
+          // 병동에서 채우는 사람은 대개 간호사다. 기본은 발송이 아니라 "준비 완료".
+          <div style={{ display: "grid", gap: 8 }}>
+            <button
+              formAction={sendWardReport.bind(null, kind, id, patientId, "ready")}
+              className="ward-send"
+            >
+              발송 준비 완료
+            </button>
+            <button className="btn btn-ghost" style={{ justifySelf: "center" }}>
+              내가 확인했습니다 · 바로 보내기
+            </button>
+            <p className="ward-prefill" style={{ textAlign: "center", margin: 0 }}>
+              준비 완료를 누르면 수의사에게 확인 알림이 갑니다
+            </p>
+          </div>
         )}
       </form>
     </div>

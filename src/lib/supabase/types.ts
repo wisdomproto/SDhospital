@@ -68,6 +68,8 @@ export type Database = {
           id: string
           read_at: string | null
           feeding: string | null
+          ready_at: string | null
+          ready_by: string | null
           elimination: string | null
           special: string | null
           report_date: string
@@ -81,6 +83,8 @@ export type Database = {
           id?: string
           read_at?: string | null
           feeding?: string | null
+          ready_at?: string | null
+          ready_by?: string | null
           elimination?: string | null
           special?: string | null
           report_date?: string
@@ -94,6 +98,8 @@ export type Database = {
           id?: string
           read_at?: string | null
           feeding?: string | null
+          ready_at?: string | null
+          ready_by?: string | null
           elimination?: string | null
           special?: string | null
           report_date?: string
@@ -792,6 +798,10 @@ export type Database = {
       current_hospital_id: { Args: never; Returns: string }
       current_owner_id: { Args: never; Returns: string }
       current_role_name: { Args: never; Returns: string }
+      push_targets_staff: {
+        Args: Record<PropertyKey, never>
+        Returns: { id: string; endpoint: string; p256dh: string; auth: string }[]
+      }
       push_targets_for_hospital: {
         Args: { p_patient_id: string }
         Returns: { id: string; endpoint: string; p256dh: string; auth: string }[]

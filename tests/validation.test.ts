@@ -7,7 +7,7 @@ import { validateVisitInput } from "@/lib/validation/visit";
 import { validatePrescriptionInput } from "@/lib/validation/prescription";
 import { validateAdmissionInput } from "@/lib/validation/admission";
 import { validateReportInput } from "@/lib/validation/report";
-import { daysBetween, admittedDay, sortWorkItems } from "@/lib/worklist";
+import { daysBetween, admittedDay, sortWorkItems, type WorkItem } from "@/lib/worklist";
 import { validateVitalInput } from "@/lib/validation/vital";
 import { validateRedeemInput } from "@/lib/validation/invite";
 
@@ -193,5 +193,27 @@ describe("validateRedeemInput", () => {
     const r = validateRedeemInput({ email: "  A@B.com ", password: "secretpw1" });
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value.email).toBe("a@b.com");
+  });
+});
+
+describe("sortWorkItems — 확인만 남은 것", () => {
+  const item = (o: Partial<WorkItem>): WorkItem => ({
+    kind: "admission",
+    href: "/x",
+    patientName: "p",
+    species: null,
+    date: "2026-07-29",
+    overdueDays: 0,
+    subtitle: "",
+    ...o,
+  });
+
+  it("간호사가 채워 둔 것이 밀린 회차보다 위로 온다 — 누르기만 하면 끝난다", () => {
+    const sorted = sortWorkItems([
+      item({ kind: "visit", overdueDays: 40, patientName: "밀린회차" }),
+      item({ awaitingReview: true, patientName: "확인대기" }),
+      item({ patientName: "입력전" }),
+    ]);
+    expect(sorted.map((i) => i.patientName)).toEqual(["확인대기", "밀린회차", "입력전"]);
   });
 });

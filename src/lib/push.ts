@@ -47,6 +47,19 @@ export async function notifyReferringVet(
   return send(supabase, "push_targets_for_hospital", patientId, payload);
 }
 
+/**
+ * 우리 병원 직원에게. 병동 입력을 끝낸 사람과 보호자에게 내보낼지 정하는 사람이 다르므로,
+ * "발송 준비됐다"를 알려 줘야 판단 단계가 실제로 돌아간다.
+ */
+export async function notifyStaff(
+  supabase: SupabaseClient<Database>,
+  payload: PushPayload
+): Promise<number> {
+  if (!pushConfigured) return 0;
+  const { data: targets } = await supabase.rpc("push_targets_staff");
+  return deliver(supabase, targets ?? [], payload);
+}
+
 async function send(
   supabase: SupabaseClient<Database>,
   fn: "push_targets_for_patient" | "push_targets_for_hospital",
@@ -54,9 +67,18 @@ async function send(
   payload: PushPayload
 ): Promise<number> {
   if (!pushConfigured) return 0;
-
   const { data: targets } = await supabase.rpc(fn, { p_patient_id: patientId });
-  if (!targets?.length) return 0;
+  return deliver(supabase, targets ?? [], payload);
+}
+
+type Target = { id: string; endpoint: string; p256dh: string; auth: string };
+
+async function deliver(
+  supabase: SupabaseClient<Database>,
+  targets: Target[],
+  payload: PushPayload
+): Promise<number> {
+  if (!targets.length) return 0;
 
   const body = JSON.stringify(payload);
   let sent = 0;

@@ -310,4 +310,9 @@ insert into case_story (id, title, summary, url, tags, species) values
 ('d0000000-0000-4000-8000-000006000011','목 디스크 복측감압술','목을 못 움직이던 아이의 수술과 회복','https://sdamc.co.kr/dog-cervical-disc-ventral-slot',array['디스크','통증','마비'],'강아지')
 on conflict (id) do nothing;
 
+-- ── 9. 데모 보호자에게 두 번째 아이 ───────────────────────────
+-- 여러 마리를 키우는 보호자가 헤더에서 아이를 바꾸는 걸 시연하려면 최소 두 마리가 필요하다.
+update patient set owner_id = '5cbcfd44-1dfd-5582-9cd0-6c66908d9458'  -- 이지현(슈슈 보호자)
+ where id = 'd0000000-0000-4000-8000-000000000202';                    -- 나비
+
 commit;

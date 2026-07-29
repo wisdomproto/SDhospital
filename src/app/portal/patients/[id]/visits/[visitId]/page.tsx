@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { signedUrl, signMedicalImages } from "@/lib/storage";
 import { MediaGrid, type SignedFile } from "../../MediaGrid";
 import { buildOwnerReport } from "@/lib/owner-report";
-import { dailyLines } from "@/lib/admission-report";
 import { matchCaseStories, type CaseStory } from "@/lib/case-stories";
 import { ReportActions } from "./ReportActions";
 import Link from "next/link";
@@ -58,14 +57,15 @@ export default async function PortalVisitDetail({
     .select("id, admitted_at, discharged_at, status")
     .eq("visit_id", visitId);
   const admIds = (admissions ?? []).map((a) => a.id);
-  const { data: dailyReports } = admIds.length
+  const { count: unreadDailyCount } = admIds.length
     ? await supabase
         .from("admission_report")
-        .select("id, report_date, comment, feeding, elimination, special")
+        .select("id", { count: "exact", head: true })
         .in("admission_id", admIds)
         .not("sent_at", "is", null)
-        .order("report_date", { ascending: false })
-    : { data: [] as { id: string; report_date: string; comment: string | null; feeding: string | null; elimination: string | null; special: string | null }[] };
+        .is("read_at", null)
+    : { count: 0 };
+  const unreadDaily = unreadDailyCount ?? 0;
 
   const [{ data: images }, { data: media }] = await Promise.all([
     supabase.from("medical_image").select("id, modality, file_name, storage_path, preview_path").eq("visit_id", visitId),
@@ -161,37 +161,23 @@ export default async function PortalVisitDetail({
       )}
 
       {(admissions ?? []).map((a) => (
-        <div className="portal-card" key={a.id}>
-          <div style={{ fontWeight: 800, marginBottom: 2 }}>입원 경과</div>
-          <div className="portal-tile-sub" style={{ marginBottom: 10 }}>
-            {a.admitted_at} ~ {a.discharged_at ?? "입원 중"}
-          </div>
-          {dailyReports && dailyReports.length > 0 ? (
-            <div style={{ display: "grid", gap: 12 }}>
-              {dailyReports.map((d, i) => (
-                <div
-                  key={d.id}
-                  style={{
-                    paddingBottom: 10,
-                    borderBottom: i < dailyReports.length - 1 ? "1px solid var(--line)" : 0,
-                  }}
-                >
-                  <div style={{ fontWeight: 700, fontSize: ".82rem", color: "var(--muted)" }}>{d.report_date}</div>
-                  <div style={{ display: "grid", gap: 6, marginTop: 6 }}>
-                    {dailyLines(d).map((l) => (
-                      <div key={l.label} className={`daily-line ${l.tone}`}>
-                        <span className="k">{l.label}</span>
-                        <span className="v">{l.text}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+        // 입원 경과는 입원 화면에서만 본다. 같은 내용을 두 곳에 두면
+        // 어느 쪽이 최신인지 보호자가 판단해야 한다.
+        <Link key={a.id} href={`/portal/patients/${id}/admissions/${a.id}`} className="portal-tile">
+          <span aria-hidden style={{ fontSize: 18 }}>🏥</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: ".95rem" }}>
+              입원 {a.admitted_at}
+              {a.discharged_at ? ` ~ ${a.discharged_at}` : ""}
             </div>
-          ) : (
-            <p className="portal-tile-sub" style={{ margin: 0 }}>도착한 경과가 없어요.</p>
-          )}
-        </div>
+            <div className="portal-tile-sub">
+              {a.status === "admitted" ? "입원 중이에요" : "하루하루 경과 보기"}
+              {unreadDaily > 0 && ` · 새 경과 ${unreadDaily}`}
+            </div>
+          </div>
+          {unreadDaily > 0 && <span className="dot-new" aria-label="새 경과" />}
+          <span style={{ color: "var(--muted)", fontSize: "1.2rem" }}>›</span>
+        </Link>
       ))}
 
       <div className="portal-card">

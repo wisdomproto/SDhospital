@@ -18,6 +18,8 @@ function Icon({ name }: { name: string }) {
       return (<svg {...c}><path d="M3 11.5 12 4l9 7.5" /><path d="M5 10v10h14V10" /></svg>);
     case "visit":
       return (<svg {...c}><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 3v3h6V3M8.5 11h7M8.5 15h4" /></svg>);
+    case "me":
+      return (<svg {...c}><circle cx="12" cy="8" r="4" /><path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6" /></svg>);
     case "chat":
       return (<svg {...c}><path d="M20 15a3 3 0 0 1-3 3H8l-4 3V6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3Z" /><path d="M9 10h6M9 13h4" /></svg>);
     default:
@@ -38,6 +40,7 @@ export function PortalTabBar({ patientId }: { patientId: string }) {
       match: (p: string) => p.startsWith(`${base}/visits`) || p.startsWith(`${base}/admissions`),
     },
     { href: `${base}/chat`, label: "AI 채팅", icon: "chat", match: (p: string) => p.startsWith(`${base}/chat`) },
+    { href: `${base}/profile`, label: "내 정보", icon: "me", match: (p: string) => p.startsWith(`${base}/profile`) },
   ];
   return (
     <nav className="portal-tabbar">

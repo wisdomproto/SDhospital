@@ -35,12 +35,17 @@ export default async function PortalAdmissionDetail({
   // 발송된 일일 리포트만 보여주고, 최신 것을 열람 처리한다 (DEFINER 함수로만 기록 가능)
   const { data: reportRows } = await supabase
     .from("admission_report")
-    .select("id, report_date, comment, feeding, elimination, special, sent_at")
+    .select("id, report_date, comment, feeding, elimination, special, sent_at, read_at")
     .eq("admission_id", admissionId)
     .not("sent_at", "is", null)
     .order("report_date", { ascending: false });
   const reports = reportRows ?? [];
-  if (reports[0]) await supabase.rpc("mark_admission_report_read", { p_report_id: reports[0].id });
+  // 안 읽은 것을 전부 읽음 처리한다. 최신 한 건만 찍으면 배지가 영영 안 사라진다.
+  // 화면에는 이번에 새로 온 것을 표시해야 하므로, 처리 전에 어떤 게 안 읽음이었는지 기억해 둔다.
+  const wasUnread = new Set(reports.filter((r) => r.read_at == null).map((r) => r.id));
+  await Promise.all(
+    [...wasUnread].map((id) => supabase.rpc("mark_admission_report_read", { p_report_id: id }))
+  );
 
   return (
     <>
@@ -64,13 +69,17 @@ export default async function PortalAdmissionDetail({
             {reports.map((r, i) => (
               <div
                 key={r.id}
+                className={wasUnread.has(r.id) ? "daily-new" : undefined}
                 style={{
                   paddingBottom: 12,
                   borderBottom: i < reports.length - 1 ? "1px solid var(--line)" : 0,
                 }}
               >
-                <div style={{ fontWeight: 700, fontSize: ".82rem", color: "var(--muted)" }}>
-                  {r.report_date}
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div style={{ fontWeight: 700, fontSize: ".82rem", color: "var(--muted)" }}>
+                    {r.report_date}
+                  </div>
+                  {wasUnread.has(r.id) && <span className="pill-new">새 경과</span>}
                 </div>
                 <div style={{ display: "grid", gap: 6, marginTop: 6 }}>
                   {dailyLines(r).map((l) => (

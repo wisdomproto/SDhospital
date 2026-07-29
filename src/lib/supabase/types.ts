@@ -499,6 +499,7 @@ export type Database = {
         Row: {
           birth_date: string | null
           breed: string | null
+          photo: string | null
           chart_no: string | null
           created_at: string
           id: string
@@ -512,6 +513,7 @@ export type Database = {
         Insert: {
           birth_date?: string | null
           breed?: string | null
+          photo?: string | null
           chart_no?: string | null
           created_at?: string
           id?: string
@@ -525,6 +527,7 @@ export type Database = {
         Update: {
           birth_date?: string | null
           breed?: string | null
+          photo?: string | null
           chart_no?: string | null
           created_at?: string
           id?: string
@@ -873,6 +876,7 @@ export type Database = {
       current_hospital_id: { Args: never; Returns: string }
       current_owner_id: { Args: never; Returns: string }
       current_role_name: { Args: never; Returns: string }
+      set_patient_photo: { Args: { p_patient_id: string; p_photo: string | null }; Returns: undefined }
       push_targets_staff: {
         Args: Record<PropertyKey, never>
         Returns: { id: string; endpoint: string; p256dh: string; auth: string }[]

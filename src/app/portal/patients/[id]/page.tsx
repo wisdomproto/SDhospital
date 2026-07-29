@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { ownerReportFeed } from "@/lib/reports";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { EnableNotifications } from "@/components/EnableNotifications";
 
 export default async function PortalPatientOverview({
   params,
@@ -47,27 +46,6 @@ export default async function PortalPatientOverview({
 
   return (
     <>
-      <EnableNotifications />
-      <div className="portal-hero">
-        <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 14 }}>
-          <span style={{ width: 58, height: 58, borderRadius: 20, display: "grid", placeItems: "center", background: "rgba(255,255,255,.24)", fontSize: 32 }}>
-            {p.species === "고양이" ? "🐱" : "🐶"}
-          </span>
-          <div>
-            <div style={{ fontSize: "1.55rem", fontWeight: 900, letterSpacing: "-0.01em" }}>{p.name}</div>
-            <div style={{ fontSize: ".88rem", opacity: 0.94, marginTop: 2 }}>
-              {[p.species, p.breed].filter(Boolean).join(" / ") || "-"}
-              {p.sex ? ` · ${p.sex}` : ""}
-            </div>
-          </div>
-        </div>
-        {openAdm && (
-          <div style={{ position: "relative", zIndex: 1, marginTop: 14, display: "inline-block", background: "rgba(255,255,255,.24)", padding: "6px 13px", borderRadius: 999, fontSize: ".8rem", fontWeight: 800 }}>
-            🏥 현재 입원중
-          </div>
-        )}
-      </div>
-
       {(pendingConsents ?? []).length > 0 && (
         <div className="portal-card" style={{ borderLeft: "4px solid #b4541f" }}>
           <div style={{ fontWeight: 800, marginBottom: 8 }}>서명이 필요합니다</div>

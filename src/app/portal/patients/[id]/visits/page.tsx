@@ -21,6 +21,18 @@ export default async function PortalVisits({
       .eq("patient_id", id),
   ]);
 
+  // 입원 경과는 매일 오는데 목록에 표시가 없으면 온 줄을 모른다
+  const { data: unreadRows } = await supabase
+    .from("admission_report")
+    .select("id, admission_id, admission:admission_id!inner(patient_id)")
+    .eq("admission.patient_id", id)
+    .not("sent_at", "is", null)
+    .is("read_at", null);
+  const unreadByAdmission = new Map<string, number>();
+  for (const r of unreadRows ?? []) {
+    unreadByAdmission.set(r.admission_id, (unreadByAdmission.get(r.admission_id) ?? 0) + 1);
+  }
+
   return (
     <>
       <div style={{ fontWeight: 800, fontSize: "1.05rem", padding: "2px 2px 4px" }}>진료 회차</div>
@@ -72,8 +84,10 @@ export default async function PortalVisits({
                 </div>
                 <div className="portal-tile-sub">
                   {a.status === "admitted" ? "입원 중이에요" : "하루하루 경과 보기"}
+                  {(unreadByAdmission.get(a.id) ?? 0) > 0 && ` · 새 경과 ${unreadByAdmission.get(a.id)}`}
                 </div>
               </div>
+              {(unreadByAdmission.get(a.id) ?? 0) > 0 && <span className="dot-new" aria-label="새 경과" />}
               <span style={{ color: "var(--muted)", fontSize: "1.1rem" }}>›</span>
             </Link>
           ))}

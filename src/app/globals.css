@@ -1663,3 +1663,121 @@ button.media-thumb.media-open {
   letter-spacing: -.02em;
 }
 .coupon-note { margin-top: 4px; font-size: .76rem; color: var(--muted-2); }
+
+/* 새로 온 것 표시 — 매일 오는 경과는 표시가 없으면 온 줄을 모른다 */
+.dot-new {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+}
+.pill-new {
+  background: #ef4444;
+  color: #fff;
+  font-size: .64rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+.daily-new {
+  margin: 0 -8px;
+  padding: 8px 8px 12px !important;
+  border-radius: 12px;
+  background: #fff7ed;
+}
+
+/* 탭 4개 */
+.portal-tabbar { grid-template-columns: repeat(4, 1fr); }
+
+/* 내 정보 — 프로필 사진 */
+.pet-photo {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 3px solid var(--line);
+  background: var(--surface-soft, #f4fbf9);
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.pet-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pet-photo-empty { font-size: 54px; line-height: 1; }
+.pet-photo-edit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 6px 0;
+  background: rgba(0, 0, 0, .55);
+  color: #fff;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+/* 반려동물 전환 — 이름은 어차피 헤더에 있으니 그걸 누르면 바꾼다 */
+.portal-head-av {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--surface-soft, #f4fbf9);
+}
+.portal-head-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pet-switch {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  padding: 4px 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.pet-sheet {
+  margin: auto auto 0;
+  width: min(440px, 100%);
+  max-width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0 10px 10px;
+}
+.pet-sheet::backdrop { background: rgba(15, 23, 30, .4); }
+.pet-sheet-box {
+  background: #fff;
+  border-radius: 20px;
+  padding: 14px 10px 10px;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, .18);
+}
+.pet-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.pet-row.current { background: var(--surface-soft, #f4fbf9); }
+.pet-row-av {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--surface-soft, #f4fbf9);
+}

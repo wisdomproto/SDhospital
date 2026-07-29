@@ -131,7 +131,7 @@ export async function unreadCounts(
   const counts = new Map<string, number>();
   if (patientIds.length === 0) return counts;
 
-  const [{ data: visits }, { data: admReports }] = await Promise.all([
+  const [{ data: visits }, { data: admReports }, { data: consents }] = await Promise.all([
     supabase
       .from("visit")
       .select("patient_id")
@@ -144,6 +144,12 @@ export async function unreadCounts(
       .in("admission.patient_id", patientIds)
       .not("sent_at", "is", null)
       .is("read_at", null),
+    // 서명 안 한 동의서도 "확인해야 할 것"이다. 배지에서 빼면 화면의 개수와 어긋난다.
+    supabase
+      .from("consent")
+      .select("patient_id")
+      .in("patient_id", patientIds)
+      .is("signed_at", null),
   ]);
 
   for (const v of visits ?? []) {
@@ -152,6 +158,9 @@ export async function unreadCounts(
   for (const r of admReports ?? []) {
     const a = r.admission as unknown as { patient_id: string } | null;
     if (a) counts.set(a.patient_id, (counts.get(a.patient_id) ?? 0) + 1);
+  }
+  for (const c of consents ?? []) {
+    counts.set(c.patient_id, (counts.get(c.patient_id) ?? 0) + 1);
   }
   return counts;
 }

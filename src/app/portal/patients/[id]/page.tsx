@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { ownerReportFeed } from "@/lib/reports";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { NEWS_SEEN_COOKIE } from "@/lib/seen";
+import { MarkNewsSeen } from "../../MarkNewsSeen";
 
 export default async function PortalPatientOverview({
   params,
@@ -36,16 +39,20 @@ export default async function PortalPatientOverview({
   // 병원 소식. 기간이 지난 것은 RLS 가 감추므로 여기서 날짜를 다시 따지지 않는다.
   const { data: notices } = await supabase
     .from("notice")
-    .select("id, title, body, link_url, link_label, coupon_label, image_url, ends_on, pinned")
+    .select("id, title, body, link_url, link_label, coupon_label, image_url, starts_on, ends_on, pinned")
     .order("pinned", { ascending: false })
     .order("starts_on", { ascending: false })
     .limit(5);
+
+  const seen = (await cookies()).get(NEWS_SEEN_COOKIE)?.value ?? "";
+  const isNew = (startsOn: string) => !seen || startsOn > seen.slice(0, 10);
 
   const feed = await ownerReportFeed(supabase, id, `/portal/patients/${id}`, 3);
   const unread = feed.filter((f) => f.unread).length;
 
   return (
     <>
+      <MarkNewsSeen hasNew={(notices ?? []).some((n) => isNew(n.starts_on))} />
       {(pendingConsents ?? []).length > 0 && (
         <div className="portal-card" style={{ borderLeft: "4px solid #b4541f" }}>
           <div style={{ fontWeight: 800, marginBottom: 8 }}>서명이 필요합니다</div>
@@ -81,8 +88,9 @@ export default async function PortalPatientOverview({
                   </div>
                 </div>
               )}
-              <div style={{ fontWeight: 800, fontSize: ".97rem" }}>
-                {n.pinned && <span aria-hidden>📌 </span>}
+              <div style={{ fontWeight: 800, fontSize: ".97rem", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                {isNew(n.starts_on) && <span className="pill-new">NEW</span>}
+                {n.pinned && <span aria-hidden>📌</span>}
                 {n.title}
               </div>
               {n.body && (

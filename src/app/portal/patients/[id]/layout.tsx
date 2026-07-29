@@ -6,6 +6,8 @@ import { InstallApp } from "../../InstallApp";
 import { PetSwitcher, type Pet } from "./PetSwitcher";
 import { RememberPet } from "../../RememberPet";
 import { unreadCounts } from "@/lib/reports";
+import { cookies } from "next/headers";
+import { NEWS_SEEN_COOKIE } from "@/lib/seen";
 
 export default async function PortalPatientLayout({
   params,
@@ -25,6 +27,12 @@ export default async function PortalPatientLayout({
   if (!patient) notFound();
 
   const unread = await unreadCounts(supabase, (pets ?? []).map((p) => p.id));
+
+  // 마지막으로 소식 화면을 연 뒤에 올라온 것 (RLS 가 기간 밖 소식은 이미 감춘다)
+  const seen = (await cookies()).get(NEWS_SEEN_COOKIE)?.value;
+  let newsQuery = supabase.from("notice").select("id", { count: "exact", head: true });
+  if (seen) newsQuery = newsQuery.gt("starts_on", seen.slice(0, 10));
+  const { count: newNews } = await newsQuery;
   const list: Pet[] = (pets ?? []).map((p) => ({ ...p, unread: unread.get(p.id) ?? 0 }));
   const current = list.find((p) => p.id === id)!;
 
@@ -54,7 +62,7 @@ export default async function PortalPatientLayout({
 
       <div className="portal-body">{children}</div>
 
-      <PortalTabBar patientId={patient.id} unread={current.unread} />
+      <PortalTabBar patientId={patient.id} unread={current.unread} news={newNews ?? 0} />
     </>
   );
 }

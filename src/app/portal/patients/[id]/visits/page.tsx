@@ -10,7 +10,7 @@ export default async function PortalVisits({
   const { id } = await params;
   const supabase = await createClient();
   // 입원은 회차에 딸린 기록이라 탭을 따로 두지 않고 그 회차 아래에서 이어 본다
-  const [{ data: visits }, { data: admissions }] = await Promise.all([
+  const [{ data: visits }, { data: admissions }, { data: consents }] = await Promise.all([
     supabase
       .from("visit")
       .select("id, visit_date, visit_no, report_comment, report_sent_at, report_read_at")
@@ -20,6 +20,12 @@ export default async function PortalVisits({
       .from("admission")
       .select("id, visit_id, admitted_at, discharged_at, status")
       .eq("patient_id", id),
+    // 동의서도 회차에 딸린 기록이다 — 병원에서 오면 여기서 찾는다
+    supabase
+      .from("consent")
+      .select("id, visit_id, form_title, signed_at")
+      .eq("patient_id", id)
+      .order("created_at", { ascending: false }),
   ]);
 
   // 입원 경과는 매일 오는데 목록에 표시가 없으면 온 줄을 모른다
@@ -37,13 +43,26 @@ export default async function PortalVisits({
   // 배지가 "3건 있다"고만 말하고 어디 있는지 안 알려주면 보호자가 목록을 뒤져야 한다.
   // 안 읽은 것만 위에 모아 준다 — 아래 목록은 시간순 그대로 둔다.
   const fresh = await unreadFeed(supabase, id, `/portal/patients/${id}`);
+  const pending = (consents ?? []).filter((c) => c.signed_at == null);
 
   return (
     <>
-      {fresh.length > 0 && (
+      {(fresh.length > 0 || pending.length > 0) && (
         <div className="portal-card fresh-card">
-          <div style={{ fontWeight: 800, marginBottom: 8 }}>새로 온 리포트 {fresh.length}건</div>
+          <div style={{ fontWeight: 800, marginBottom: 8 }}>
+            확인이 필요해요 {fresh.length + pending.length}건
+          </div>
           <div style={{ display: "grid", gap: 8 }}>
+            {pending.map((c) => (
+              <Link key={c.id} href={`/portal/patients/${id}/consents/${c.id}`} className="fresh-row">
+                <span className="dot-new" />
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ fontWeight: 700, fontSize: ".9rem" }}>{c.form_title}</span>
+                  <span className="portal-tile-sub">서명이 필요합니다</span>
+                </span>
+                <span style={{ color: "var(--muted)" }}>›</span>
+              </Link>
+            ))}
             {fresh.map((f) => (
               <Link key={f.key} href={f.href} className="fresh-row">
                 <span className="dot-new" />
@@ -93,6 +112,25 @@ export default async function PortalVisits({
           </div>
           <span style={{ color: "var(--muted)", fontSize: "1.2rem" }}>›</span>
         </Link>
+        {(consents ?? [])
+          .filter((c) => c.visit_id === v.id)
+          .map((c) => (
+            <Link
+              key={c.id}
+              href={`/portal/patients/${id}/consents/${c.id}`}
+              className={`portal-tile portal-subtile${c.signed_at == null ? " tile-new" : ""}`}
+            >
+              <span aria-hidden style={{ fontSize: 15 }}>📝</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: ".88rem" }}>{c.form_title}</div>
+                <div className="portal-tile-sub">
+                  {c.signed_at ? `서명 완료 · ${c.signed_at.slice(0, 10)}` : "서명이 필요합니다"}
+                </div>
+              </div>
+              {c.signed_at == null && <span className="dot-new" />}
+              <span style={{ color: "var(--muted)", fontSize: "1.1rem" }}>›</span>
+            </Link>
+          ))}
         {(admissions ?? [])
           .filter((a) => a.visit_id === v.id)
           .map((a) => (

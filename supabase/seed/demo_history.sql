@@ -316,4 +316,14 @@ on conflict (id) do nothing;
 update patient set owner_id = '5cbcfd44-1dfd-5582-9cd0-6c66908d9458'  -- 이지현(슈슈 보호자)
  where id = 'd0000000-0000-4000-8000-000000000202';                    -- 나비
 
+-- ── 10. 동의서 (진료 기록 안에서 보인다) ─────────────────────
+-- 하나는 미서명(보호자에게 "서명이 필요합니다"로 뜬다), 하나는 서명 완료.
+insert into consent (id, patient_id, visit_id, form_code, form_title, fields, body_snapshot, signed_at, signer_name) values
+('d0000000-0000-4000-8000-000007000001','438e9b38-5eec-5664-a31b-72a5244bcf3d','c98630e6-f4bc-5fb9-bc0e-6f8d96ad8ce1',
+ 'admission','입원 동의서','{"진단":"흉수 및 폐침윤","처치":"흉수 배액 및 산소 치료"}'::jsonb, null, null, null),
+('d0000000-0000-4000-8000-000007000002','438e9b38-5eec-5664-a31b-72a5244bcf3d','d0000000-0000-4000-8000-000001000056',
+ 'surgery','수술·마취·검사 동의서','{"진단":"기침 및 식욕 저하","시술설명":"흉부 CT 및 기관지 내시경"}'::jsonb,
+ '본 동의서는 시술 전 설명을 듣고 동의함을 확인합니다.', '2025-01-27 18:40+09', '이지현')
+on conflict (id) do nothing;
+
 commit;

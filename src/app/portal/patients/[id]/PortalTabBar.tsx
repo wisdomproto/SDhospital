@@ -31,12 +31,20 @@ function Icon({ name }: { name: string }) {
  * 새 리포트가 왔는데 탭에 표시가 없으면, 알림을 못 본 보호자는 영영 모른다.
  * 배지는 "진료 기록" 에만 붙인다 — 회차 리포트와 입원 경과가 전부 그 안에 있다.
  */
-export function PortalTabBar({ patientId, unread = 0 }: { patientId: string; unread?: number }) {
+export function PortalTabBar({
+  patientId,
+  unread = 0,
+  news = 0,
+}: {
+  patientId: string;
+  unread?: number;
+  news?: number;
+}) {
   const pathname = usePathname();
   const base = `/portal/patients/${patientId}`;
   // 입원은 따로 두지 않는다 — 입원은 진료 회차에 딸린 기록이라 "진료 기록" 안에서 이어 보는 게 맞다.
   const tabs = [
-    { href: base, label: "병원 소식", icon: "home", match: (p: string) => p === base },
+    { href: base, label: "병원 소식", icon: "home", match: (p: string) => p === base, badge: news },
     {
       href: `${base}/visits`,
       label: "진료 기록",

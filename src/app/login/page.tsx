@@ -1,5 +1,6 @@
 import { signIn, quickLoginStaff, quickLoginOwner, quickLoginVet } from "./actions";
 import { DEMO_ACCOUNTS, VET_ACCOUNTS, DEMO_ENABLED } from "./demo";
+import { PendingButton } from "./PendingButton";
 
 function Check() {
   return (
@@ -94,9 +95,9 @@ export default async function LoginPage({
               <input name="remember" type="checkbox" defaultChecked style={{ accentColor: "var(--primary)", width: 16, height: 16 }} />
               로그인 상태 유지
             </label>
-            <button type="submit" className="btn btn-primary" style={{ marginTop: 2, padding: "13px" }}>
+            <PendingButton className="btn btn-primary" style={{ marginTop: 2, padding: "13px" }} pendingLabel="로그인 중…">
               로그인
-            </button>
+            </PendingButton>
           </form>
 
           {DEMO_ENABLED && (
@@ -106,7 +107,7 @@ export default async function LoginPage({
           {/* ⚠️ DEMO ONLY — gated by NEXT_PUBLIC_ENABLE_DEMO */}
           <div className="login-demo-grid">
             <form action={quickLoginStaff}>
-              <button className="login-demo-btn" title={DEMO_ACCOUNTS.staff.email} style={{ width: "100%" }}>
+              <PendingButton className="login-demo-btn" title={DEMO_ACCOUNTS.staff.email} style={{ width: "100%" }}>
                 <span className="ic">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="8" r="4" />
@@ -115,14 +116,14 @@ export default async function LoginPage({
                 </span>
                 <span style={{ fontWeight: 600, fontSize: ".78rem", color: "var(--text)" }}>우리 병원</span>
                 <span style={{ fontSize: ".66rem", color: "var(--muted-2)" }}>직원 EMR</span>
-              </button>
+              </PendingButton>
             </form>
             <form action={quickLoginOwner}>
-              <button className="login-demo-btn" title={DEMO_ACCOUNTS.owner.email} style={{ width: "100%" }}>
+              <PendingButton className="login-demo-btn" title={DEMO_ACCOUNTS.owner.email} style={{ width: "100%" }}>
                 <span className="ic" style={{ fontSize: 15 }}>🐶</span>
                 <span style={{ fontWeight: 600, fontSize: ".78rem", color: "var(--text)" }}>보호자</span>
                 <span style={{ fontSize: ".66rem", color: "var(--muted-2)" }}>포털</span>
-              </button>
+              </PendingButton>
             </form>
           </div>
 
@@ -138,11 +139,11 @@ export default async function LoginPage({
           <div className="login-demo-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
             {VET_ACCOUNTS.map((v) => (
               <form key={v.key} action={quickLoginVet.bind(null, v.email)}>
-                <button className="login-demo-btn" title={v.email} style={{ width: "100%" }}>
+                <PendingButton className="login-demo-btn" title={v.email} style={{ width: "100%" }}>
                   <span className="ic">🏥</span>
                   <span style={{ fontWeight: 600, fontSize: ".78rem", color: "var(--text)" }}>{v.label}</span>
                   <span style={{ fontSize: ".66rem", color: "var(--muted-2)" }}>원장으로 입장 →</span>
-                </button>
+                </PendingButton>
               </form>
             ))}
           </div>

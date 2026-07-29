@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { signInPortal, quickOwner } from "./actions";
 import { DEMO_ENABLED } from "../demo";
+import { PendingButton } from "../PendingButton";
 
 export default async function PortalLoginPage({
   searchParams,
@@ -57,9 +58,9 @@ export default async function PortalLoginPage({
           <form action={signInPortal} style={{ display: "grid", gap: 12 }}>
             <input name="email" type="email" placeholder="이메일" required className="field" />
             <input name="password" type="password" placeholder="비밀번호" required className="field" />
-            <button type="submit" className="btn btn-primary" style={{ padding: 13 }}>
+            <PendingButton className="btn btn-primary" style={{ padding: 13 }} pendingLabel="로그인 중…">
               로그인
-            </button>
+            </PendingButton>
           </form>
 
           {DEMO_ENABLED && (
@@ -67,11 +68,11 @@ export default async function PortalLoginPage({
               <div className="login-divider">테스트 계정 · 클릭하면 바로 입장</div>
               {/* ⚠️ DEMO ONLY — gated by NEXT_PUBLIC_ENABLE_DEMO */}
               <form action={quickOwner}>
-                <button className="login-demo-btn" style={{ width: "100%" }}>
+                <PendingButton className="login-demo-btn" style={{ width: "100%" }}>
                   <span className="ic" style={{ fontSize: 16 }}>🐶</span>
                   <span style={{ fontWeight: 600, fontSize: ".82rem", color: "var(--text)" }}>보호자</span>
                   <span style={{ fontSize: ".68rem", color: "var(--muted-2)" }}>포털 입장</span>
-                </button>
+                </PendingButton>
               </form>
             </>
           )}

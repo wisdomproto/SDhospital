@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redeemInvite } from "./actions";
 import Link from "next/link";
+import { PendingButton } from "@/app/login/PendingButton";
 
 function BrandHero({ subtitle }: { subtitle: string }) {
   return (
@@ -83,9 +84,9 @@ export default async function InvitePage({
           <form action={redeemInvite.bind(null, token)} style={{ display: "grid", gap: 12 }}>
             <input name="email" type="email" placeholder="이메일" required className="field" />
             <input name="password" type="password" placeholder="비밀번호 (8자 이상)" required className="field" />
-            <button type="submit" className="btn btn-primary" style={{ padding: 13 }}>
+            <PendingButton className="btn btn-primary" style={{ padding: 13 }} pendingLabel="가입 중…">
               계정 만들기
-            </button>
+            </PendingButton>
           </form>
 
           <Link href="/login/portal" className="muted" style={{ textAlign: "center", fontSize: ".8rem", textDecoration: "none" }}>

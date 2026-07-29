@@ -1446,3 +1446,27 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
   min-width: 16px; height: 16px; padding: 0 4px; font-size: .6rem;
 }
 .sidebar.collapsed .nav-item { position: relative; }
+
+/* 진료 기록 틀 — 기본은 자유 노트다. 틀은 필요한 사람만 꺼내 쓰게 접어 둔다 */
+.tpl-menu { position: relative; flex: none; }
+.tpl-menu > summary {
+  list-style: none; cursor: pointer;
+  font-size: .78rem; color: var(--muted);
+  padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px;
+}
+.tpl-menu > summary::-webkit-details-marker { display: none; }
+.tpl-menu > summary::after { content: " ▾"; }
+.tpl-menu[open] > summary { background: var(--surface-soft); color: var(--text); }
+.tpl-items {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 6;
+  width: 260px; padding: 6px; display: grid; gap: 2px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; box-shadow: 0 12px 32px rgba(0, 0, 0, .14);
+}
+.tpl-items button {
+  display: grid; gap: 2px; text-align: left; width: 100%;
+  padding: 9px 10px; border: 0; border-radius: 8px;
+  background: transparent; color: var(--text); font: inherit; font-size: .86rem; cursor: pointer;
+}
+.tpl-items button:hover { background: var(--surface-soft); }
+.tpl-items button span { font-size: .72rem; color: var(--muted-2); }

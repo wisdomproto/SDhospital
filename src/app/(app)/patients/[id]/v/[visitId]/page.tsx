@@ -115,14 +115,17 @@ export default async function VisitDetail({
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
               <span className="field-label" style={{ marginBottom: 0 }}>진료 내용</span>
+              <span className="muted" style={{ fontSize: 12, flex: 1 }}>
+                자유롭게 적으세요 · 보호자에게는 보이지 않습니다
+              </span>
               <SoapTemplate target="note" />
-              <span className="muted" style={{ fontSize: 12 }}>보호자에게는 보이지 않습니다</span>
             </div>
             <textarea
               name="note"
               rows={20}
               autoFocus={isNew === "1"}
               defaultValue={v.note ?? ""}
+              placeholder={"예) 뒷다리 절음으로 내원. 보호자분 말로는 3일 전 산책 후부터.\nX-ray상 좌측 슬개골 내측탈구 3기 확인, 관절액 소량.\n오늘 소염 주사 후 2주 약 처방. 2주 뒤 재평가하고 수술 상담 예정."}
               className={`${inputClass} note-input`}
             />
           </div>

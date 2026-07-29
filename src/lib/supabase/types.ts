@@ -516,6 +516,39 @@ export type Database = {
           },
         ]
       }
+      push_subscription: {
+        Row: {
+          id: string
+          user_id: string
+          endpoint: string
+          p256dh: string
+          auth: string
+          user_agent: string | null
+          created_at: string
+          failed_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          endpoint: string
+          p256dh: string
+          auth: string
+          user_agent?: string | null
+          created_at?: string
+          failed_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          endpoint?: string
+          p256dh?: string
+          auth?: string
+          user_agent?: string | null
+          created_at?: string
+          failed_at?: string | null
+        }
+        Relationships: []
+      }
       profile: {
         Row: {
           created_at: string
@@ -759,6 +792,11 @@ export type Database = {
       current_hospital_id: { Args: never; Returns: string }
       current_owner_id: { Args: never; Returns: string }
       current_role_name: { Args: never; Returns: string }
+      push_targets_for_patient: {
+        Args: { p_patient_id: string }
+        Returns: { id: string; endpoint: string; p256dh: string; auth: string }[]
+      }
+      mark_push_failed: { Args: { p_id: string }; Returns: undefined }
       log_access: {
         Args: { p_patient_id: string; p_target: string; p_target_id: string | null }
         Returns: undefined

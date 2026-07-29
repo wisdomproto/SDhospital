@@ -147,6 +147,43 @@ begin
   if r is distinct from 'referring_vet' then raise exception 'log_access must stamp the real role, got %', r; end if;
 end $$;
 
+-- 웹 푸시 구독 — 남의 기기로 알림을 보낼 수 있으면 안 된다
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}', true);
+insert into push_subscription (user_id, endpoint, p256dh, auth)
+values ('22222222-2222-2222-2222-222222222222', 'https://example.test/ep-owner-x', 'k', 'a');
+
+do $$
+declare n int;
+begin
+  select count(*) into n from push_subscription;
+  if n <> 1 then raise exception 'ownerX should see only their own subscription, saw %', n; end if;
+  -- 발송용 함수는 직원 전용이다
+  begin
+    perform push_targets_for_patient('cccccccc-0000-0000-0000-000000000001');
+    raise exception 'ownerX must not call push_targets_for_patient';
+  exception when others then null;
+  end;
+end $$;
+
+-- vetA 는 남의 구독을 볼 수도, 만들 수도 없다
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}', true);
+do $$
+declare n int;
+begin
+  select count(*) into n from push_subscription;
+  if n <> 0 then raise exception 'vetA must not see push subscriptions, saw %', n; end if;
+  begin
+    insert into push_subscription (user_id, endpoint, p256dh, auth)
+    values ('22222222-2222-2222-2222-222222222222', 'https://example.test/forged', 'k', 'a');
+    raise exception 'vetA must not insert a subscription for another user';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
 reset role;
 select 'RLS TESTS PASSED' as result;
 rollback;

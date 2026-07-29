@@ -4,6 +4,7 @@ import { validatePrescriptionInput } from "@/lib/validation/prescription";
 import { validateVisitInput } from "@/lib/validation/visit";
 import { validateReportInput } from "@/lib/validation/report";
 import { BUCKET, imagePath, mediaPath } from "@/lib/storage";
+import { notifyOwner } from "@/lib/push";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -59,6 +60,16 @@ export async function saveVisitReport(
     })
     .eq("id", visitId);
   if (error) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(error.message));
+
+  if (v.value.send) {
+    const { data: p } = await supabase.from("patient").select("name").eq("id", patientId).single();
+    await notifyOwner(supabase, patientId, {
+      title: `${p?.name ?? "반려동물"} 진료 리포트가 도착했어요`,
+      body: "오늘 진료 내용을 확인해 주세요.",
+      url: `/portal/patients/${patientId}/visits/${visitId}`,
+    });
+  }
+
   revalidatePath(vpath(patientId, visitId));
   revalidatePath(`/patients/${patientId}`, "layout");
 }

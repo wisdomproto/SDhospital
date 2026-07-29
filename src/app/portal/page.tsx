@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { unreadCounts } from "@/lib/reports";
+import { EnableNotifications } from "./EnableNotifications";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "../(app)/logout";
@@ -47,6 +48,7 @@ export default async function PortalHome() {
         </form>
       </header>
       <div className="portal-body">
+        <EnableNotifications />
         <div className="portal-hero">
           <div style={{ fontSize: ".72rem", fontWeight: 600, letterSpacing: ".08em", opacity: 0.9 }}>
             {isOwner ? "보호자 · 읽기 전용" : "의뢰 병원 · 읽기 전용"}

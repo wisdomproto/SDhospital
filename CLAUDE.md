@@ -69,13 +69,16 @@
 - **01 기반 · 02 환자 · 03 진료 · 04 입원 · 05 초대/외부 포털** ✅ — EMR 자체는 완성
 - **06 보호자 앱 MVP** 🚧 — `2026-07-26-mvp-owner-app.md` **(진행 상황·결정 근거는 전부 여기)**.
   리포트·오늘 할 일·병동 입력·종합 리포트·PWA·전자 동의서·전송 미리보기·레퍼럴 브릿지 완료.
-  대기: **알림 채널(발신번호 필요 — 없으면 이 사업은 작동하지 않는다)**, FAQ(10년치 상담 데이터), 건강검진(샘플).
+  **알림 = PWA 웹 푸시** (발신번호·요금 불필요, 단 보호자가 홈 화면 설치 + 알림 허용을 해야 도착).
+  대기: FAQ(10년치 상담 데이터), 건강검진(샘플).
 - 이후 후보: 의료영상 뷰어·DICOM, 1차병원 EMR+PACS, AI, 예약/청구, 네이티브 앱
 - 스펙: `docs/superpowers/specs/2026-07-07-vet-emr-design.md`
 
 ## 배포 (Railway)
 - `railway.json`(Nixpacks, start `npm run start`, healthcheck `/login`) + `.nvmrc`(Node 22). GitHub 리포 연결 → env 2개(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) → Generate Domain. DB는 이미 Supabase 클라우드라 앱만 배포.
 - **데모 로그인 게이트**: 원클릭 로그인 버튼·서버액션은 `NEXT_PUBLIC_ENABLE_DEMO=1`일 때만 동작. 로컬 `.env.local`엔 켜둠, 프로덕션(Railway)엔 **넣지 말 것** → 자동 비활성화.
+- ⚠️ **웹 푸시 키 필수** — `NEXT_PUBLIC_VAPID_PUBLIC_KEY` · `VAPID_PRIVATE_KEY` · `VAPID_SUBJECT`.
+  `npx web-push generate-vapid-keys` 로 만든다. **공개키를 바꾸면 기존 구독이 전부 무효**가 되어 보호자가 다시 켜야 한다.
 - ⚠️ **`CONSENT_ENC_KEY` 필수** (주민등록번호 암호화). Railway 에 로컬과 다른 값으로 넣고 **별도 백업** —
   잃어버리면 저장된 주민번호를 복구할 수 없다.
 - 배포 후 Supabase Auth → URL Configuration에 배포 도메인 등록.

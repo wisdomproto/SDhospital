@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ownerReportFeed } from "@/lib/reports";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { EnableNotifications } from "../../EnableNotifications";
 
 export default async function PortalPatientOverview({
   params,
@@ -38,6 +39,7 @@ export default async function PortalPatientOverview({
 
   return (
     <>
+      <EnableNotifications />
       <div className="portal-hero">
         <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 14 }}>
           <span style={{ width: 58, height: 58, borderRadius: 20, display: "grid", placeItems: "center", background: "rgba(255,255,255,.24)", fontSize: 32 }}>

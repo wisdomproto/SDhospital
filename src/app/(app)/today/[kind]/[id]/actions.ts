@@ -5,6 +5,7 @@ import { validateVitalInput } from "@/lib/validation/vital";
 import { BUCKET, mediaPath } from "@/lib/storage";
 import { kstToday } from "@/lib/worklist";
 import { canSendDaily } from "@/lib/admission-report";
+import { notifyOwner } from "@/lib/push";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -102,6 +103,19 @@ export async function sendWardReport(
       .eq("id", targetId);
     if (error) fail(error.message);
   }
+
+  const { data: pet } = await supabase.from("patient").select("name").eq("id", patientId).single();
+  await notifyOwner(supabase, patientId, {
+    title:
+      kind === "a"
+        ? `${pet?.name ?? "반려동물"} 오늘 입원 경과예요`
+        : `${pet?.name ?? "반려동물"} 진료 리포트가 도착했어요`,
+    body: kind === "a" ? "오늘 하루 어떻게 지냈는지 확인해 주세요." : "오늘 진료 내용을 확인해 주세요.",
+    url:
+      kind === "a"
+        ? `/portal/patients/${patientId}/admissions/${targetId}`
+        : `/portal/patients/${patientId}/visits/${targetId}`,
+  });
 
   revalidatePath("/today");
   revalidatePath(`/patients/${patientId}`, "layout");

@@ -15,10 +15,13 @@ import Link from "next/link";
 
 export default async function VisitDetail({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string; visitId: string }>;
+  searchParams: Promise<{ new?: string; error?: string }>;
 }) {
   const { id: patientId, visitId } = await params;
+  const { new: isNew, error } = await searchParams;
   const supabase = await createClient();
   const { data: v } = await supabase
     .from("visit")
@@ -94,6 +97,10 @@ export default async function VisitDetail({
         </form>
       </div>
 
+      {error && (
+        <p className="pill warning" style={{ padding: "10px 14px", margin: 0 }}>{error}</p>
+      )}
+
       <div className="card">
         <div className="card-head"><h2 className="section-title">회차 정보</h2></div>
         <form action={updateVisit.bind(null, patientId, v.id)} style={{ display: "grid", gap: 12 }}>
@@ -111,7 +118,13 @@ export default async function VisitDetail({
               <SoapTemplate target="note" />
               <span className="muted" style={{ fontSize: 12 }}>보호자에게는 보이지 않습니다</span>
             </div>
-            <textarea name="note" rows={20} defaultValue={v.note ?? ""} className={`${inputClass} note-input`} />
+            <textarea
+              name="note"
+              rows={20}
+              autoFocus={isNew === "1"}
+              defaultValue={v.note ?? ""}
+              className={`${inputClass} note-input`}
+            />
           </div>
           <div><SubmitButton>저장</SubmitButton></div>
         </form>

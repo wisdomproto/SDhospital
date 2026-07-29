@@ -88,5 +88,6 @@ export async function startVisit(patientId: string) {
   if (error) redirect(`/patients/${patientId}?error=` + encodeURIComponent(error.message));
 
   revalidatePath(`/patients/${patientId}`, "layout");
-  redirect(`/patients/${patientId}/v/${data!.id}`);
+  // new=1 이면 회차 화면이 진료 내용에 커서를 놓는다 — 만들자마자 바로 쓰기 시작한다
+  redirect(`/patients/${patientId}/v/${data!.id}?new=1`);
 }

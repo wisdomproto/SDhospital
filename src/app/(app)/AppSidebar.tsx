@@ -44,7 +44,7 @@ function Icon({ name }: { name: string }) {
   }
 }
 
-export function AppSidebar({ name }: { name: string }) {
+export function AppSidebar({ name, todoCount = 0 }: { name: string; todoCount?: number }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -129,6 +129,9 @@ export function AppSidebar({ name }: { name: string }) {
                 <Icon name={item.icon} />
               </span>
               <span className="label">{item.label}</span>
+              {item.href === "/today" && todoCount > 0 && (
+                <span className="nav-badge" title={`보낼 리포트 ${todoCount}건`}>{todoCount}</span>
+              )}
             </Link>
           );
         })}

@@ -67,6 +67,9 @@ export type Database = {
           created_by: string | null
           id: string
           read_at: string | null
+          feeding: string | null
+          elimination: string | null
+          special: string | null
           report_date: string
           sent_at: string | null
         }
@@ -77,6 +80,9 @@ export type Database = {
           created_by?: string | null
           id?: string
           read_at?: string | null
+          feeding?: string | null
+          elimination?: string | null
+          special?: string | null
           report_date?: string
           sent_at?: string | null
         }
@@ -87,6 +93,9 @@ export type Database = {
           created_by?: string | null
           id?: string
           read_at?: string | null
+          feeding?: string | null
+          elimination?: string | null
+          special?: string | null
           report_date?: string
           sent_at?: string | null
         }

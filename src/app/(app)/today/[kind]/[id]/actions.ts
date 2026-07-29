@@ -4,6 +4,7 @@ import { validateReportInput } from "@/lib/validation/report";
 import { validateVitalInput } from "@/lib/validation/vital";
 import { BUCKET, mediaPath } from "@/lib/storage";
 import { kstToday } from "@/lib/worklist";
+import { canSendDaily } from "@/lib/admission-report";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -21,11 +22,24 @@ export async function sendWardReport(
   const back = `/today/${kind}/${targetId}`;
   const fail = (msg: string) => redirect(`${back}?error=${encodeURIComponent(msg)}`);
 
-  const report = validateReportInput({
-    comment: String(formData.get("comment") ?? ""),
-    send: "1", // 이 화면의 버튼은 발송뿐이다 — 코멘트는 필수
-  });
+  const comment = String(formData.get("comment") ?? "").trim();
+  const daily = {
+    feeding: (String(formData.get("feeding") ?? "").trim() || null),
+    elimination: (String(formData.get("elimination") ?? "").trim() || null),
+    special: (String(formData.get("special") ?? "").trim() || null),
+    comment: comment || null,
+  };
+
+  // 회차 리포트는 코멘트가 필수다(사람 말 한 줄 없이 나가면 통보로 읽힌다).
+  // 입원 일일 리포트는 식사·배변만 골라도 보낼 수 있다 — 매일 문장을 쓰게 하면 며칠 만에 끊긴다.
+  const report =
+    kind === "a"
+      ? ({ ok: true, value: { comment: daily.comment, send: true } } as const)
+      : validateReportInput({ comment, send: "1" });
   if (!report.ok) fail(report.error);
+  if (kind === "a" && !canSendDaily(daily)) {
+    fail("오늘 식사나 배변 중 하나는 골라주세요.");
+  }
 
   const supabase = await createClient();
 
@@ -64,7 +78,10 @@ export async function sendWardReport(
       {
         admission_id: targetId,
         report_date: kstToday(),
-        comment: report.ok ? report.value.comment : null,
+        comment: daily.comment,
+        feeding: daily.feeding,
+        elimination: daily.elimination,
+        special: daily.special,
         sent_at: new Date().toISOString(),
       },
       { onConflict: "admission_id,report_date" }

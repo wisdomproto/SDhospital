@@ -3,6 +3,7 @@ import { sendWardReport } from "./actions";
 import { PhotoPicker } from "./PhotoPicker";
 import { kstToday, admittedDay } from "@/lib/worklist";
 import { OwnerPreview } from "@/app/(app)/patients/[id]/v/[visitId]/OwnerPreview";
+import { FEEDING, ELIMINATION } from "@/lib/admission-report";
 import type { ReportVisit } from "@/lib/owner-report";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -31,6 +32,7 @@ export default async function WardEntry({
   let patientId = "";
   let lastVital: { temperature: number | null; heart_rate: number | null; resp_rate: number | null } | null = null;
   let draft = "";
+  let daily: { feeding: string | null; elimination: string | null; special: string } | null = null;
   let previewCtx: {
     patient: { name: string; species: string | null; breed: string | null; birth_date: string | null };
     visitDate: string;
@@ -95,7 +97,7 @@ export default async function WardEntry({
         .limit(50),
       supabase
         .from("admission_report")
-        .select("comment")
+        .select("comment, feeding, elimination, special")
         .eq("admission_id", id)
         .eq("report_date", today)
         .maybeSingle(),
@@ -108,6 +110,11 @@ export default async function WardEntry({
       resp_rate: firstNonNull("resp_rate"),
     };
     draft = todayReport?.comment ?? "";
+    daily = {
+      feeding: todayReport?.feeding ?? null,
+      elimination: todayReport?.elimination ?? null,
+      special: todayReport?.special ?? "",
+    };
   }
 
   return (
@@ -168,8 +175,46 @@ export default async function WardEntry({
           </div>
         )}
 
+        {kind === "a" && daily && (
+          <div style={{ display: "grid", gap: 14 }}>
+            <div>
+              <div className="ward-choice-label">오늘 식사</div>
+              <div className="chip-group">
+                {FEEDING.map((o) => (
+                  <label key={o.key}>
+                    <input type="radio" name="feeding" value={o.key} defaultChecked={daily!.feeding === o.key} />
+                    <span>{o.staff}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="ward-choice-label">오늘 배변</div>
+              <div className="chip-group">
+                {ELIMINATION.map((o) => (
+                  <label key={o.key}>
+                    <input type="radio" name="elimination" value={o.key} defaultChecked={daily!.elimination === o.key} />
+                    <span>{o.staff}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="ward-choice-label">특이사항 (있을 때만)</div>
+              <input
+                name="special"
+                defaultValue={daily!.special}
+                placeholder="예) 오후에 한 번 토했습니다"
+                className="ward-special"
+              />
+            </div>
+          </div>
+        )}
+
         <div>
-          <div style={{ fontWeight: 700, fontSize: ".88rem", marginBottom: 8 }}>보호자에게 한 줄</div>
+          <div style={{ fontWeight: 700, fontSize: ".88rem", marginBottom: 8 }}>
+            보호자에게 한 줄{kind === "a" ? " (선택)" : ""}
+          </div>
           <textarea
             name="comment"
             rows={3}
@@ -177,7 +222,7 @@ export default async function WardEntry({
             className="ward-comment"
             placeholder={
               kind === "a"
-                ? "예) 식욕 돌아왔습니다. 내일 드레싱 후 경과 봅니다."
+                ? "위 항목 외에 더 전할 말이 있을 때만 적으세요"
                 : "예) 오늘 촬영 결과 설명드린 대로입니다. 다음 주 재검 예정입니다."
             }
           />

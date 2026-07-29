@@ -1390,3 +1390,43 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
   color: var(--muted);
 }
 .pnav-item.pnav-sub.active { color: var(--text); border-left-color: var(--primary); }
+
+/* 병동 입력 — 매일 고르는 항목은 타이핑보다 버튼이 빠르다 */
+.ward-choice-label { font-weight: 700; font-size: .88rem; margin-bottom: 8px; }
+.chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-group input { position: absolute; opacity: 0; pointer-events: none; }
+.chip-group span {
+  display: inline-block; padding: 10px 14px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface);
+  font-size: .88rem; cursor: pointer; user-select: none;
+}
+.chip-group input:checked + span {
+  background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 600;
+}
+.chip-group input:focus-visible + span { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ward-special {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--line);
+  border-radius: 12px; font: inherit; background: var(--surface); color: var(--text);
+}
+
+/* 보호자 앱 — 하루치 한 줄 */
+.daily-line { display: flex; gap: 10px; align-items: baseline; font-size: .95rem; line-height: 1.6; }
+.daily-line .k {
+  flex: none; width: 52px; font-size: .78rem; font-weight: 700; color: var(--muted-2);
+}
+.daily-line.watch .v { color: var(--warn, #b4541f); }
+.daily-line.alert .v { color: var(--danger); font-weight: 600; }
+
+/* 사이드바 "오늘 할 일" 배지 — 접힌 상태에서도 보여야 재촉이 된다 */
+.nav-badge {
+  margin-left: auto; flex: none;
+  min-width: 20px; height: 20px; padding: 0 6px;
+  display: grid; place-items: center;
+  border-radius: 999px; background: var(--danger); color: #fff;
+  font-size: .68rem; font-weight: 700; line-height: 1;
+}
+.sidebar.collapsed .nav-badge {
+  position: absolute; top: 4px; right: 4px; margin: 0;
+  min-width: 16px; height: 16px; padding: 0 4px; font-size: .6rem;
+}
+.sidebar.collapsed .nav-item { position: relative; }

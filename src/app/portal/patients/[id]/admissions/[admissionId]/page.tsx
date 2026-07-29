@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl, signMedicalImages } from "@/lib/storage";
-import { VitalChart } from "@/components/VitalChart";
+import { dailyLines } from "@/lib/admission-report";
 import { MediaGrid, type SignedFile } from "../../MediaGrid";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -23,12 +23,9 @@ export default async function PortalAdmissionDetail({
     .single();
   if (!a) notFound();
 
-  const [{ data: vitals }, { data: images }, { data: media }] = await Promise.all([
-    supabase
-      .from("vital")
-      .select("measured_at, temperature, heart_rate, resp_rate, systolic, diastolic")
-      .eq("admission_id", admissionId)
-      .order("measured_at", { ascending: true }),
+  // 바이털 수치는 보호자에게 내보내지 않는다 — 38.4라는 숫자는 안심을 주지 못한다.
+  // 매일 필요한 건 "잘 먹었나 · 잘 쌌나"이고, 이상이 있으면 특이사항으로 적어 보낸다.
+  const [{ data: images }, { data: media }] = await Promise.all([
     supabase.from("medical_image").select("id, modality, file_name, storage_path, preview_path").eq("admission_id", admissionId),
     supabase.from("media").select("id, kind, file_name, storage_path").eq("admission_id", admissionId),
   ]);
@@ -38,7 +35,7 @@ export default async function PortalAdmissionDetail({
   // 발송된 일일 리포트만 보여주고, 최신 것을 열람 처리한다 (DEFINER 함수로만 기록 가능)
   const { data: reportRows } = await supabase
     .from("admission_report")
-    .select("id, report_date, comment, sent_at")
+    .select("id, report_date, comment, feeding, elimination, special, sent_at")
     .eq("admission_id", admissionId)
     .not("sent_at", "is", null)
     .order("report_date", { ascending: false });
@@ -60,34 +57,38 @@ export default async function PortalAdmissionDetail({
         </span>
       </div>
 
-      {reports.length > 0 && (
-        <div className="portal-card" style={{ borderLeft: "4px solid var(--brand, #2f7d6a)" }}>
+      {reports.length > 0 ? (
+        <div className="portal-card">
           <div style={{ fontWeight: 800, marginBottom: 10 }}>하루하루 경과</div>
-          <div style={{ display: "grid", gap: 12 }}>
+          <div style={{ display: "grid", gap: 14 }}>
             {reports.map((r, i) => (
               <div
                 key={r.id}
                 style={{
-                  paddingBottom: 10,
+                  paddingBottom: 12,
                   borderBottom: i < reports.length - 1 ? "1px solid var(--line)" : 0,
                 }}
               >
                 <div style={{ fontWeight: 700, fontSize: ".82rem", color: "var(--muted)" }}>
                   {r.report_date}
                 </div>
-                <p style={{ margin: "4px 0 0", fontSize: ".95rem", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
-                  {r.comment}
-                </p>
+                <div style={{ display: "grid", gap: 6, marginTop: 6 }}>
+                  {dailyLines(r).map((l) => (
+                    <div key={l.label} className={`daily-line ${l.tone}`}>
+                      <span className="k">{l.label}</span>
+                      <span className="v">{l.text}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
         </div>
-      )}
-
-      {(vitals ?? []).length > 0 && (
+      ) : (
         <div className="portal-card">
-          <div style={{ fontWeight: 800, marginBottom: 8 }}>바이털 추이</div>
-          <VitalChart data={vitals ?? []} />
+          <p className="portal-tile-sub" style={{ margin: 0 }}>
+            아직 도착한 경과가 없어요. 담당 선생님이 오늘 상태를 보내면 여기에 쌓입니다.
+          </p>
         </div>
       )}
 

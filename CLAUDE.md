@@ -29,6 +29,7 @@
 ## 구조
 - `src/app/(app)/` 직원 EMR · `src/app/referral/` 1차병원 포털(읽기 전용) · `src/app/portal/` 보호자 모바일 앱
 - `supabase/migrations/` 스키마·RLS · `supabase/tests/` RLS 테스트 · `supabase/seed/` 시연용 데이터
+- `src/lib/push.ts` 웹 푸시 · `supabase/seed/` 시연용 데이터
 - 파일별 상세는 **see [src/CLAUDE.md](src/CLAUDE.md)**
 
 ## 설계 결정

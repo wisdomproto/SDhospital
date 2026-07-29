@@ -23,6 +23,10 @@
 - `loading.tsx` — 화면 전환 스켈레톤. 영역마다(`(app)`·`portal`·`referral`) + 환자 상세 안에도 따로 둔다
   (회차를 옮겨 다닐 때 왼쪽 환자 내비게이션이 남아야 한다). 공용 블록은 `src/components/Skeleton.tsx`
 - `src/app/login/PendingButton.tsx` — 로그인·초대 제출 버튼의 대기 표시(`useFormStatus`)
+- `src/lib/push.ts` — **웹 푸시 발송**(보호자/1차병원 원장/우리 직원). 대상 조회는 전부 직원 전용 DEFINER.
+  구독 저장은 `src/app/push-actions.ts`, 켜기 UI는 `src/components/EnableNotifications.tsx`(`audience` 로 문구 분리).
+  `public/sw.js` 에 `push`·`notificationclick` 핸들러
+- `src/lib/admission-report.ts` — **입원 일일 리포트 선택지**(식사·배변)와 보호자용 문장. 자유 서술이 아니라 고정 선택지
 - `src/lib/auth/roles.ts` — 역할 모델
 - `supabase/migrations/` — 스키마·RLS, `supabase/tests/` — RLS 테스트
 

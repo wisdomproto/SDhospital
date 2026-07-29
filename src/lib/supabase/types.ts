@@ -420,6 +420,45 @@ export type Database = {
         }
         Relationships: []
       }
+      notice: {
+        Row: {
+          id: string
+          title: string
+          body: string | null
+          link_url: string | null
+          link_label: string | null
+          starts_on: string
+          ends_on: string | null
+          pinned: boolean
+          created_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          body?: string | null
+          link_url?: string | null
+          link_label?: string | null
+          starts_on?: string
+          ends_on?: string | null
+          pinned?: boolean
+          created_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          body?: string | null
+          link_url?: string | null
+          link_label?: string | null
+          starts_on?: string
+          ends_on?: string | null
+          pinned?: boolean
+          created_at?: string
+          created_by?: string | null
+        }
+        Relationships: []
+      }
       patient: {
         Row: {
           birth_date: string | null

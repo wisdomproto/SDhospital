@@ -8,18 +8,26 @@ export default async function PortalVisits({
 }) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data: visits } = await supabase
-    .from("visit")
-    .select("id, visit_date, visit_no, report_comment, report_sent_at, report_read_at")
-    .eq("patient_id", id)
-    .order("visit_date", { ascending: false });
+  // 입원은 회차에 딸린 기록이라 탭을 따로 두지 않고 그 회차 아래에서 이어 본다
+  const [{ data: visits }, { data: admissions }] = await Promise.all([
+    supabase
+      .from("visit")
+      .select("id, visit_date, visit_no, report_comment, report_sent_at, report_read_at")
+      .eq("patient_id", id)
+      .order("visit_date", { ascending: false }),
+    supabase
+      .from("admission")
+      .select("id, visit_id, admitted_at, discharged_at, status")
+      .eq("patient_id", id),
+  ]);
 
   return (
     <>
       <div style={{ fontWeight: 800, fontSize: "1.05rem", padding: "2px 2px 4px" }}>진료 회차</div>
       {(visits ?? []).length === 0 && <div className="empty-state">진료 기록이 없습니다.</div>}
       {(visits ?? []).map((v) => (
-        <Link key={v.id} href={`/portal/patients/${id}/visits/${v.id}`} className="portal-tile" style={{ alignItems: "flex-start" }}>
+        <div key={v.id} style={{ display: "grid", gap: 6 }}>
+        <Link href={`/portal/patients/${id}/visits/${v.id}`} className="portal-tile" style={{ alignItems: "flex-start" }}>
           <span className="portal-chip" style={{ background: "#e8f0ff", color: "var(--primary)", fontWeight: 900, fontSize: ".92rem" }}>
             {v.visit_no != null ? `${v.visit_no}회` : "·"}
           </span>
@@ -41,13 +49,35 @@ export default async function PortalVisits({
                 </span>
               )}
             </div>
-            <div className="portal-tile-sub" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <div className="portal-tile-sub portal-tile-clamp">
               {/* 담당의 코멘트만 보여준다. 진료 내용 원문은 의료진 기록이라 보호자에게 내보내지 않는다 */}
               {v.report_sent_at ? v.report_comment || "내용 없음" : "리포트 준비 중입니다"}
             </div>
           </div>
           <span style={{ color: "var(--muted)", fontSize: "1.2rem" }}>›</span>
         </Link>
+        {(admissions ?? [])
+          .filter((a) => a.visit_id === v.id)
+          .map((a) => (
+            <Link
+              key={a.id}
+              href={`/portal/patients/${id}/admissions/${a.id}`}
+              className="portal-tile portal-subtile"
+            >
+              <span aria-hidden style={{ fontSize: 15 }}>🏥</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: ".88rem" }}>
+                  입원 {a.admitted_at}
+                  {a.discharged_at ? ` ~ ${a.discharged_at}` : ""}
+                </div>
+                <div className="portal-tile-sub">
+                  {a.status === "admitted" ? "입원 중이에요" : "하루하루 경과 보기"}
+                </div>
+              </div>
+              <span style={{ color: "var(--muted)", fontSize: "1.1rem" }}>›</span>
+            </Link>
+          ))}
+        </div>
       ))}
     </>
   );

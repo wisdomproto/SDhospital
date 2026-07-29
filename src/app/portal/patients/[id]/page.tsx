@@ -34,6 +34,14 @@ export default async function PortalPatientOverview({
     .is("signed_at", null)
     .order("created_at", { ascending: true });
 
+  // 병원 소식. 기간이 지난 것은 RLS 가 감추므로 여기서 날짜를 다시 따지지 않는다.
+  const { data: notices } = await supabase
+    .from("notice")
+    .select("id, title, body, link_url, link_label, pinned")
+    .order("pinned", { ascending: false })
+    .order("starts_on", { ascending: false })
+    .limit(5);
+
   const feed = await ownerReportFeed(supabase, id, `/portal/patients/${id}`, 3);
   const unread = feed.filter((f) => f.unread).length;
 
@@ -75,6 +83,34 @@ export default async function PortalPatientOverview({
               </Link>
             ))}
           </div>
+        </div>
+      )}
+
+      {(notices ?? []).length > 0 && (
+        <div style={{ display: "grid", gap: 10 }}>
+          {(notices ?? []).map((n) => (
+            <div key={n.id} className="portal-card notice-card">
+              <div style={{ fontWeight: 800, fontSize: ".97rem" }}>
+                {n.pinned && <span aria-hidden>📌 </span>}
+                {n.title}
+              </div>
+              {n.body && (
+                <p style={{ margin: "6px 0 0", fontSize: ".9rem", lineHeight: 1.65, whiteSpace: "pre-wrap" }}>
+                  {n.body}
+                </p>
+              )}
+              {n.link_url && (
+                <a
+                  href={n.link_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ display: "inline-block", marginTop: 10, fontWeight: 700, fontSize: ".88rem" }}
+                >
+                  {n.link_label || "자세히 보기"} →
+                </a>
+              )}
+            </div>
+          ))}
         </div>
       )}
 

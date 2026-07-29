@@ -9,6 +9,7 @@ const NAV = [
   { href: "/today", label: "오늘 할 일", icon: "check" },
   { href: "/patients", label: "환자", icon: "paw" },
   { href: "/owners", label: "보호자", icon: "user" },
+  { href: "/notices", label: "병원 소식", icon: "megaphone" },
   { href: "/hospitals", label: "1차병원", icon: "hospital" },
   { href: "/drugs", label: "약품", icon: "pill" },
 ] as const;
@@ -33,6 +34,8 @@ function Icon({ name }: { name: string }) {
       return (<svg {...c}><circle cx="12" cy="8" r="4" /><path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6" /></svg>);
     case "hospital":
       return (<svg {...c}><path d="M4 21V6l8-3 8 3v15" /><path d="M12 9v6M9 12h6" /></svg>);
+    case "megaphone":
+      return (<svg {...c}><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1Z" /><path d="M16 9a3 3 0 0 1 0 6" /></svg>);
     case "pill":
       return (<svg {...c}><rect x="3" y="8" width="18" height="8" rx="4" /><path d="M12 8v8" /></svg>);
     case "check":

@@ -51,7 +51,7 @@ export default async function PortalAdmissionDetail({
   return (
     <>
       <RefreshOnRead when={wasUnread.size > 0} />
-      <Link href={`/portal/patients/${id}/admissions`} className="portal-tile-sub" style={{ textDecoration: "none" }}>← 입원 목록</Link>
+      <Link href={`/portal/patients/${id}/visits`} className="portal-tile-sub" style={{ textDecoration: "none" }}>← 진료 기록</Link>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div>
           <div style={{ fontSize: "1.25rem", fontWeight: 900 }}>입원 {a.admitted_at}</div>

@@ -27,20 +27,9 @@
 - DB 타입 재생성: `npx supabase gen types typescript --local`
 
 ## 구조
-- `src/app/(app)/` — 직원 EMR (인증·staff 게이팅)
-- `src/app/referral/` — **1차병원 원장 데스크탑 포털** (읽기 전용). 직원 EMR과 동일한 셸/클래스(`app-shell`·`sidebar`·`DataTable`·`card`)를 재사용하고 편집(폼·업로드·수정/삭제)만 제거. `ReferralSidebar.tsx` + 목록/개요/회차(`v/[visitId]`)/입원(`a/[admissionId]`) 페이지
-- `src/app/portal/` — 보호자 모바일 앱 (원장이 오면 `/referral`로 리다이렉트)
-- `src/app/login/` — 직원 로그인 (데모: 병원별 원장 버튼 → `VET_ACCOUNTS`), `src/app/login/portal/` — 보호자 모바일 로그인, `src/proxy.ts` — 세션 갱신 + 라우트 가드
-- `src/app/(app)/today/` — **오늘 할 일**(미발송 목록, 밀린 것 우선) + `[kind]/[id]` **병동 입력 화면**(카메라 즉시·바이털 프리필·한 화면 발송). 로직은 `src/lib/worklist.ts`
-- `src/lib/supabase/` — 브라우저/서버 클라이언트 + 생성된 타입. **세 클라이언트 모두 `createXClient<Database>` 제네릭 필수** (안 붙이면 모든 쿼리가 `any`가 되어 컬럼 오타가 안 잡힌다)
-- `src/lib/validation/report.ts` — 리포트 공통 규칙, `src/lib/reports.ts` — 보호자 리포트 피드/안읽음
-- `src/lib/image.ts` + `src/components/PhotoInput.tsx` — **업로드 전 브라우저 축소**(1600px+WebP)
-- `src/lib/consent/forms.ts` — **동의서 양식 5종(본문 포함)**. 양식은 DB 아닌 코드에 둔다(git = 버전관리)
-- `src/components/ConsentSheet.tsx` + `SignaturePad.tsx` — 보호자앱·병원태블릿·직원이 공유하는 동의서 화면
-- `src/lib/crypto.ts` — 주민등록번호 등 고유식별정보 AES-256-GCM (키: `CONSENT_ENC_KEY`)
-- `src/app/manifest.ts` · `public/sw.js` · `public/offline.html` — PWA. `src/app/portal/InstallApp.tsx`가 등록+설치 안내
-- `src/lib/auth/roles.ts` — 역할 모델
-- `supabase/migrations/` — 스키마·RLS, `supabase/tests/` — RLS 테스트
+- `src/app/(app)/` 직원 EMR · `src/app/referral/` 1차병원 포털(읽기 전용) · `src/app/portal/` 보호자 모바일 앱
+- `supabase/migrations/` 스키마·RLS · `supabase/tests/` RLS 테스트 · `supabase/seed/` 시연용 데이터
+- 파일별 상세는 **see [src/CLAUDE.md](src/CLAUDE.md)**
 
 ## 설계 결정
 - **기본 단위는 진료 회차(`visit`).** 입원하러 온 환자도 진료 기록이 먼저 생기고,
@@ -53,6 +42,13 @@
 - 보호자는 읽기 전용이라 **열람 표시는 DEFINER 함수로만** (`mark_visit_report_read`, `mark_admission_report_read`).
 - ⚠️ **보호자에게 진료 원문·처방 상세를 보여주지 않는다** (분쟁 소지). 담당의 코멘트 + 검사 요약 + 사진/영상만.
   보호자 쿼리에서 `visit.note` 컬럼 자체를 뺐다. **1차병원(`/referral`)은 전부 본다** — 의료진이다.
+- **보호자 리포트는 조립하되 요약하지 않는다.** 수의사가 넣는 건 주 증상(C.C.) 한 줄 · 코멘트 · (선택) 추가 안내뿐이고,
+  제목·프로필(종·품종·나이·체중)·"지난 방문 대비 변화"(직전 회차 C.C. + 체중 증감)는 계산한다.
+  진료 원문을 우리가 줄여서 내보내면 그 문장의 책임을 병원이 진다. **미리보기는 저장값이 아니라 입력 중인 값으로** 조립한다 —
+  그래야 미리보기가 곧 실제 발송물이다.
+- **의뢰 진행 상태는 컬럼으로 저장하지 않는다.** `closed_at`+`admission.status`+`referred_back_at`에서 전부 파생된다.
+  저장하면 실제와 어긋나는 순간이 오고 그걸 맞추는 코드를 또 짜야 한다. 파생 불가능한 "환송했는가"만 컬럼이다.
+- **접근 로그는 외부 역할이 남길 수만 있다** (`log_access` DEFINER). 읽지도 고치지도 못한다 — 로그 자체가 감사 대상이다.
 - 사진은 **업로드 전 브라우저에서** 1600px+WebP로 줄인다(서버 변환 없음). 의료영상만 원본 보존 +
   보호자용 사본(`medical_image.preview_path`)을 따로 올린다.
 - 서비스워커는 **진료 기록을 캐시하지 않는다** (가족 공용 폰·로그아웃 후 잔존). 껍데기만 캐시.
@@ -65,19 +61,12 @@
 - 외부 공유 UI 분리: **보호자 = 모바일(`/portal`)**, **원장 = 데스크탑(`/referral`)**. 원장 화면은 직원 EMR과 "수정 가능 여부"만 다르게 (동일 레이아웃·컴포넌트, 읽기 전용)
 
 ## 계획서 (`docs/superpowers/plans/`)
-- **01 기반** ✅ — 스키마·RLS·직원 로그인·앱 셸
-- **02 환자 관리** ✅ — 보호자·1차병원·환자 CRUD, 검색 목록, 상세/수정
-- **03 진료 기록** ✅ — 회차·약품 마스터·처방·의료영상/사진 업로드(Storage+서명URL)
-- **04 입원·바이털** ✅ — 입원 생애주기·바이털 입력·Recharts 시계열 그래프
-- **05 초대·외부 포털** ✅ — 초대 발급/수락(DEFINER 함수), 읽기전용 보호자 모바일 포털 + **1차병원 원장 데스크탑 포털(`/referral`)**
-
-- **06 보호자 앱 MVP** 🚧 — `2026-07-26-mvp-owner-app.md`.
-  M-0 스키마·M-1/M-1b 리포트·M-2 오늘 할 일·병동 입력 화면·M-3 종합 리포트·사진 최적화·PWA 완료.
-  M-5 전자 동의서 완료. 대기: 알림(발신번호), M-8 FAQ(10년치 상담 데이터), M-4 검진(샘플). 다음 M-6/M-7 또는 레퍼럴 브릿지.
-
-EMR 자체(Plan 01–05)는 완성. 이후 후보: 알림 채널(문자/알림톡/푸시) 연결, 의료영상 뷰어·DICOM, 1차병원 EMR+PACS, AI, 예약/청구, 감사 로그, 네이티브 앱.
-
-스펙: `docs/superpowers/specs/2026-07-07-vet-emr-design.md`
+- **01 기반 · 02 환자 · 03 진료 · 04 입원 · 05 초대/외부 포털** ✅ — EMR 자체는 완성
+- **06 보호자 앱 MVP** 🚧 — `2026-07-26-mvp-owner-app.md` **(진행 상황·결정 근거는 전부 여기)**.
+  리포트·오늘 할 일·병동 입력·종합 리포트·PWA·전자 동의서·전송 미리보기·레퍼럴 브릿지 완료.
+  대기: **알림 채널(발신번호 필요 — 없으면 이 사업은 작동하지 않는다)**, FAQ(10년치 상담 데이터), 건강검진(샘플).
+- 이후 후보: 의료영상 뷰어·DICOM, 1차병원 EMR+PACS, AI, 예약/청구, 네이티브 앱
+- 스펙: `docs/superpowers/specs/2026-07-07-vet-emr-design.md`
 
 ## 배포 (Railway)
 - `railway.json`(Nixpacks, start `npm run start`, healthcheck `/login`) + `.nvmrc`(Node 22). GitHub 리포 연결 → env 2개(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) → Generate Domain. DB는 이미 Supabase 클라우드라 앱만 배포.

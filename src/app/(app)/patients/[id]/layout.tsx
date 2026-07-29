@@ -21,7 +21,7 @@ export default async function PatientLayout({
       .order("visit_date", { ascending: false }),
     supabase
       .from("admission")
-      .select("id, admitted_at, status")
+      .select("id, visit_id, admitted_at, status")
       .eq("patient_id", id)
       .order("admitted_at", { ascending: false }),
   ]);

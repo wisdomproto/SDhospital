@@ -111,7 +111,7 @@ export default async function VisitDetail({
               <SoapTemplate target="note" />
               <span className="muted" style={{ fontSize: 12 }}>보호자에게는 보이지 않습니다</span>
             </div>
-            <textarea name="note" rows={6} defaultValue={v.note ?? ""} className={inputClass} />
+            <textarea name="note" rows={20} defaultValue={v.note ?? ""} className={`${inputClass} note-input`} />
           </div>
           <div><SubmitButton>저장</SubmitButton></div>
         </form>
@@ -157,7 +157,8 @@ export default async function VisitDetail({
           <FormField label="담당의 코멘트 · 한 줄에 하나씩 쓰면 항목으로 나갑니다">
             <textarea
               name="comment"
-              rows={4}
+              rows={5}
+              data-grow
               defaultValue={v.report_comment ?? ""}
               placeholder={"예)\n보행 시 균형을 잡지 못하는 증상이 있어요\n눈이 왔다 갔다 하는 안구 진탕 증상이 있어요\n타 병원에서 항경련제를 처방받은 과거력이 있어요"}
               className={inputClass}
@@ -167,6 +168,7 @@ export default async function VisitDetail({
             <textarea
               name="report_notice"
               rows={2}
+              data-grow
               defaultValue={v.report_notice ?? ""}
               placeholder="예) 당분간 계단과 미끄러운 바닥은 피해주세요. 증상이 심해지면 바로 연락 주세요."
               className={inputClass}
@@ -204,7 +206,8 @@ export default async function VisitDetail({
             <FormField label="회신 소견">
               <textarea
                 name="referral_note"
-                rows={4}
+                rows={5}
+                data-grow
                 defaultValue={v.referral_note ?? ""}
                 placeholder="예) 슬개골 3기로 확인되어 교정술 시행했습니다. 경과 양호하며 2주 뒤 실밥 제거 부탁드립니다. 재활은 4주차부터 권장합니다."
                 className={inputClass}

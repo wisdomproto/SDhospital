@@ -15,7 +15,7 @@ export default async function ReferralPatientLayout({
   const [{ data: patient }, { data: visits }, { data: admissions }] = await Promise.all([
     supabase.from("patient").select("id, name, species").eq("id", id).single(),
     supabase.from("visit").select("id, visit_date, visit_no").eq("patient_id", id).order("visit_date", { ascending: false }),
-    supabase.from("admission").select("id, admitted_at, status").eq("patient_id", id).order("admitted_at", { ascending: false }),
+    supabase.from("admission").select("id, visit_id, admitted_at, status").eq("patient_id", id).order("admitted_at", { ascending: false }),
   ]);
   if (!patient) notFound();
 

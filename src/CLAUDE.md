@@ -18,6 +18,11 @@
 - `src/components/ConsentSheet.tsx` + `SignaturePad.tsx` — 보호자앱·병원태블릿·직원이 공유하는 동의서 화면
 - `src/lib/crypto.ts` — 주민등록번호 등 고유식별정보 AES-256-GCM (키: `CONSENT_ENC_KEY`)
 - `src/app/manifest.ts` · `public/sw.js` · `public/offline.html` — PWA. `src/app/portal/InstallApp.tsx`가 등록+설치 안내
+- `src/app/(app)/CommandPalette.tsx` + `search-actions.ts` — 상단 ⌘K 검색과 **＋진료 입력**(환자 고르면 오늘 회차 생성).
+  둘이 같은 창을 쓴다 — 진료를 넣으려면 어차피 환자를 먼저 골라야 한다
+- `loading.tsx` — 화면 전환 스켈레톤. 영역마다(`(app)`·`portal`·`referral`) + 환자 상세 안에도 따로 둔다
+  (회차를 옮겨 다닐 때 왼쪽 환자 내비게이션이 남아야 한다). 공용 블록은 `src/components/Skeleton.tsx`
+- `src/app/login/PendingButton.tsx` — 로그인·초대 제출 버튼의 대기 표시(`useFormStatus`)
 - `src/lib/auth/roles.ts` — 역할 모델
 - `supabase/migrations/` — 스키마·RLS, `supabase/tests/` — RLS 테스트
 

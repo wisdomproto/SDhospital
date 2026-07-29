@@ -31,6 +31,8 @@
 - `src/lib/case-stories.ts` — 사례 매칭(태그 ⊂ 주 증상 + 종 일치). 순수 함수
 - `src/app/portal/patients/[id]/PortalTabBar.tsx` (탭 4개 + 안읽음 배지) · `PetSwitcher.tsx`(헤더에서 반려동물 전환) ·
   `profile/`(내 정보 — 사진 업로드는 `set_patient_photo` DEFINER, data URL) · `RefreshOnRead.tsx`(읽음 처리 후 배지 갱신)
+- `src/lib/seen.ts` + `src/app/portal/MarkNewsSeen.tsx` — 소식 "마지막 본 시각" 쿠키.
+  ⚠️ 서버가 읽는 상수는 `"use client"` 파일에 두지 말 것 (서버에서 `undefined` 가 된다 — `src/lib/last-pet.ts` 도 같은 이유)
 - `src/lib/reports.ts` — `ownerReportFeed`(피드) · **`unreadFeed`(안 읽은 것만 직접 조회)** · `unreadCounts`(배지)
 - `src/app/portal/patients/[id]/MediaGrid.tsx` — 사진·영상 그리드 + **앱 내 뷰어**(닫기·이동·확대).
   ⚠️ 클라이언트라 `lib/storage`(서버 클라이언트 포함)를 import 하면 안 된다 — 순수 판별 함수는 `src/lib/media.ts`

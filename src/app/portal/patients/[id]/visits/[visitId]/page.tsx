@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { signedUrl, signMedicalImages } from "@/lib/storage";
 import { MediaGrid, type SignedFile } from "../../MediaGrid";
 import { buildOwnerReport } from "@/lib/owner-report";
+import { matchCaseStories, type CaseStory } from "@/lib/case-stories";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -36,6 +37,15 @@ export default async function PortalVisitDetail({
       .maybeSingle(),
   ]);
   const report = patient ? buildOwnerReport(patient, v, prev) : null;
+
+  // 같은 문제로 치료받은 사례. 태그가 주 증상에 걸릴 때만 붙고, 없으면 아예 안 붙는다.
+  const { data: stories } = await supabase
+    .from("case_story")
+    .select("id, title, summary, url, tags, species");
+  const cases = matchCaseStories((stories ?? []) as CaseStory[], {
+    chiefComplaint: v.chief_complaint,
+    species: patient?.species ?? null,
+  });
 
   // 열람 표시 — 보호자는 visit 에 쓰기 권한이 없으므로 DEFINER 함수로만 기록한다.
   // 최초 1회만 기록되고, 실패해도 화면은 그대로 보여준다.
@@ -97,6 +107,26 @@ export default async function PortalVisitDetail({
           >
             전체 리포트 보기 · PDF 저장 →
           </Link>
+        </div>
+      )}
+
+      {cases.length > 0 && (
+        <div className="portal-card">
+          <div style={{ fontWeight: 800, marginBottom: 4 }}>같은 문제로 치료받은 아이들</div>
+          <p className="portal-tile-sub" style={{ margin: "0 0 10px" }}>
+            병원이 기록해 둔 치료 이야기예요. 아이마다 상태가 달라 경과는 다를 수 있어요.
+          </p>
+          <div style={{ display: "grid", gap: 8 }}>
+            {cases.map((c) => (
+              <a key={c.id} href={c.url} target="_blank" rel="noreferrer" className="portal-tile case-tile">
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: ".92rem" }}>{c.title}</div>
+                  {c.summary && <div className="portal-tile-sub portal-tile-clamp">{c.summary}</div>}
+                </div>
+                <span style={{ color: "var(--muted)", fontSize: "1.1rem" }}>↗</span>
+              </a>
+            ))}
+          </div>
         </div>
       )}
 

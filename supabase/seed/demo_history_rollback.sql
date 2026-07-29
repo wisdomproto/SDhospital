@@ -5,6 +5,7 @@
 
 begin;
 
+delete from case_story        where id::text like 'd0000000%';
 delete from notice            where id::text like 'd0000000%';
 delete from admission_report where id::text like 'd0000000%';
 delete from vital            where id::text like 'd0000000%';

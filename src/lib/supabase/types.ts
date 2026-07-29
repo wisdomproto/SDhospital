@@ -420,6 +420,39 @@ export type Database = {
         }
         Relationships: []
       }
+      case_story: {
+        Row: {
+          id: string
+          title: string
+          summary: string | null
+          url: string
+          tags: string[]
+          species: string | null
+          active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          summary?: string | null
+          url: string
+          tags?: string[]
+          species?: string | null
+          active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          summary?: string | null
+          url?: string
+          tags?: string[]
+          species?: string | null
+          active?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
       notice: {
         Row: {
           id: string

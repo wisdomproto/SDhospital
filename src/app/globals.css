@@ -1508,3 +1508,6 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
   background: linear-gradient(180deg, #fffdf6, #fff);
   border-color: #ecdfc0;
 }
+
+/* 치료 사례 — 리포트가 아니라 병원 글로 나가는 링크라 살짝 구분한다 */
+.portal-tile.case-tile { background: var(--surface-soft, #f7f5f0); padding: 12px 13px; border-radius: 14px; }

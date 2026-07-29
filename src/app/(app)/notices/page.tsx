@@ -15,7 +15,7 @@ export default async function NoticesPage({
   const today = kstToday();
   const { data: notices } = await supabase
     .from("notice")
-    .select("id, title, body, link_url, starts_on, ends_on, pinned")
+    .select("id, title, body, link_url, coupon_label, starts_on, ends_on, pinned")
     .order("pinned", { ascending: false })
     .order("starts_on", { ascending: false });
 
@@ -47,6 +47,7 @@ export default async function NoticesPage({
             <span key="t" style={{ display: "grid", gap: 2 }}>
               <b>
                 {n.pinned && "📌 "}
+                {n.coupon_label && "🎟 "}
                 {n.title}
               </b>
               <span className="muted" style={{ fontSize: ".8rem" }}>
@@ -106,6 +107,9 @@ export default async function NoticesPage({
               <input name="link_label" placeholder="자세히 보기" className={inputClass} />
             </FormField>
           </div>
+          <FormField label="쿠폰 문구 (선택) · 적으면 쿠폰 카드로 나갑니다">
+            <input name="coupon_label" placeholder="예) 건강검진 20% 할인" className={inputClass} />
+          </FormField>
           <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: ".88rem" }}>
             <input type="checkbox" name="pinned" value="1" style={{ width: 16, height: 16, accentColor: "var(--primary)" }} />
             맨 위에 고정
@@ -114,6 +118,8 @@ export default async function NoticesPage({
         </form>
         <p className="muted" style={{ fontSize: 13, marginTop: 12, marginBottom: 0 }}>
           종료일이 지나면 <b>보호자 화면에서 자동으로 사라집니다.</b> 내리는 걸 사람이 기억해야 하는 구조는 반드시 실패합니다.
+          <br />
+          쿠폰은 <b>코드도 사용 처리도 없습니다</b> — 보호자가 앱 화면을 보여주면 접수에서 눈으로 확인하시면 됩니다.
         </p>
       </div>
     </div>

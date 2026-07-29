@@ -459,6 +459,7 @@ export type Database = {
           title: string
           body: string | null
           link_url: string | null
+          coupon_label: string | null
           link_label: string | null
           starts_on: string
           ends_on: string | null
@@ -471,6 +472,7 @@ export type Database = {
           title: string
           body?: string | null
           link_url?: string | null
+          coupon_label?: string | null
           link_label?: string | null
           starts_on?: string
           ends_on?: string | null
@@ -483,6 +485,7 @@ export type Database = {
           title?: string
           body?: string | null
           link_url?: string | null
+          coupon_label?: string | null
           link_label?: string | null
           starts_on?: string
           ends_on?: string | null

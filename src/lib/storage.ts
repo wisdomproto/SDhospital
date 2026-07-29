@@ -17,12 +17,7 @@ export async function signedUrl(path: string, expiresIn = 300): Promise<string |
   return data?.signedUrl ?? null;
 }
 
-export function isVideoFile(fileName: string | null | undefined): boolean {
-  return /\.(mp4|mov|webm|m4v|avi|mkv)$/i.test(fileName ?? "");
-}
-export function isImageFile(fileName: string | null | undefined): boolean {
-  return /\.(png|jpe?g|gif|webp|bmp|heic|svg)$/i.test(fileName ?? "");
-}
+export { isVideoFile, isImageFile } from "@/lib/media";
 
 /**
  * 보호자 화면용 의료영상 링크.

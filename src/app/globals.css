@@ -1511,3 +1511,130 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
 
 /* 치료 사례 — 리포트가 아니라 병원 글로 나가는 링크라 살짝 구분한다 */
 .portal-tile.case-tile { background: var(--surface-soft, #f7f5f0); padding: 12px 13px; border-radius: 14px; }
+
+/* 사진·영상 뷰어 — 앱 안에서 열고 닫는다.
+   새 탭으로 열면 홈 화면에 설치한 앱에는 주소창도 뒤로가기도 없어 돌아올 수가 없다. */
+button.media-thumb.media-open {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  cursor: zoom-in;
+  font: inherit;
+}
+.media-zoom {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .55);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.viewer {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #0b0d10;
+  color: #fff;
+  display: grid;
+  /* 위/아래 막대는 고정, 가운데가 남는 만큼 전부 이미지 */
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+.viewer::backdrop { background: #000; }
+.viewer-top,
+.viewer-bottom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, .04);
+}
+.viewer-title {
+  flex: 1;
+  min-width: 0;
+  font-size: .82rem;
+  color: #cfd6dd;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.viewer-title b { color: #fff; }
+.viewer-close {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+.viewer-stage {
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+}
+.viewer-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform .12s;
+  user-select: none;
+}
+.viewer-stage.zoomed { cursor: grab; }
+.viewer-bottom { justify-content: center; }
+.viewer-bottom button {
+  min-width: 44px;
+  height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.viewer-bottom button:disabled { opacity: .3; cursor: default; }
+.viewer-count { font-size: .84rem; color: #cfd6dd; font-variant-numeric: tabular-nums; }
+.viewer-zoom, .viewer-orig { font-size: .84rem !important; }
+.viewer-orig {
+  display: grid;
+  place-items: center;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* 쿠폰 — 코드도 사용 처리도 없다. 접수에서 눈으로 보는 게 전부라 한눈에 읽혀야 한다 */
+.notice-card.coupon { border-color: var(--primary); }
+.coupon-strip {
+  margin: -2px 0 10px;
+  padding: 14px 12px;
+  border: 2px dashed var(--primary);
+  border-radius: 14px;
+  background: var(--surface-soft, #f4fbf9);
+  text-align: center;
+}
+.coupon-label {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--primary-dark, var(--primary));
+  letter-spacing: -.02em;
+}
+.coupon-note { margin-top: 4px; font-size: .76rem; color: var(--muted-2); }

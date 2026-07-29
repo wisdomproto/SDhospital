@@ -27,6 +27,10 @@
   구독 저장은 `src/app/push-actions.ts`, 켜기 UI는 `src/components/EnableNotifications.tsx`(`audience` 로 문구 분리).
   `public/sw.js` 에 `push`·`notificationclick` 핸들러
 - `src/lib/admission-report.ts` — **입원 일일 리포트 선택지**(식사·배변)와 보호자용 문장. 자유 서술이 아니라 고정 선택지
+- `src/app/(app)/notices/` · `src/app/(app)/cases/` — **병원 소식(+쿠폰)** 과 **치료 사례** 관리(직원 전용)
+- `src/lib/case-stories.ts` — 사례 매칭(태그 ⊂ 주 증상 + 종 일치). 순수 함수
+- `src/app/portal/patients/[id]/MediaGrid.tsx` — 사진·영상 그리드 + **앱 내 뷰어**(닫기·이동·확대).
+  ⚠️ 클라이언트라 `lib/storage`(서버 클라이언트 포함)를 import 하면 안 된다 — 순수 판별 함수는 `src/lib/media.ts`
 - `src/lib/auth/roles.ts` — 역할 모델
 - `supabase/migrations/` — 스키마·RLS, `supabase/tests/` — RLS 테스트
 

@@ -203,6 +203,47 @@ begin
   if owners <> 1 then raise exception 'owner targets should be ownerX only, got %', owners; end if;
 end $$;
 
+-- 건강검진 — 보호자는 발송된 것만, 값도 부모의 가시성을 따라야 한다
+reset role;
+insert into checkup (id, patient_id, visit_id, checked_on, conclusion) values
+  ('aaaaaaaa-1111-4000-8000-000000000001', 'cccccccc-0000-0000-0000-000000000001',
+   'dddddddd-0000-0000-0000-000000000001', current_date, '종합 소견');
+insert into checkup_value (checkup_id, section_key, item_key, value) values
+  ('aaaaaaaa-1111-4000-8000-000000000001', 'chemistry', 'BUN', '44.2');
+
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}', true);
+do $$
+declare n int; v int;
+begin
+  select count(*) into n from checkup;
+  select count(*) into v from checkup_value;
+  if n <> 0 then raise exception 'ownerX must not see an unsent checkup, saw %', n; end if;
+  if v <> 0 then raise exception 'ownerX must not see values of an unsent checkup, saw %', v; end if;
+end $$;
+
+reset role;
+update checkup set sent_at = now() where id = 'aaaaaaaa-1111-4000-8000-000000000001';
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}', true);
+select mark_checkup_read('aaaaaaaa-1111-4000-8000-000000000001');
+do $$
+declare n int; v int;
+begin
+  select count(*) into n from checkup;
+  select count(*) into v from checkup_value;
+  if n <> 1 then raise exception 'ownerX should see the sent checkup, saw %', n; end if;
+  if v <> 1 then raise exception 'ownerX should see its values, saw %', v; end if;
+end $$;
+
+reset role;
+do $$
+declare r timestamptz;
+begin
+  select read_at into r from checkup where id = 'aaaaaaaa-1111-4000-8000-000000000001';
+  if r is null then raise exception 'mark_checkup_read must stamp read_at'; end if;
+end $$;
+
 reset role;
 select 'RLS TESTS PASSED' as result;
 rollback;

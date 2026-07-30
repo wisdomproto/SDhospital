@@ -420,6 +420,78 @@ export type Database = {
         }
         Relationships: []
       }
+      checkup: {
+        Row: {
+          id: string
+          patient_id: string
+          visit_id: string
+          checked_on: string
+          vet_name: string | null
+          conclusion: string | null
+          recheck_on: string | null
+          recheck_note: string | null
+          sent_at: string | null
+          read_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          patient_id: string
+          visit_id: string
+          checked_on?: string
+          vet_name?: string | null
+          conclusion?: string | null
+          recheck_on?: string | null
+          recheck_note?: string | null
+          sent_at?: string | null
+          read_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          patient_id?: string
+          visit_id?: string
+          checked_on?: string
+          vet_name?: string | null
+          conclusion?: string | null
+          recheck_on?: string | null
+          recheck_note?: string | null
+          sent_at?: string | null
+          read_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      checkup_value: {
+        Row: {
+          id: string
+          checkup_id: string
+          section_key: string
+          item_key: string
+          value: string | null
+          side: string | null
+          note: string | null
+        }
+        Insert: {
+          id?: string
+          checkup_id: string
+          section_key: string
+          item_key: string
+          value?: string | null
+          side?: string | null
+          note?: string | null
+        }
+        Update: {
+          id?: string
+          checkup_id?: string
+          section_key?: string
+          item_key?: string
+          value?: string | null
+          side?: string | null
+          note?: string | null
+        }
+        Relationships: []
+      }
       case_story: {
         Row: {
           id: string
@@ -893,6 +965,7 @@ export type Database = {
         Returns: { id: string; endpoint: string; p256dh: string; auth: string }[]
       }
       mark_push_failed: { Args: { p_id: string }; Returns: undefined }
+      mark_checkup_read: { Args: { p_checkup_id: string }; Returns: undefined }
       log_access: {
         Args: { p_patient_id: string; p_target: string; p_target_id: string | null }
         Returns: undefined

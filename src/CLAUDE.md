@@ -40,7 +40,10 @@
   `evaluate.ts`(값 하나의 판정, 근거 없으면 `unknown`) · `load.ts`(값이 있는 섹션만 · 지난 검진 값).
   입력 `(app)/patients/[id]/k/[checkupId]` (한 폼에 전부, 저장은 **지우고 다시 넣는다** —
   `side` 가 null 이라 upsert 가 안 듣는다) · 보호자 `portal/.../checkups/[checkupId]` ·
-  1차병원은 회차 화면 안에 카드로 붙는다
+  1차병원은 회차 화면 안에 카드로 붙는다.
+  미발송 검진은 **오늘 할 일**에 올라오고(소견 없으면 "소견 작성 필요"),
+  재검일은 `src/app/api/cron/recheck/route.ts` 가 하루 한 번 보호자·직원에게 민다
+  (`recheck_notified_at` 이 두 번 보내는 걸 막는다). ⚠️ `src/lib/supabase/service.ts` 는 **이 경로 전용** — 화면에서 쓰면 그 화면엔 RLS 가 없다
 - `src/lib/auth/roles.ts` — 역할 모델
 - `supabase/migrations/` — 스키마·RLS, `supabase/tests/` — RLS 테스트
 

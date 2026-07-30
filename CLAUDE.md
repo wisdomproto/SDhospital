@@ -112,6 +112,10 @@
   `npx web-push generate-vapid-keys` 로 만든다. **공개키를 바꾸면 기존 구독이 전부 무효**가 되어 보호자가 다시 켜야 한다.
 - ⚠️ **`CONSENT_ENC_KEY` 필수** (주민등록번호 암호화). Railway 에 로컬과 다른 값으로 넣고 **별도 백업** —
   잃어버리면 저장된 주민번호를 복구할 수 없다.
+- **재검 알림**은 하루 한 번 `GET /api/cron/recheck` 를 불러야 돈다 —
+  `Authorization: Bearer $CRON_SECRET`. `CRON_SECRET` 과 **`SUPABASE_SERVICE_ROLE_KEY`** 를 넣는다
+  (스케줄러엔 세션이 없어 RLS 를 못 통과한다 — 서비스 키를 쓰는 **유일한** 경로다).
+  안 넣으면 503 을 돌려주고 아무 일도 안 한다. 지난 날짜도 같이 집으므로 하루 걸러도 재검이 사라지지 않는다.
 - 배포 후 Supabase Auth → URL Configuration에 배포 도메인 등록.
 
 ## 로컬 개발 메모

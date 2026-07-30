@@ -430,6 +430,7 @@ export type Database = {
           conclusion: string | null
           recheck_on: string | null
           recheck_note: string | null
+          recheck_notified_at: string | null
           sent_at: string | null
           read_at: string | null
           created_at: string
@@ -443,6 +444,7 @@ export type Database = {
           conclusion?: string | null
           recheck_on?: string | null
           recheck_note?: string | null
+          recheck_notified_at?: string | null
           sent_at?: string | null
           read_at?: string | null
           created_at?: string
@@ -456,6 +458,7 @@ export type Database = {
           conclusion?: string | null
           recheck_on?: string | null
           recheck_note?: string | null
+          recheck_notified_at?: string | null
           sent_at?: string | null
           read_at?: string | null
           created_at?: string

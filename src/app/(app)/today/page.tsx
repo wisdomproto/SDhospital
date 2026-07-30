@@ -9,7 +9,7 @@ export default async function TodayWorklist() {
   const supabase = await createClient();
   const today = kstToday();
 
-  const [{ data: visitRows }, { data: admRows }, { data: todayReports }] = await Promise.all([
+  const [{ data: visitRows }, { data: admRows }, { data: todayReports }, { data: checkupRows }] = await Promise.all([
     // 진료가 끝났는데 아직 리포트가 안 나간 회차 (오늘 것 + 밀린 것)
     supabase
       .from("visit")
@@ -22,6 +22,12 @@ export default async function TodayWorklist() {
       .select("id, admitted_at, patient:patient_id(id, name, species)")
       .eq("status", "admitted"),
     supabase.from("admission_report").select("admission_id, ready_at, sent_at").eq("report_date", today),
+    // 결과를 넣어 놓고 아직 안 보낸 검진. 소견이 비어 있으면 쓸 게 남은 것이다
+    supabase
+      .from("checkup")
+      .select("id, patient_id, checked_on, conclusion, patient:patient_id(id, name, species)")
+      .is("sent_at", null)
+      .order("checked_on", { ascending: true }),
   ]);
 
   const sentToday = new Set(
@@ -62,6 +68,18 @@ export default async function TodayWorklist() {
           awaitingReview: readyToday.has(a.id),
         };
       }),
+    ...(checkupRows ?? []).map((c) => {
+      const p = c.patient as unknown as Pet;
+      return {
+        kind: "checkup" as const,
+        href: `/patients/${c.patient_id}/k/${c.id}`,
+        patientName: p?.name ?? "-",
+        species: p?.species ?? null,
+        date: c.checked_on,
+        overdueDays: Math.max(0, daysBetween(c.checked_on, today)),
+        subtitle: c.conclusion ? "건강검진 · 발송 대기" : "건강검진 · 소견 작성 필요",
+      };
+    }),
   ];
 
   const list = sortWorkItems(items);

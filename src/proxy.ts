@@ -29,7 +29,9 @@ export async function proxy(request: NextRequest) {
   // (서비스 워커가 로그인 화면 HTML 을 받아버리면 등록 자체가 실패한다)
   const isAppShell =
     path === "/sw.js" || path === "/offline.html" || path === "/manifest.webmanifest";
-  const isPublic = isAppShell || path.startsWith("/login") || path.startsWith("/invite");
+  // 스케줄러가 부르는 경로는 세션이 아니라 `CRON_SECRET` 으로 자기를 증명한다 (라우트 안에서 확인)
+  const isPublic =
+    isAppShell || path.startsWith("/login") || path.startsWith("/invite") || path.startsWith("/api/cron");
 
   // Public pages need no session — skip the Supabase getUser() round trip
   // entirely so the login screen (and its post-login redirects) don't each

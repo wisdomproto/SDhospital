@@ -2,7 +2,7 @@
 // 사람은 잊는 게 아니라 밀린다. 보낼 때까지 목록에서 사라지지 않는다.
 
 export type WorkItem = {
-  kind: "visit" | "admission";
+  kind: "visit" | "admission" | "checkup";
   href: string;
   patientName: string;
   species: string | null;

@@ -71,9 +71,9 @@ async function send(
   return deliver(supabase, targets ?? [], payload);
 }
 
-type Target = { id: string; endpoint: string; p256dh: string; auth: string };
+export type Target = { id: string; endpoint: string; p256dh: string; auth: string };
 
-async function deliver(
+export async function deliver(
   supabase: SupabaseClient<Database>,
   targets: Target[],
   payload: PushPayload

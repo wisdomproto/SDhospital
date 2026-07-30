@@ -90,7 +90,7 @@ export default async function PortalVisitDetail({
   return (
     <>
       <RefreshOnRead when={justRead} />
-      <Link href={`/portal/patients/${id}/visits`} className="portal-tile-sub" style={{ textDecoration: "none" }}>← 진료 목록</Link>
+      <Link href={`/portal/patients/${id}/visits`} className="portal-tile-sub" style={{ textDecoration: "none" }}>← 진료 기록</Link>
       <div>
         <div style={{ fontSize: "1.25rem", fontWeight: 900, lineHeight: 1.35 }}>
           {report?.title ?? v.visit_date}

@@ -12,7 +12,7 @@ export default async function PatientLayout({
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: patient }, { data: visits }, { data: admissions }] = await Promise.all([
+  const [{ data: patient }, { data: visits }, { data: admissions }, { data: checkups }] = await Promise.all([
     supabase.from("patient").select("id, name, species").eq("id", id).single(),
     supabase
       .from("visit")
@@ -24,6 +24,7 @@ export default async function PatientLayout({
       .select("id, visit_id, admitted_at, status")
       .eq("patient_id", id)
       .order("admitted_at", { ascending: false }),
+    supabase.from("checkup").select("id, visit_id, checked_on, sent_at").eq("patient_id", id),
   ]);
   if (!patient) notFound();
 
@@ -35,6 +36,7 @@ export default async function PatientLayout({
         species={patient.species}
         visits={visits ?? []}
         admissions={admissions ?? []}
+        checkups={checkups ?? []}
       />
       <div style={{ minWidth: 0 }}>{children}</div>
     </div>

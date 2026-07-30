@@ -29,8 +29,9 @@ export default async function PortalConsent({
   return (
     <>
       <div className="no-print">
-        <Link href={`/portal/patients/${id}`} className="portal-tile-sub" style={{ textDecoration: "none" }}>
-          ← 돌아가기
+        {/* 동의서는 진료 기록에서 들어온다 — "돌아가기"가 첫 화면(병원 소식)으로 가면 온 길이 끊긴다 */}
+        <Link href={`/portal/patients/${id}/visits`} className="portal-tile-sub" style={{ textDecoration: "none" }}>
+          ← 진료 기록
         </Link>
       </div>
       {signed && (

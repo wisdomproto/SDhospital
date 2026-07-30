@@ -50,7 +50,10 @@ export function PortalTabBar({
       label: "진료 기록",
       icon: "visit",
       badge: unread,
-      match: (p: string) => p.startsWith(`${base}/visits`) || p.startsWith(`${base}/admissions`),
+      // 회차·입원·검진·동의서가 전부 여기 딸린다. 목록을 적어 두면 다음에 하나 늘 때 빠뜨리고,
+      // 그러면 그 화면에서만 탭이 아무것도 안 켜져 앱 밖으로 나온 것처럼 보인다.
+      match: (p: string) =>
+        p !== base && !p.startsWith(`${base}/chat`) && !p.startsWith(`${base}/profile`),
     },
     { href: `${base}/chat`, label: "AI 채팅", icon: "chat", match: (p: string) => p.startsWith(`${base}/chat`) },
     { href: `${base}/profile`, label: "내 정보", icon: "me", match: (p: string) => p.startsWith(`${base}/profile`) },

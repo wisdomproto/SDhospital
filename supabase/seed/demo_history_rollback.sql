@@ -5,6 +5,7 @@
 
 begin;
 
+delete from medical_image     where id::text like 'f0000000%';  -- Storage 파일은 콘솔에서 지운다
 delete from checkup_value     where checkup_id::text like 'e0000000%';
 delete from checkup           where id::text like 'e0000000%';
 delete from consent           where id::text like 'd0000000%';

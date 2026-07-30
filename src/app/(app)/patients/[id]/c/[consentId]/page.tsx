@@ -34,7 +34,7 @@ export default async function StaffConsent({
     <div style={{ display: "grid", gap: 16, maxWidth: 760 }}>
       <div className="no-print">
         <Link href={`/patients/${id}/v/${c.visit_id}`} className="link-btn" style={{ fontSize: ".85rem" }}>
-          ← 회차로
+          ← 진료 회차
         </Link>
       </div>
       {signed && (

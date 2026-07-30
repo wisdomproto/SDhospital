@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 
 type Visit = { id: string; visit_date: string; visit_no: number | null };
 type Admission = { id: string; visit_id: string | null; admitted_at: string; status: string };
+type Checkup = { id: string; visit_id: string; checked_on: string; sent_at: string | null };
 
 export function PatientNav({
   patientId,
@@ -11,12 +12,14 @@ export function PatientNav({
   species,
   visits,
   admissions,
+  checkups,
 }: {
   patientId: string;
   name: string;
   species: string | null;
   visits: Visit[];
   admissions: Admission[];
+  checkups: Checkup[];
 }) {
   const pathname = usePathname();
   const base = `/patients/${patientId}`;
@@ -50,12 +53,24 @@ export function PatientNav({
         // 입원은 회차에 딸린 기록이다. 따로 떼어 놓으면 "이 입원이 어느 진료였나"를
         // 날짜로 되짚어야 한다 — 데이터가 이미 알고 있는 것을 사람이 다시 맞추는 셈이다.
         const stays = admissions.filter((a) => a.visit_id === v.id);
+        const checkup = checkups.find((c) => c.visit_id === v.id);
         return (
           <div key={v.id}>
             <Link href={href} className={`pnav-item${pathname === href ? " active" : ""}`}>
               <span>{v.visit_date}</span>
               <span className="pnav-meta">{v.visit_no != null ? `${v.visit_no}회` : ""}</span>
             </Link>
+            {/* 검진도 회차에 딸린 기록이라 입원과 같은 자리에 둔다.
+                여기 없으면 검진 화면에 있을 때 왼쪽에 켜지는 항목이 하나도 없다 */}
+            {checkup && (
+              <Link
+                href={`${base}/k/${checkup.id}`}
+                className={`pnav-item pnav-sub${pathname === `${base}/k/${checkup.id}` ? " active" : ""}`}
+              >
+                <span>검진 {checkup.checked_on}</span>
+                <span className="pnav-meta">{checkup.sent_at ? "발송" : "미발송"}</span>
+              </Link>
+            )}
             {stays.map((a) => {
               const ahref = `${base}/a/${a.id}`;
               return (

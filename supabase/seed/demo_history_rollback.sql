@@ -5,6 +5,8 @@
 
 begin;
 
+delete from checkup_value     where checkup_id::text like 'e0000000%';
+delete from checkup           where id::text like 'e0000000%';
 delete from consent           where id::text like 'd0000000%';
 delete from case_story        where id::text like 'd0000000%';
 delete from notice            where id::text like 'd0000000%';

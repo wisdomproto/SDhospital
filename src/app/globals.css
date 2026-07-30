@@ -1861,3 +1861,43 @@ button.media-thumb.media-open {
 /* 소식 묶음은 위쪽에 숨 쉴 자리를 준다 — 카드가 연달아 붙으면 어디서 끊기는지 안 보인다 */
 .notice-list { display: grid; gap: 12px; margin-top: 6px; }
 .notice-card { padding: 14px; }
+
+/* 건강검진 — 수치는 접어 두고 원하는 사람만 펼친다 */
+.checkup-section > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.checkup-section > summary::-webkit-details-marker { display: none; }
+.checkup-section > summary::after {
+  content: "▾";
+  margin-left: auto;
+  color: var(--muted-2);
+  font-size: .7rem;
+}
+.checkup-section[open] > summary::after { content: "▴"; }
+.checkup-table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+  font-size: .82rem;
+  font-variant-numeric: tabular-nums;
+}
+.checkup-table th {
+  text-align: left;
+  font-size: .72rem;
+  color: var(--muted-2);
+  font-weight: 700;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--line);
+}
+.checkup-table td { padding: 5px 6px; border-bottom: 1px solid var(--line-soft, #f1efe9); }
+.checkup-table .ref { color: var(--muted-2); white-space: nowrap; }
+.checkup-table .unit { color: var(--muted-2); font-size: .72rem; }
+.checkup-table .vd { font-size: .72rem; font-weight: 800; margin-left: 4px; }
+.checkup-table tr.high td, .checkup-table tr.low td { background: #fff7f6; }
+.checkup-table tr.high .vd, .checkup-table tr.low .vd { color: #b4541f; }
+.checkup-table tr.watch td { background: #fff1f0; }
+.checkup-table tr.watch .vd { color: var(--danger); }

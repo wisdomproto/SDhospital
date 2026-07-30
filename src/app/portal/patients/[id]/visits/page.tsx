@@ -10,7 +10,7 @@ export default async function PortalVisits({
   const { id } = await params;
   const supabase = await createClient();
   // 입원은 회차에 딸린 기록이라 탭을 따로 두지 않고 그 회차 아래에서 이어 본다
-  const [{ data: visits }, { data: admissions }, { data: consents }] = await Promise.all([
+  const [{ data: visits }, { data: admissions }, { data: consents }, { data: checkups }] = await Promise.all([
     supabase
       .from("visit")
       .select("id, visit_date, visit_no, report_comment, report_sent_at, report_read_at")
@@ -26,6 +26,11 @@ export default async function PortalVisits({
       .select("id, visit_id, form_title, signed_at")
       .eq("patient_id", id)
       .order("created_at", { ascending: false }),
+    // 검진도 그날 병원에 와서 받은 것이라 회차에 딸린다
+    supabase
+      .from("checkup")
+      .select("id, visit_id, checked_on, recheck_on, read_at")
+      .eq("patient_id", id),
   ]);
 
   // 입원 경과는 매일 오는데 목록에 표시가 없으면 온 줄을 모른다
@@ -112,6 +117,25 @@ export default async function PortalVisits({
           </div>
           <span style={{ color: "var(--muted)", fontSize: "1.2rem" }}>›</span>
         </Link>
+        {(checkups ?? [])
+          .filter((k) => k.visit_id === v.id)
+          .map((k) => (
+            <Link
+              key={k.id}
+              href={`/portal/patients/${id}/checkups/${k.id}`}
+              className={`portal-tile portal-subtile${k.read_at == null ? " tile-new" : ""}`}
+            >
+              <span aria-hidden style={{ fontSize: 15 }}>🩺</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: ".88rem" }}>건강검진 결과</div>
+                <div className="portal-tile-sub">
+                  {k.recheck_on ? `다음 확인 ${k.recheck_on}` : "결과 보기"}
+                </div>
+              </div>
+              {k.read_at == null && <span className="dot-new" />}
+              <span style={{ color: "var(--muted)", fontSize: "1.1rem" }}>›</span>
+            </Link>
+          ))}
         {(consents ?? [])
           .filter((c) => c.visit_id === v.id)
           .map((c) => (

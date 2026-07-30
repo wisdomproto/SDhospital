@@ -1901,3 +1901,10 @@ button.media-thumb.media-open {
 .checkup-table tr.high .vd, .checkup-table tr.low .vd { color: #b4541f; }
 .checkup-table tr.watch td { background: #fff1f0; }
 .checkup-table tr.watch .vd { color: var(--danger); }
+
+/* 직원 입력 — 표 안에서 바로 친다. 항목이 백 개라 한 줄이 낮아야 한 화면에 들어온다 */
+.checkup-section.entry { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.checkup-entry td { padding: 3px 6px; }
+.checkup-entry input { padding: 4px 8px; font-size: .82rem; }
+.checkup-entry .vd.high, .checkup-entry .vd.low { color: #b4541f; }
+.checkup-entry .vd.watch { color: var(--danger); }

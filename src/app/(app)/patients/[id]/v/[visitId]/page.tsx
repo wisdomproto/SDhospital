@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
-import { updateVisit, updatePrescription, deletePrescription, deleteFile, saveVisitReport, toggleVisitClosed, referBack, saveReferralDraft } from "./actions";
+import { updateVisit, updatePrescription, deletePrescription, deleteFile, saveVisitReport, toggleVisitClosed, referBack, saveReferralDraft, createCheckup } from "./actions";
 import { PrescriptionForm } from "./PrescriptionForm";
 import { SoapTemplate } from "./SoapTemplate";
 import { ConsentIssue } from "./ConsentIssue";
@@ -30,7 +30,7 @@ export default async function VisitDetail({
     .single();
   if (!v) notFound();
 
-  const [{ data: drugs }, { data: rxs }, { data: images }, { data: mediaRows }, { data: admissions }, { data: consents }] =
+  const [{ data: drugs }, { data: rxs }, { data: images }, { data: mediaRows }, { data: admissions }, { data: consents }, { data: checkup }] =
     await Promise.all([
       supabase.from("drug").select("id, name").order("name"),
       supabase
@@ -49,6 +49,7 @@ export default async function VisitDetail({
         .select("id, form_title, signed_at, signer_name")
         .eq("visit_id", visitId)
         .order("created_at", { ascending: false }),
+      supabase.from("checkup").select("id, checked_on, sent_at").eq("visit_id", visitId).maybeSingle(),
     ]);
 
   // 직전 회차 — "지난 방문 대비 변화" 를 만들 재료
@@ -261,6 +262,30 @@ export default async function VisitDetail({
           ])}
         />
         <ConsentIssue patientId={patientId} visitId={v.id} />
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <h2 className="section-title">건강검진</h2>
+          {checkup && (
+            checkup.sent_at
+              ? <span className="pill success">발송됨</span>
+              : <span className="pill warning">미발송</span>
+          )}
+        </div>
+        {checkup ? (
+          <p style={{ margin: 0, display: "flex", alignItems: "center", gap: 10 }}>
+            <span>{checkup.checked_on} 검진</span>
+            <Link href={`/patients/${patientId}/k/${checkup.id}`} className="link-btn">열기 →</Link>
+          </p>
+        ) : (
+          <form action={createCheckup.bind(null, patientId, v.id)}>
+            <p className="muted" style={{ fontSize: 13, marginTop: 0 }}>
+              이 회차에 검진 기록이 없습니다.
+            </p>
+            <button className="btn btn-secondary btn-sm">+ 건강검진 결과 입력</button>
+          </form>
+        )}
       </div>
 
       <div className="card">

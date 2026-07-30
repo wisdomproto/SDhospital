@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
 import { DataTable } from "@/components/DataTable";
 import { MediaGrid, type SignedFile } from "@/app/portal/patients/[id]/MediaGrid";
+import { loadCheckup } from "@/lib/checkup/load";
+import { rangeText } from "@/lib/checkup/template";
+import { VERDICT_LABEL } from "@/lib/checkup/evaluate";
 import { notFound } from "next/navigation";
 
 async function signAll(rows: Omit<SignedFile, "url">[]): Promise<SignedFile[]> {
@@ -30,6 +33,8 @@ export default async function ReferralVisitDetail({
     supabase.from("medical_image").select("id, modality, file_name, storage_path").eq("visit_id", visitId),
     supabase.from("media").select("id, kind, file_name, storage_path").eq("visit_id", visitId),
   ]);
+  const { data: k } = await supabase.from("checkup").select("id").eq("visit_id", visitId).maybeSingle();
+  const checkup = k ? await loadCheckup(supabase, k.id) : null;
   const imageLinks = await signAll((images as Omit<SignedFile, "url">[]) ?? []);
   const mediaLinks = await signAll((media as Omit<SignedFile, "url">[]) ?? []);
 
@@ -89,6 +94,60 @@ export default async function ReferralVisitDetail({
           ])}
         />
       </div>
+
+      {checkup && (
+        <div className="card">
+          <div className="card-head">
+            <h2 className="section-title">건강검진 · {checkup.checkedOn}</h2>
+            {checkup.outOfRange > 0 && <span className="pill warning">참고범위 밖 {checkup.outOfRange}항목</span>}
+          </div>
+          {checkup.conclusion && (
+            <p style={{ margin: "0 0 12px", fontSize: ".92rem", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+              {checkup.conclusion}
+            </p>
+          )}
+          {checkup.recheckOn && (
+            <p className="muted" style={{ fontSize: ".85rem", marginTop: 0 }}>
+              재검 {checkup.recheckOn}{checkup.recheckNote ? ` · ${checkup.recheckNote}` : ""}
+            </p>
+          )}
+          {checkup.sections.map((s) => (
+            <details key={s.key} className="checkup-section" open={s.outOfRange > 0}>
+              <summary>
+                {s.title}
+                <span className="pill muted">{s.outOfRange > 0 ? `${s.outOfRange}` : "정상"}</span>
+              </summary>
+              {s.note && (
+                <p style={{ margin: "8px 0 0", fontSize: ".88rem", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{s.note}</p>
+              )}
+              {s.values.length > 0 && (
+                <table className="checkup-table">
+                  <thead>
+                    <tr><th>항목</th><th>결과</th><th>참고범위</th></tr>
+                  </thead>
+                  <tbody>
+                    {s.values.map((val) => (
+                      <tr key={val.item.key + (val.side ?? "")} className={val.eval.verdict}>
+                        <td>
+                          {val.item.label}{val.side ? ` (${val.side})` : ""}
+                          {val.item.unit && <span className="unit"> {val.item.unit}</span>}
+                        </td>
+                        <td>
+                          {val.raw}
+                          {val.eval.verdict !== "normal" && val.eval.verdict !== "unknown" && (
+                            <span className="vd">{VERDICT_LABEL[val.eval.verdict]}</span>
+                          )}
+                        </td>
+                        <td className="ref">{rangeText(val.eval.range)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </details>
+          ))}
+        </div>
+      )}
 
       <div className="quickadd-grid">
         <div className="card">

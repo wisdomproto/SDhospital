@@ -190,7 +190,6 @@ export const CHECKUP_SECTIONS: CheckupSection[] = [
   { key: "rad_limb", title: "방사선 — 관절 및 후지", narrative: true },
   { key: "us_abdomen", title: "복부 초음파", narrative: true },
   { key: "us_cardiac", title: "심장 초음파", narrative: true },
-  { key: "conclusion", title: "담당의 종합 소견", narrative: true },
 ];
 
 export const SECTION_BY_KEY = new Map(CHECKUP_SECTIONS.map((s) => [s.key, s]));
@@ -205,4 +204,14 @@ export function toSpecies(species: string | null | undefined): Species | null {
   if (/고양이|cat|묘/i.test(species)) return "cat";
   if (/개|강아지|dog|견/i.test(species)) return "dog";
   return null;
+}
+
+/** 참고범위를 사람이 읽는 한 줄로. 없으면 빈칸 — 모르는 걸 아는 척하지 않는다 */
+export function rangeText(r: Range | null | undefined): string {
+  if (!r) return "";
+  if (r.text) return r.text;
+  if (r.min != null && r.max != null) return `${r.min}~${r.max}`;
+  if (r.min != null) return `${r.min} 이상`;
+  if (r.max != null) return `${r.max} 이하`;
+  return "";
 }

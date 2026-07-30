@@ -257,3 +257,16 @@ export async function deleteFile(
   await supabase.from(table).delete().eq("id", id);
   revalidatePath(vpath(patientId, visitId));
 }
+
+/** 검진은 회차당 하나 (unique index) — 이미 있으면 그 화면으로 보낸다 */
+export async function createCheckup(patientId: string, visitId: string) {
+  const supabase = await createClient();
+  const { data: v } = await supabase.from("visit").select("visit_date").eq("id", visitId).single();
+  const { data, error } = await supabase
+    .from("checkup")
+    .insert({ patient_id: patientId, visit_id: visitId, checked_on: v?.visit_date })
+    .select("id")
+    .single();
+  if (error || !data) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(error?.message ?? "검진 생성 실패"));
+  redirect(`/patients/${patientId}/k/${data.id}`);
+}

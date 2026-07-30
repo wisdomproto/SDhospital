@@ -36,6 +36,11 @@
 - `src/lib/reports.ts` — `ownerReportFeed`(피드) · **`unreadFeed`(안 읽은 것만 직접 조회)** · `unreadCounts`(배지)
 - `src/app/portal/patients/[id]/MediaGrid.tsx` — 사진·영상 그리드 + **앱 내 뷰어**(닫기·이동·확대).
   ⚠️ 클라이언트라 `lib/storage`(서버 클라이언트 포함)를 import 하면 안 된다 — 순수 판별 함수는 `src/lib/media.ts`
+- `src/lib/checkup/` — **건강검진**: `template.ts`(항목·단위·종별 참고범위 — 결과서 5부를 옮긴 것) ·
+  `evaluate.ts`(값 하나의 판정, 근거 없으면 `unknown`) · `load.ts`(값이 있는 섹션만 · 지난 검진 값).
+  입력 `(app)/patients/[id]/k/[checkupId]` (한 폼에 전부, 저장은 **지우고 다시 넣는다** —
+  `side` 가 null 이라 upsert 가 안 듣는다) · 보호자 `portal/.../checkups/[checkupId]` ·
+  1차병원은 회차 화면 안에 카드로 붙는다
 - `src/lib/auth/roles.ts` — 역할 모델
 - `supabase/migrations/` — 스키마·RLS, `supabase/tests/` — RLS 테스트
 

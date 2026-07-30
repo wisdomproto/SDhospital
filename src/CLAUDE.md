@@ -28,8 +28,10 @@
   `public/sw.js` 에 `push`·`notificationclick` 핸들러
 - `src/lib/admission-report.ts` — **입원 일일 리포트 선택지**(식사·배변)와 보호자용 문장. 자유 서술이 아니라 고정 선택지
 - `src/app/(app)/notices/` · `src/app/(app)/cases/` — **병원 소식(+쿠폰)** 과 **치료 사례** 관리(직원 전용)
-- `src/lib/case-stories.ts` — 사례 매칭(태그 ⊂ 주 증상 + 종 일치). 순수 함수
-- `src/app/portal/patients/[id]/PortalTabBar.tsx` (탭 4개 + 안읽음 배지) · `PetSwitcher.tsx`(헤더에서 반려동물 전환) ·
+- `src/lib/case-stories.ts` — 사례 매칭(태그 ⊂ 주 증상 + 종 일치). 순수 함수.
+  `portal/patients/[id]/cases/` 는 **치료 사례 탭**(검색 + 자주 찾는 태그 칩, 같은 종이 위로).
+  긁어오는 건 `supabase/seed/seed_from_website.mjs` (홈페이지 Story + 네이버 블로그, logNo 로 중복 제거)
+- `src/app/portal/patients/[id]/PortalTabBar.tsx` (탭 5개 + 안읽음 배지) · `PetSwitcher.tsx`(헤더에서 반려동물 전환) ·
   `profile/`(내 정보 — 사진 업로드는 `set_patient_photo` DEFINER, data URL) · `RefreshOnRead.tsx`(읽음 처리 후 배지 갱신)
 - `src/lib/seen.ts` + `src/app/portal/MarkNewsSeen.tsx` — 소식 "마지막 본 시각" 쿠키.
   ⚠️ 서버가 읽는 상수는 `"use client"` 파일에 두지 말 것 (서버에서 `undefined` 가 된다 — `src/lib/last-pet.ts` 도 같은 이유)

@@ -102,7 +102,46 @@ async function detail(board, id) {
     body: cleanBody(ogText(html, "description")),
     image: meta(html, "image"),
     url: `${SITE}/${board}/?bmode=view&idx=${id}&t=board`,
+    // 홈페이지 글은 대부분 네이버 블로그 글의 사본이다. 원글 번호를 들고 있어야 중복해서 안 넣는다
+    logNo: (html.match(/blog\.naver\.com\/sdamc00\/(\d+)/) ?? html.match(/logNo=(\d+)/) ?? [])[1] ?? null,
   };
+}
+
+/**
+ * 네이버 블로그 목록. 416편이라 **본문은 안 읽는다** — 제목만으로 태그를 다는 데다,
+ * 요약 하나 얻자고 남의 서버에 416번 더 두드릴 이유가 없다.
+ * 응답이 JSON 이라고 하지만 `pagingHtml` 안에 잘못된 이스케이프가 있어 `JSON.parse` 가 깨진다.
+ */
+async function naverPosts() {
+  const posts = new Map();
+  for (let page = 1; page <= 20; page++) {
+    const t = await fetch(
+      `https://blog.naver.com/PostTitleListAsync.naver?blogId=sdamc00&currentPage=${page}&countPerPage=30&categoryNo=0`,
+      { headers: { "user-agent": UA, referer: "https://blog.naver.com/sdamc00" } }
+    ).then((r) => r.text());
+    const found = [...t.matchAll(/"logNo":"(\d+)","title":"([^"]*)"[\s\S]{0,200}?"addDate":"([^"]*)"/g)];
+    if (!found.length) break;
+    let fresh = 0;
+    for (const [, logNo, encoded, addDate] of found) {
+      if (posts.has(logNo)) continue;
+      fresh++;
+      posts.set(logNo, {
+        logNo,
+        title: cleanTitle(decodeURIComponent(encoded.replace(/\+/g, " "))),
+        addDate,
+        url: `https://blog.naver.com/sdamc00/${logNo}`,
+      });
+    }
+    if (!fresh) break;
+  }
+  return [...posts.values()];
+}
+
+/** "2026. 7. 25." → ISO. 목록을 최신순으로 세우려면 날짜가 있어야 한다 */
+function parseAddDate(s) {
+  const m = s.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})/);
+  if (!m) return null;
+  return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])).toISOString();
 }
 
 /** 병렬로 긁되 한 번에 8개까지 — 남의 서버다 */
@@ -113,6 +152,14 @@ async function mapLimit(items, n, fn) {
   }
   return out;
 }
+
+/** 제목에 종이 적혀 있으면 그것만 믿는다. 애매하면 null — 종 무관으로 두면 양쪽에 다 보인다 */
+const SPECIES = (t) =>
+  /고양이|냥이|묘|캣/.test(t)
+    ? "고양이"
+    : /강아지|반려견|말티|푸들|포메|시츄|비숑|닥스|리트리버|치와와|웰시|코카/.test(t)
+      ? "강아지"
+      : null;
 
 const uuid = (prefix, id) => `${prefix}-0000-4000-8000-${String(id).padStart(12, "0")}`;
 
@@ -145,30 +192,53 @@ const storyIds = await listIds("Story");
 console.log(`Story ${storyIds.length}편`);
 const stories = await mapLimit(storyIds, 8, (id) => detail("Story", id));
 
+// 네이버 블로그 목록을 먼저 읽는다 — 홈페이지 글의 **작성일**이 거기에 있다
+const posts = await naverPosts();
+const dateOf = new Map(posts.map((b) => [b.logNo, parseAddDate(b.addDate)]));
+
 const cases = stories
   .filter((s) => s.title)
   .map((s) => {
     const tags = [...new Set(TAGS.filter(([re]) => re.test(s.title)).flatMap(([, v]) => v))].slice(0, 3);
-    const species = /고양이|냥이|묘|캣/.test(s.title)
-      ? "고양이"
-      : /강아지|반려견|말티|푸들|포메|시츄|비숑|닥스|리트리버|치와와|웰시|코카/.test(s.title)
-        ? "강아지"
-        : null;
     return {
       id: uuid("c0000000", s.id),
       title: s.title.slice(0, 200),
       url: s.url,
       summary: firstSentence(s.body, 90, s.title),
       tags,
-      species,
-      // 태그를 못 단 글은 숨긴 채로 넣는다 — 버리면 다시 긁어야 하고, 켜 두면 엉뚱한 데 붙는다
-      active: tags.length > 0,
+      species: SPECIES(s.title),
+      // 태그가 없어도 켜 둔다. **붙는 조건은 태그**라서(`matchCaseStories`) 태그 없는 글은
+      // 리포트에 절대 안 붙는다 — 대신 "치료 사례" 메뉴에서는 읽을 수 있다.
+      // 병원이 이미 공개한 글이라 보이는 것 자체는 위험하지 않다. 위험한 건 엉뚱한 데 붙는 것뿐이다.
+      active: true,
+      created_at: (s.logNo && dateOf.get(s.logNo)) || new Date().toISOString(),
     };
   });
 
-const { error: caseErr } = await supabase.from("case_story").upsert(cases);
+// 홈페이지에 옮겨 둔 글은 빼고, 블로그에만 있는 것을 더한다
+const mirrored = new Set(stories.map((s) => s.logNo).filter(Boolean));
+const blog = posts.filter((b) => !mirrored.has(b.logNo));
+console.log(`Naver ${blog.length}편 (홈페이지와 겹친 ${mirrored.size}편 제외)`);
+
+const blogCases = blog.map((b) => {
+  const tags = [...new Set(TAGS.filter(([re]) => re.test(b.title)).flatMap(([, v]) => v))].slice(0, 3);
+  return {
+    id: uuid("a0000000", b.logNo),
+    title: b.title.slice(0, 200),
+    url: b.url,
+    // 목록 API 는 본문을 안 준다. 제목이 충분히 길고 구체적이라 그대로 둔다
+    summary: null,
+    tags,
+    species: SPECIES(b.title),
+    active: true,
+    created_at: parseAddDate(b.addDate) ?? new Date().toISOString(),
+  };
+});
+
+const all = [...cases, ...blogCases];
+const { error: caseErr } = await supabase.from("case_story").upsert(all);
 if (caseErr) throw caseErr;
-console.log(`  사례 ${cases.length}건 (노출 ${cases.filter((c) => c.active).length} · 태그 대기 ${cases.filter((c) => !c.active).length})`);
+console.log(`  사례 ${all.length}건 (태그 붙은 것 ${all.filter((c) => c.tags.length).length} · 태그 없는 것 ${all.filter((c) => !c.tags.length).length} — 둘 다 목록엔 보이고, 리포트엔 태그 있는 것만 붙는다)`);
 
 // ── 병원 소식 ────────────────────────────────────────────────
 const noticeIds = await listIds("Notice");

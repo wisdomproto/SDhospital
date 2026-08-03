@@ -194,8 +194,9 @@
   <h1>보호자 AI 채팅<br>— 증상 문의를 받는 방법</h1>
   <div class="basis"><span class="dot"></span>약 100명분 채널 상담 샘플 데이터 기반 · 105개 대화 / 12,738 메시지 전수 분석</div>
   <p class="lead">
-    지금 보호자가 새벽에 증상을 물으면 <b>“증상 상담은 하지 않습니다”</b>라는 자동응답이 나갑니다.
-    그 자리에 무엇을 넣을지에 대한 기획입니다.
+    지금 보호자가 증상을 물으면 <b>“증상 상담은 하지 않습니다”</b>라는 자동응답이 나가고,
+    사람이 받아도 <b>“주치의 확인 후 답변드리겠습니다”</b>에서 멈춥니다.
+    <b>낮에도 절반은 한 시간을 넘깁니다.</b> 그 자리에 무엇을 넣을지에 대한 기획입니다.
   </p>
   <p class="meta">
     <span>2026-08-03</span><span>대상 · 대표원장</span>
@@ -212,7 +213,7 @@
     <div class="stat"><div class="v">44%</div><div class="k">병원이 보낸 메시지 중<br>자동응답·광고</div></div>
     <div class="stat"><div class="v warn">1,952</div><div class="k">“증상 상담은 하지 않습니다”<br>가 나간 횟수</div></div>
     <div class="stat"><div class="v">194</div><div class="k">그럼에도 보호자가<br>증상을 적어 보낸 횟수</div></div>
-    <div class="stat"><div class="v">25%</div><div class="k">증상 문의가<br>밤에 오는 비율</div></div>
+    <div class="stat"><div class="v warn">58분</div><div class="k"><b>낮에도</b> 증상에 답이<br>오기까지 중앙값</div></div>
   </div>
 
   <div class="quote">
@@ -225,7 +226,8 @@
   <p>채널을 막아 두었는데도 보호자는 계속 증상을 적습니다. <strong>물어볼 데가 여기뿐이기 때문입니다.</strong>
     이 기획은 <span class="em">새 기능을 만드는 것이 아니라, 이미 나가고 있는 “안 해드립니다”를 쓸모 있는 것으로 바꾸는 일</span>입니다.</p>
 
-  <h3>새벽 4시에 아이가 토했을 때</h3>
+  <h3>실제 사례 — 수술 전날 새벽에 토했을 때</h3>
+  <p style="color:var(--muted); font-size:.9rem; margin-top:-10px">밤이라 늦은 것이 아니라, <b>받은 사람이 답할 수 없어서</b> 늦습니다. 낮이었어도 주치의를 거쳐야 했습니다.</p>
   <div class="vs">
     <div class="card bad">
       <div class="tag">지금</div>
@@ -316,25 +318,56 @@
     <tr><td>괜찮다</td><td class="n">10%</td></tr>
     <tr class="hi"><td><b>내원 안내 없이 원격으로 끝난 것</b></td><td class="n">3%</td></tr>
   </table></div>
-  <p><strong>접수 데스크는 증상에 답할 수 없습니다.</strong> 44%가 주치의에게 넘어갔다 돌아옵니다.
+  <p><strong>접수 데스크는 증상에 답할 수 없습니다.</strong> 44%가 주치의에게 넘어갔다 돌아옵니다 —
+    <b>이것이 04번에서 볼 지연의 원인</b>입니다.
     최종 답은 대부분 <strong>“오세요”</strong>이고 원격으로 끝나는 건 3%뿐입니다.
     <span class="em">AI가 진료를 대신하는 기획은 애초에 성립하지 않습니다.</span></p>
 </section>
 
 <!-- ══════ 04 ══════ -->
 <section>
-  <h2><span class="num">04</span>밤에는 기다리게 됩니다</h2>
-  <p class="dek">자동응답을 걷어내고 <b>사람이 친 답장만</b> 세었습니다.</p>
+  <h2><span class="num">04</span>빠른 건 접수지 답변이 아닙니다</h2>
+  <p class="dek">밤만의 문제가 아닙니다. <b>낮에도 증상에는 답이 잘 못 나갑니다.</b></p>
+
+  <div class="quote" style="border-left-color:var(--amber); background:var(--amber-l)">
+    <div class="lbl" style="color:var(--amber)">가장 많이 나간 답장</div>
+    <p>“<b>주치의 선생님 확인 후 답변드리겠습니다.</b>”</p>
+    <p class="cnt">증상 문의에 사람이 한 답장의 <b>44%</b> · 접수 데스크는 증상에 답할 수 없습니다</p>
+  </div>
+
+  <p>그래서 응답 시간을 <strong>두 가지로 나눠 다시 셌습니다</strong> —
+    <strong>첫 답장</strong>(대부분 “확인 후 답변드릴게요”)과, 실제로 내용이 담긴 <strong>실질 답변</strong>입니다.</p>
+
   <div class="tw"><table>
-    <tr><th>증상 문의 → 사람 답장</th><th class="n">낮 (9~19시)</th><th class="n">밤 (19~9시)</th></tr>
-    <tr><td>중앙값</td><td class="n">8분</td><td class="n">64분</td></tr>
-    <tr class="hi"><td>75%가 이 시간 안에</td><td class="n">36분</td><td class="n"><b>9시간 24분</b></td></tr>
-    <tr><td>1시간 넘게 기다림</td><td class="n">12%</td><td class="n"><b>51%</b></td></tr>
-    <tr><td>6시간 넘게 기다림</td><td class="n">3%</td><td class="n"><b>30%</b></td></tr>
+    <tr><th>낮 시간 (9~19시)</th><th class="n">첫 답장<br><span style="font-weight:500">= 접수</span></th><th class="n">실질 답변<br><span style="font-weight:500">= 진짜 답</span></th></tr>
+    <tr><td>중앙값</td><td class="n">9분</td><td class="n"><b>58분</b></td></tr>
+    <tr class="hi"><td>75%가 이 시간 안에</td><td class="n">39분</td><td class="n"><b>24시간 40분</b></td></tr>
+    <tr><td>1시간 넘게 걸림</td><td class="n">14%</td><td class="n"><b>46%</b></td></tr>
+    <tr><td>3시간 넘게 걸림</td><td class="n">8%</td><td class="n"><b>30%</b></td></tr>
   </table></div>
-  <p>낮에는 8분입니다. <strong>이건 굉장히 빠른 것이고 병원의 강점입니다.</strong>
-    문제는 그 속도를 <strong>사람이 만들고 있다</strong>는 것과, 밤에는 그게 안 된다는 것입니다.
-    표본에서 병원이 친 메시지는 <strong>7,104건</strong> — 환자 한 명당 <strong>68건</strong>입니다.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v">9분</div><div class="k">낮에 <b>접수</b>되기까지<br>— 굉장히 빠릅니다</div></div>
+    <div class="stat"><div class="v warn">58분</div><div class="k">낮에 <b>답변</b>이 오기까지<br>중앙값</div></div>
+    <div class="stat"><div class="v warn">46%</div><div class="k">낮인데 답변까지<br>1시간이 넘는 비율</div></div>
+    <div class="stat"><div class="v warn">8%</div><div class="k">접수만 되고<br><b>답변이 끝내 안 온 것</b></div></div>
+  </div>
+
+  <div class="callout">
+    <div class="lbl">문제를 정확히 말하면</div>
+    <p><strong>느린 게 아니라, 받은 사람이 답할 수 없는 것입니다.</strong>
+      9분 만에 오는 건 “접수했습니다”이고, 실제 답은 주치의를 거쳐야 하니
+      진료 사이사이에 밀려 <strong>낮에도 절반은 한 시간을 넘깁니다.</strong>
+      <span class="em">밤에 안 되는 건 이 구조의 결과지 원인이 아닙니다.</span></p>
+    <p style="margin-top:12px">그래서 <strong>사람을 더 붙여도 해결되지 않습니다.</strong>
+      접수 인원을 늘리면 “확인 후 답변드릴게요”가 더 빨리 나갈 뿐입니다.
+      바뀌어야 하는 건 <strong>주치의를 거치지 않고도 답이 되는 질문을 걸러내는 것</strong>입니다 —
+      그게 08번의 A 12건이고, 데이터가 늘수록 그 몫이 커집니다.</p>
+  </div>
+
+  <p style="color:var(--muted); font-size:.9rem">
+    표본에서 병원이 친 메시지는 <b>7,104건</b> — 환자 한 명당 <b>68건</b>입니다.
+    밤(19~9시)은 첫 답장 중앙값 64분, 75%가 9시간 24분으로 낮보다 더 벌어집니다.</p>
 </section>
 
 <!-- ══════ 05 ══════ -->

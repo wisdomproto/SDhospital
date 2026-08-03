@@ -114,6 +114,64 @@
   .dmerge{margin-top:18px; border-radius:12px; background:var(--ink); color:#fff; padding:14px 18px; text-align:center; font-size:.9rem; font-weight:700}
   .dmerge span{display:block; font-weight:500; font-size:.8rem; opacity:.75; margin-top:3px}
 
+  /* ── 05 상황별 분기 ── */
+  .gate{border:1px solid var(--line); border-radius:14px; background:#fff; break-inside:avoid}
+  .gate .gh{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; align-items:start;
+            padding:12px 16px; border-bottom:1px solid var(--line)}
+  .gate .gn{font-size:.7rem; font-weight:800; letter-spacing:.05em; color:#fff; background:var(--ink);
+            border-radius:999px; padding:4px 11px; white-space:nowrap; margin-top:2px}
+  .gate .gh b{font-size:1rem; display:block}
+  .gate .gh .gt{display:block; font-weight:600; font-size:.8rem; color:var(--muted); margin-top:2px}
+  .gate .gb{padding:14px 16px}
+  .gate.g-red{border-color:var(--red)} .gate.g-red .gn{background:var(--red)}
+  .gate.g-teal{border-color:var(--teal)} .gate.g-teal .gn{background:var(--teal)}
+  .gwhy{font-size:.85rem; color:var(--muted); margin:0 0 11px}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin:0 0 4px}
+  .chip{font-size:.78rem; font-weight:700; padding:4px 10px; border-radius:999px;
+        background:var(--soft); color:var(--ink2); border:1px solid var(--line)}
+  .g-red .chip{background:var(--red-l); border-color:#f3c9c9; color:#991b1b}
+  .yn{display:grid; grid-template-columns:46px minmax(0,1fr); gap:11px; align-items:start;
+      padding:10px 12px; border-radius:9px; font-size:.87rem; line-height:1.6; margin-top:10px}
+  .yn .k{font-weight:800; font-size:.76rem; text-align:center; border-radius:6px; padding:3px 0; color:#fff}
+  .yn.y{background:var(--red-l); color:#991b1b} .yn.y .k{background:var(--red)}
+  .yn.n{background:var(--soft); color:var(--ink2)} .yn.n .k{background:var(--faint)}
+  .yn.go{background:var(--teal-l); color:var(--teal-d)} .yn.go .k{background:var(--teal)}
+
+  .sits{display:grid; grid-template-columns:minmax(0,1fr); gap:11px; margin-top:12px}
+  .sit{display:grid; grid-template-columns:minmax(0,1fr); border:2px solid var(--line);
+       border-radius:12px; background:#fff; overflow:hidden; break-inside:avoid}
+  .sit .sh{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:10px; align-items:center;
+           padding:10px 14px; color:#fff; font-weight:800; font-size:.93rem}
+  .sit .sh .sn{font-size:.72rem; font-weight:800; background:rgba(255,255,255,.22); border-radius:6px; padding:2px 7px}
+  .sit .sh .pct{font-size:.76rem; font-weight:700; opacity:.92; white-space:nowrap}
+  .sit .sb{padding:12px 14px}
+  .sit .sex{font-size:.82rem; color:var(--muted); font-style:italic; margin:0 0 10px;
+            padding-bottom:9px; border-bottom:1px dashed var(--line)}
+  .sit .sline{display:grid; grid-template-columns:70px minmax(0,1fr); gap:10px; font-size:.86rem;
+              color:var(--ink2); padding:4px 0; align-items:start; line-height:1.6}
+  .sit .sline .lk{font-size:.74rem; font-weight:800; color:var(--faint); letter-spacing:.03em; padding-top:3px}
+  .sit .sline.no{color:var(--muted)}
+  .s-adm{border-color:var(--ink)} .s-adm .sh{background:var(--ink)}
+  .s-proc{border-color:var(--blue)} .s-proc .sh{background:var(--blue)}
+  .s-drug{border-color:var(--amber)} .s-drug .sh{background:var(--amber)}
+  .s-chr{border-color:#be185d} .s-chr .sh{background:#be185d}
+  .s-new{border-color:var(--teal)} .s-new .sh{background:var(--teal)}
+
+  .wt{display:grid; grid-template-columns:minmax(0,1fr); gap:9px; margin-top:4px}
+  .wrow{display:grid; grid-template-columns:96px minmax(0,1fr); gap:12px; align-items:start;
+        border:1px solid var(--line); border-radius:10px; padding:11px 13px; font-size:.87rem; line-height:1.6}
+  .wrow .wk{font-weight:800; font-size:.84rem}
+  .wrow.w1{border-color:var(--red); background:var(--red-l)} .wrow.w1 .wk{color:var(--red)}
+  .wrow.w2{border-color:var(--amber); background:var(--amber-l)} .wrow.w2 .wk{color:var(--amber)}
+  .wrow.w3{border-color:#c9b8ee; background:#faf7ff} .wrow.w3 .wk{color:#7c3aed}
+  .wrow.w0{border-style:dashed; background:var(--soft)} .wrow.w0 .wk{color:var(--muted)}
+  table.grid td.yes{color:var(--teal-d); font-weight:800}
+  table.grid td.non{color:var(--faint)}
+  @media (max-width:560px){
+    .yn{grid-template-columns:minmax(0,1fr)} .yn .k{justify-self:start; padding:3px 10px}
+    .sit .sline,.wrow{grid-template-columns:minmax(0,1fr); gap:2px}
+  }
+
   ul.rules{list-style:none; padding:0; margin:18px 0; display:grid; gap:13px}
   ul.rules li{padding-left:30px; position:relative; font-size:.95rem; color:var(--ink2)}
   ul.rules li::before{content:"✕"; position:absolute; left:6px; top:0; color:var(--red); font-weight:800}
@@ -236,7 +294,7 @@
     <div class="stat"><div class="v">44%</div><div class="k">병원이 보낸 메시지 중<br>자동응답·광고 <b>(4,123건)</b></div></div>
     <div class="stat"><div class="v warn">1,952</div><div class="k">그중 “증상 상담은<br>하지 않습니다”</div></div>
     <div class="stat"><div class="v">194</div><div class="k">그럼에도 보호자가<br>증상을 적어 보낸 메시지</div></div>
-    <div class="stat"><div class="v">49건</div><div class="k">사람이 친 메시지<br>환자 1명당 <b>(총 5,152건)</b></div></div>
+    <div class="stat"><div class="v">49건</div><div class="k">사람이 친 메시지<br>대화 1건당 <b>(총 5,152건 ÷ 105)</b></div></div>
   </div>
 
   <div class="quote">
@@ -247,7 +305,7 @@
     <p style="margin-top:14px;padding-top:12px;border-top:1px dashed #f3c9c9"><b>자동응답 ② — 진료시간 밖</b><br>
       “지금은 답변(채팅)이 가능한 시간이 아닙니다. 🌃 야간 중 채널 확인 및 전송이 불가능하오니
       내용을 남겨주시면 채팅이 가능한 시간에 순차적으로 답변드리겠습니다.”</p>
-    <p class="cnt"><b>2,048번</b> 발송 · 둘을 합쳐 병원 메시지의 44%</p>
+    <p class="cnt"><b>2,048번</b> 발송 · 둘을 합쳐 <b>4,000건</b>(병원 메시지의 43%). 위 44%는 여기에 광고 123건을 더한 값입니다.</p>
   </div>
 
   <p>채널을 막아 두었는데도 보호자는 계속 증상을 적습니다. <strong>물어볼 데가 여기뿐이기 때문입니다.</strong>
@@ -386,69 +444,193 @@
 <!-- ══════ 05 ══════ -->
 <section>
   <h2><span class="num">05</span>전체 흐름</h2>
-  <p class="dek">질문이 들어와서 나가기까지. <b>기록을 먼저 읽고, 두 갈래로 나눕니다.</b></p>
+  <p class="dek">질문 하나가 들어와서 나가기까지 <b>문 일곱 개</b>를 순서대로 지납니다.
+    앞 문에서 걸리면 뒤 문은 지나지 않습니다.</p>
 
   <div class="diagram">
     <div class="dnode start">보호자 증상 메시지</div>
     <div class="darrow"></div>
-    <div class="dnode read">① 이 아이의 기록을 먼저 읽는다
-      <span>진행 중 입원 · 최근 수술/회차 · 검진 수치 · 처방 · 영상 이력 · 의뢰 병원</span></div>
+
+    <!-- 문 0 -->
+    <div class="gate g-red">
+      <div class="gh"><span class="gn">문 0</span>
+        <span><b>응급 신호가 있는가</b>
+          <span class="gt">기록보다 <b>먼저</b> 봅니다 — 조회가 늦거나 처음 오는 아이여도 이 답은 나가야 하기 때문입니다</span></span></div>
+      <div class="gb">
+        <div class="chips">
+          <span class="chip">발작·경련 — 지금 하거나 오늘 있었던</span><span class="chip">호흡곤란 · 혀가 파래짐</span>
+          <span class="chip">소변을 못 봄</span><span class="chip">다량 출혈</span>
+          <span class="chip">수술 부위 벌어짐</span><span class="chip">의식 저하 · 쓰러짐</span>
+          <span class="chip">중독 의심</span><span class="chip">배가 부풀고 헛구역질</span>
+        </div>
+        <div class="yn y"><span class="k">예</span>
+          <span><b>“지금 오세요” + 전화 연결 + 직원 알림.</b> 여기서 끝납니다 — <b>문 1~5를 지나지 않고</b>(문 6은 지납니다 — 이 문장도 승인된 것이어야 합니다),
+            의뢰 환자여도 <b>1차 병원으로 돌리지 않습니다.</b> 애매하면 이쪽으로 붙입니다.</span></div>
+        <div class="yn n"><span class="k">아니오</span><span>다음 문으로.</span></div>
+      </div>
+    </div>
     <div class="darrow"></div>
 
-    <div class="dsplit">
-      <div class="branch b1">
-        <div class="bh"><span>② 우리 처치와 관련</span><span class="pct">29% (n=156)</span></div>
-        <div class="bb">
-          <p class="ex">“수술 부위가 좀 빨갛게 올라왔어요” · “마취하고 나서 자꾸 켁켁거려요” ·<br>“퇴원하고 집에 왔는데 혈변이에요”</p>
-          <div class="first">
-            <b>답도 정형적입니다 — 승인된 설명</b>
-            “호흡 마취 시 <b>기관 삽관 자극으로 3~5일 정도 기침</b>이 날 수 있습니다. 대개 저절로 없어집니다.”
-            <span>※ <b>실제로 병원이 하신 답변</b>입니다. 실밥 시기·발적·소독도 같은 식으로 답이 정해져 있습니다.</span>
-          </div>
-          <div class="outs">
-            <div class="out"><span class="ic ask">사진</span><span>수술 부위는 <b>사진을 함께 받습니다</b> — 며칠째·벌어짐 여부</span></div>
-            <div class="out"><span class="ic now">응급</span><span>수술 부위 벌어짐·출혈 → <b>지금 오세요</b> (④의 첫째 칸)</span></div>
-          </div>
-          <div class="settled"><b>✓ 확정</b> 이 갈래는 <b>채팅 내용을 그대로 담당의에게 전달</b>합니다.
-            우리가 처치한 결과에 대한 이야기이기 때문입니다.</div>
+    <!-- 문 1 -->
+    <div class="gate g-teal">
+      <div class="gh"><span class="gn">문 1</span>
+        <span><b>이 아이의 기록을 읽는다</b>
+          <span class="gt">일반 챗봇이 할 수 없는 부분 — 아래 문들이 전부 이 결과로 갈립니다 (06번)</span></span></div>
+      <div class="gb">
+        <div class="chips">
+          <span class="chip">진행 중인 입원</span><span class="chip">최근 회차 · 수술 이력</span>
+          <span class="chip">현재 처방</span><span class="chip">최근 검진 수치</span>
+          <span class="chip">영상 촬영 이력</span><span class="chip">의뢰 병원</span>
         </div>
+        <div class="yn y"><span class="k">되돌림</span>
+          <span><b>기록을 보고서야 응급이 되는 것</b>은 여기서 문 0으로 되돌립니다 —
+            신장 수치가 올라와 있던 아이의 반복 구토처럼. <b>갈래와 무관하게 걸립니다.</b></span></div>
+        <div class="yn go"><span class="k">주의</span>
+          <span>읽는 것은 <b>판단에 쓰기 위해서</b>지 보호자에게 보여주기 위해서가 아닙니다.
+            수치·처방명·판독 소견은 <b>담당의 화면에만</b> 뜹니다.</span></div>
       </div>
+    </div>
+    <div class="darrow"></div>
 
-      <div class="branch b2">
-        <div class="bh"><span>③ 새로 생긴 증상</span><span class="pct">63% (n=156) · 앞으로 더</span></div>
-        <div class="bb">
-          <p class="ex">“오늘 아침에 혈변을 봐서 연락드립니다” ·<br>“배에서 소리가 크게 나고 기지개 자세를 하고 밥을 못 먹어요”</p>
-          <div class="first">
-            <b>먼저 — 그 증상에 대해 승인된 설명</b>
-            “기지개 자세는 <b>복부 통증에서 흔한 신호</b>입니다. 장염·췌장염 등 원인을 가려야 해 <b>오늘 내원이 필요합니다.</b>
-            그때까지 금식하시고 물만 주세요.”
-            <span>보호자가 원하는 건 안내가 아니라 <b>설명</b>입니다. 답을 먼저 주고, 그다음이 어디로 갈지입니다.
-              <br>※ 앞의 두 문장은 <b>병원이 실제로 하신 답변</b>이고, <b>금식 부분은 저희 제안</b>입니다(11-6에서 확인 요청).</span>
+    <!-- 문 2 -->
+    <div class="gate">
+      <div class="gh"><span class="gn">문 2</span>
+        <span><b>어느 상황인가</b>
+          <span class="gt">위에서부터 먼저 걸리는 갈래로 갑니다. 비율은 <b>보호자가 실제로 쓴 말</b>을 세어 나눈 것입니다 (n=156 — 증상 단어가 들어간 메시지 전부. 02번의 “증상 상담 91건”보다 넓습니다)</span></span></div>
+      <div class="gb">
+        <div class="sits">
+
+          <div class="sit s-adm">
+            <div class="sh"><span class="sn">갈래 1</span><span>지금 입원해 있는 아이</span><span class="pct">8%</span></div>
+            <div class="sb">
+              <p class="sex">“어제 면회 갔을 때보다 기운이 없어 보였어요” · “밥은 먹고 있나요”</p>
+              <div class="sline no"><span class="lk">자동 설명</span><span><b>하지 않습니다.</b> 병동이 보고 있는 것과 채팅이 어긋나면 그것만으로 신뢰가 깨집니다.</span></div>
+              <div class="sline"><span class="lk">가는 곳</span><span>병동 · 담당의. <b>흐름에서 빠집니다</b> — 아래 문을 지나지 않습니다.</span></div>
+              <div class="sline"><span class="lk">1차 회송</span><span class="lk" style="color:var(--red)">해당 없음</span></div>
+            </div>
           </div>
-          <div class="outs">
-            <div class="out"><span class="ic ask">문진</span><span>답하기에 정보가 부족하면 <b>사진·언제부터·횟수·복용 약</b>부터 받습니다</span></div>
-            <div class="out"><span class="ic now">그다음</span><span>증상의 무게에 따라 <b>어디로 갈지</b>를 붙입니다 — 아래 ④</span></div>
+
+          <div class="sit s-proc">
+            <div class="sh"><span class="sn">갈래 2</span><span>우리 처치의 경과 — 집에 간 뒤</span><span class="pct">29%</span></div>
+            <div class="sb">
+              <p class="sex">“수술 부위가 좀 빨갛게 올라왔어요” · “마취하고 나서 자꾸 켁켁거려요” · “퇴원하고 집에 왔는데 혈변이에요”</p>
+              <div class="first">
+                <b>답이 정형적입니다 — 승인된 설명</b>
+                “호흡 마취 시 <b>기관 삽관 자극으로 3~5일 정도 기침</b>이 날 수 있습니다. 대개 저절로 없어집니다.”
+                <span>※ <b>실제로 병원이 하신 답변</b>입니다. 실밥 시기·발적·소독도 같은 식으로 답이 정해져 있습니다.</span>
+              </div>
+              <div class="sline"><span class="lk">추가로</span><span>수술 부위는 <b>사진을 함께 받습니다</b> — 며칠째인지 · 벌어짐 여부.</span></div>
+              <div class="sline"><span class="lk">가는 곳</span><span>상태에 따라 갈리되, <b>응급을 뺀 전부가 담당의 인계</b>입니다. 우리가 처치한 결과에 대한 이야기이기 때문입니다.</span></div>
+              <div class="sline"><span class="lk">1차 회송</span><span class="lk" style="color:var(--red)">하지 않습니다 — 우리가 수술한 부위입니다</span></div>
+              <div class="settled"><b>✓ 확정</b> 이 갈래는 <b>채팅 내용을 그대로 담당의에게 전달</b>합니다.</div>
+            </div>
           </div>
-          <div class="open"><b>? 미결정</b> 승인된 설명 다음에 <b>이어서 누가 답할 것인가</b> — <b>09번</b>에서 다룹니다.</div>
+
+          <div class="sit s-new">
+            <div class="sh"><span class="sn">갈래 3</span><span>새로 생긴 증상</span><span class="pct">63% · 앞으로 더</span></div>
+            <div class="sb">
+              <p class="sex">“오늘 아침에 혈변을 봐서 연락드립니다” · “배에서 소리가 크게 나고 기지개 자세를 하고 밥을 못 먹어요”</p>
+              <div class="first">
+                <b>먼저 — 그 증상에 대해 승인된 설명</b>
+                “기지개 자세는 <b>복부 통증에서 흔한 신호</b>입니다. 장염·췌장염 등 원인을 가려야 해 <b>오늘 내원이 필요합니다.</b>
+                그때까지 금식하시고 물만 주세요.”
+                <span>보호자가 원하는 건 안내가 아니라 <b>설명</b>입니다. 답을 먼저 주고, 그다음이 어디로 갈지입니다.
+                  <br>※ 앞의 두 문장은 <b>병원이 실제로 하신 답변</b>이고, <b>금식 부분은 저희 제안</b>입니다(11-6에서 확인 요청).</span>
+              </div>
+              <div class="sline"><span class="lk">가는 곳</span><span><b>문 3 → 문 4</b>를 더 지납니다. 이 갈래에서만 회송이 나옵니다.</span></div>
+              <div class="open"><b>? 미결정</b> 승인된 설명 다음에 <b>이어서 누가 답할 것인가</b> — <b>09번</b>에서 다룹니다.</div>
+            </div>
+          </div>
+
+        </div>
+        <div class="yn n"><span class="k">해당<br>없음</span>
+          <span><b>증상이 아닌 것</b> — 투약 방법·급여·검체 보관(02번의 17건)은 갈래로 나누지 않습니다.
+            기록도 무게도 필요 없고 <b>승인된 답변 하나로 끝납니다.</b> 부록의 「급여·투약」 7항목이 여기입니다.</span></div>
+      </div>
+    </div>
+    <div class="darrow"></div>
+
+    <!-- 문 3 -->
+    <div class="gate">
+      <div class="gh"><span class="gn">문 3</span>
+        <span><b>새 증상처럼 보이지만 우리 것과 얽혀 있지 않은가</b>
+          <span class="gt">갈래 3에만 겁니다. 걸리면 <b>갈래 2와 같이 다룹니다</b> — 회송하지 않고 담당의 인계로 갑니다</span></span></div>
+      <div class="gb">
+        <div class="sits">
+          <div class="sit s-drug">
+            <div class="sh"><span class="sn">되돌림 A</span><span>우리가 처방한 약을 먹는 중</span><span class="pct">기록으로 판정</span></div>
+            <div class="sb">
+              <p class="sex">“항생제 먹고 나서 녹변을 봐요” · “스테로이드 먹더니 헥헥거려요”</p>
+              <div class="sline"><span class="lk">할 수 있는 것</span><span>승인된 <b>부작용 설명</b>까지 — “흔한 부작용입니다 · 유산균은 2시간 간격”.</span></div>
+              <div class="sline no"><span class="lk">못 하는 것</span><span><b>끊으라고 하지 않습니다.</b> 그 아이의 약을 아는 주치의만 내릴 수 있는 판단입니다.</span></div>
+              <div class="sline"><span class="lk">가는 곳</span><span>담당의 인계.</span></div>
+            </div>
+          </div>
+          <div class="sit s-chr">
+            <div class="sh"><span class="sn">되돌림 B</span><span>우리가 관리 중인 질환의 변화</span><span class="pct">기록으로 판정</span></div>
+            <div class="sb">
+              <p class="sex">항암 중 · 발작 관리 중 · 신장/심장 수치를 보고 있는 아이 — “요즘 물을 많이 마셔요”</p>
+              <div class="sline no"><span class="lk">자동 설명</span><span><b>하지 않습니다.</b> 같은 “물을 많이 마셔요”가 건강하던 아이와 전혀 다른 뜻입니다.</span></div>
+              <div class="sline"><span class="lk">가는 곳</span><span>문진만 받아 담당의에게. 우선순위를 올려 표시합니다.</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="yn n"><span class="k">해당<br>없음</span><span>둘 다 아니면 문 4로.</span></div>
+      </div>
+    </div>
+    <div class="darrow"></div>
+
+    <!-- 문 4 -->
+    <div class="gate">
+      <div class="gh"><span class="gn">문 4</span>
+        <span><b>증상의 무게는</b>
+          <span class="gt">문 3을 통과한 것만 — 즉 <b>순수하게 새로 생긴 증상</b>만 여기 옵니다</span></span></div>
+      <div class="gb">
+        <div class="wt">
+          <div class="wrow w0"><span class="wk">정보 부족</span>
+            <span><b>먼저 문진을 받습니다</b> — 사진 · 언제부터 · 횟수 · 지금 먹는 약. 받은 뒤 이 문으로 <b>다시 옵니다.</b>
+              무게를 못 재는 채로 아래로 내려보내지 않습니다.</span></div>
+          <div class="wrow w1"><span class="wk">응급</span>
+            <span>문진으로 받은 내용에서 응급 신호가 나오면 <b>여기서 문 0으로 되돌립니다.</b>
+              보호자가 처음 쓴 한 줄에는 없다가 사진·경과에서 나오는 경우가 있습니다.</span></div>
+          <div class="wrow w2"><span class="wk">중등도</span>
+            <span>오늘·내일 안에 봐야 하는 것.</span></div>
+          <div class="wrow w3"><span class="wk">경미</span>
+            <span><b>여기서만 회송을 묻습니다</b> — 의뢰받은 환자인가?
+              <br>예 → 1차 병원 안내 &nbsp;·&nbsp; 아니오 → 우리 병원 예약.
+              <br><b>경미 목록은 원장님이 정하십니다</b>(07번). 애매하면 경미로 내리지 않습니다.</span></div>
         </div>
       </div>
     </div>
-
     <div class="darrow"></div>
-    <div class="dnode solid">④ 어디로 갈지 안내한다
-      <span>증상의 무게로 먼저 가르고, <b>경미한데 의뢰받은 환자</b>면 1차 병원으로<br>
-        (경미하지만 의뢰 환자가 아니면 “우리 병원 예약”)</span></div>
 
-    <div class="dests">
-      <div class="dest d-now"><b>지금 우리 병원</b><span>발작·경련 · 호흡곤란 ·<br>배뇨 못 함 · 다량 출혈 ·<br>수술 부위 벌어짐 · 의식 저하<br><i>+ 전화 연결 · 접수 방법</i></span></div>
-      <div class="dest d-book"><b>우리 병원 예약</b><span>중등도<br>“내일 오전으로 도와드릴게요”<br><i>전화로 연결 · 자동으로 잡지 않음</i><br><i>+ 그때까지 지켜볼 것</i></span></div>
-      <div class="dest d-ref"><b>1차 병원으로</b><span><b>경미 + 의뢰받은 환자</b><br>“○○동물병원이 빠릅니다”<br><i>+ 그쪽에 먼저 알림</i><br><i>+ [그래도 저희로] 항상</i></span></div>
-      <div class="dest d-vet"><b>담당의 확인 후</b><span>판단이 갈리는 것<br>문진을 채워 넘김<br><i>+ ② 갈래는 응급을 뺀 전부</i></span></div>
+    <!-- 문 5 -->
+    <div class="gate">
+      <div class="gh"><span class="gn">문 5</span>
+        <span><b>어디로 갈지 안내한다</b>
+          <span class="gt">위 갈래와 무게가 만나는 곳</span></span></div>
+      <div class="gb">
+        <div class="dests" style="margin-top:0">
+          <div class="dest d-now"><b>지금 우리 병원</b><span>문 0에 걸린 것<br>+ 문 4의 응급<br><i>전화 연결 · 접수 방법</i></span></div>
+          <div class="dest d-book"><b>우리 병원 예약</b><span>중등도<br>경미 + 의뢰 환자가 아님<br><i>전화로 연결 · 자동으로 잡지 않음</i><br><i>+ 그때까지 지켜볼 것</i></span></div>
+          <div class="dest d-ref"><b>1차 병원으로</b><span><b>경미 + 의뢰받은 환자</b><br>“○○동물병원이 빠릅니다”<br><i>+ 그쪽에 먼저 알림</i><br><i>+ [그래도 저희로] 항상</i></span></div>
+          <div class="dest d-vet"><b>담당의 확인 후</b><span>갈래 2 · 되돌림 A·B 전부<br>판단이 갈리는 것<br><i>문진을 채워 넘김</i></span></div>
+        </div>
+      </div>
     </div>
+    <div class="darrow"></div>
 
-    <div class="dmerge">⑤ 승인된 답변은 즉시 나가고, 나머지는 사람이 이어받습니다
-      <span>승인된 것 = 자동 발송 · 그 밖의 것 = 직원 “오늘 할 일”에 등록, AI는 초안까지, <b>발송은 사람이 누를 때만</b><br>
-        ②(우리 처치) 갈래는 <b>응급을 뺀 전부</b>가 담당의 인계로 갑니다</span></div>
+    <!-- 문 6 -->
+    <div class="dmerge">문 6 — 이 문장을 그대로 내보내도 되는가
+      <span><b>전부 원장님이 승인하신 문장이면</b> 자동 발송 · <b>하나라도 아니면</b> 직원 “오늘 할 일”에 등록<br>
+        사람에게 넘어간 것은 AI가 초안까지 쓰고 <b>발송은 사람이 누를 때만</b>. 나간 답변에는 “의료진 확인 전 자동 안내입니다”가 붙습니다</span></div>
+  </div>
+
+  <div class="callout">
+    <div class="lbl">이 순서가 규칙을 대신합니다</div>
+    <p>“우리가 수술한 부위·우리가 처방한 약·진행 중인 질환은 <strong>의뢰 환자여도 경미로 내리지 않는다</strong>”는 07번의 원칙은,
+      <strong>지켜야 할 목록이 아니라 문의 순서로 지켜집니다.</strong> 회송을 묻는 곳은 문 4의 「경미」 한 칸뿐이고,
+      그 칸에 오려면 문 2·문 3을 통과해야 하기 때문입니다. 사람이 매번 기억해야 하는 규칙은 언젠가 반드시 빠집니다.</p>
   </div>
 
   <h3>지켜야 할 선</h3>
@@ -461,7 +643,8 @@
         다만 <b>“문제없습니다”라고 단정하거나, 지켜볼 조건 없이 끝내지 않습니다</b> — 안심은 사람이 합니다.</span></li>
     <li><b>약을 지시하지 않습니다.</b>
       <span class="sub">02번의 “조치 지시 13%”는 대부분 <b>투약 중단</b>입니다 — 그 아이의 약을 아는 주치의만 내릴 수 있는 판단입니다.
-        자동답변에 들어가는 건 넥카라·소독처럼 <b>약과 무관한 조치</b>뿐입니다.</span></li>
+        <b>끊기·용량·재개는 자동답변에 들어가지 않습니다.</b>
+        넥카라·소독처럼 약과 무관한 조치, 그리고 <b>원장님이 승인하신 복약 방법</b>(“유산균은 항생제와 2시간 간격”)까지가 한계입니다.</span></li>
     <li><b>진료 원문·처방 상세·판독 소견을 보여주지 않습니다.</b>
       <span class="sub">채팅이 이 규칙의 우회로가 되면 안 됩니다. 영상은 <b>“촬영을 했다”까지만</b> 참고하고
         소견 문장을 보호자에게 옮기지 않습니다.</span></li>
@@ -478,16 +661,16 @@
 <!-- ══════ 06 ══════ -->
 <section>
   <h2><span class="num">06</span>기록을 보고 답합니다</h2>
-  <p class="dek">흐름도 ①번 — 일반 챗봇이 할 수 없는 부분입니다.</p>
+  <p class="dek">흐름도의 <b>문 1</b> — 일반 챗봇이 할 수 없는 부분입니다.</p>
 
   <div class="tw"><table>
     <tr><th>읽는 것</th><th>무엇이 달라지는가</th></tr>
-    <tr><td>진행 중인 입원</td><td>입원 중이면 <b>흐름에서 빼고 병동으로</b> 넘깁니다</td></tr>
-    <tr><td>최근 진료 회차·수술 이력</td><td>2주 전 슬개골 수술이 있으면 “절뚝임”은 <b>② 갈래</b>로 갑니다</td></tr>
+    <tr><td>진행 중인 입원</td><td>입원 중이면 <b>흐름에서 빼고 병동으로</b> 넘깁니다(<b>갈래 1</b>)</td></tr>
+    <tr><td>최근 진료 회차·수술 이력</td><td>2주 전 슬개골 수술이 있으면 “절뚝임”은 <b>갈래 2</b>로 갑니다</td></tr>
     <tr><td>최근 검진 수치</td><td>신장 수치가 올라와 있던 아이의 “물을 많이 마셔요”는 우선순위가 다릅니다</td></tr>
-    <tr><td>처방</td><td>스테로이드 복용 중이면 팬팅·다음다뇨를 <b>담당의가 먼저 볼 항목</b>으로 표시합니다</td></tr>
+    <tr><td>처방</td><td>스테로이드 복용 중이면 팬팅·다음다뇨가 <b>되돌림 A</b>로 걸려 담당의에게 갑니다</td></tr>
     <tr><td>영상 촬영 이력</td><td>최근 흉부 촬영이 있으면 <b>“최근 촬영 있음”을 담당의 화면에 띄웁니다</b></td></tr>
-    <tr><td>의뢰 병원</td><td>있으면 <b>회송 판단</b> 대상이 됩니다</td></tr>
+    <tr><td>의뢰 병원</td><td>있으면 <b>회송 판단</b> 대상이 됩니다 — 단 <b>문 4의 「경미」에 도달했을 때만</b></td></tr>
   </table></div>
 
   <div class="warnbox">
@@ -593,14 +776,15 @@
 <!-- ══════ 09 ══════ -->
 <section>
   <h2><span class="num">09</span>새로 생긴 증상은 누가 답할 것인가 <span style="color:var(--amber)">— 미결정</span></h2>
-  <p class="dek">② 갈래는 정해졌습니다 — <b>응급을 뺀 전부</b>가 담당의에게 갑니다. 이쪽이 남은 문제입니다.</p>
+  <p class="dek">갈래 2(우리 처치)와 되돌림 A·B는 정해졌습니다 — <b>응급을 뺀 전부</b>가 담당의에게 갑니다.
+     남은 것은 <b>갈래 3</b>, 순수하게 새로 생긴 증상입니다.</p>
   <div class="callout" style="margin:0 0 22px">
     <div class="lbl">여쭙는 것은 이것 하나입니다</div>
     <p><b>승인된 답변(D)으로 시작하되, 1차 병원이 늘면 B로 옮겨갈 것인가?</b>
       지금 기획은 D를 전제로 짜여 있고, 아래 표는 그 선택지를 늘어놓은 것입니다.</p>
   </div>
 
-  <p><strong>이미 3분의 2(63% · 156건 기준)입니다.</strong> 그리고 1차 병원을 늘리고 그 환자들이 앱을 쓰기 시작하면
+  <p><strong>이미 3분의 2(63% · 05번과 같은 156건 기준)입니다.</strong> 그리고 1차 병원을 늘리고 그 환자들이 앱을 쓰기 시작하면
     — 그 아이들은 우리에게 처치받은 적이 없으므로 <strong>거의 전부가 이 갈래로 들어옵니다.</strong>
     <span class="em">지금 정해두지 않으면, 늘어난 다음에는 사람으로 막게 됩니다.</span></p>
 
@@ -630,6 +814,8 @@
       “1차 병원으로 잘 보내주는 것”</strong>이 되고, <span class="em">그게 플랫폼이 하려는 일과 맞습니다.</span></p>
     <p style="margin-top:12px">다만 <strong>응급 분류만은 우리가 합니다.</strong> 1차 병원은 진료시간이 우리와 다르고,
       넘겼다가 늦으면 그 책임은 앱을 만든 쪽에 옵니다.</p>
+    <p style="margin-top:12px"><strong>B를 고르시면 05번의 문 4를 다시 그려야 합니다.</strong>
+      지금 흐름은 회송을 <strong>「경미」 한 칸에서만</strong> 묻지만, B는 갈래 3 전체를 1차 병원으로 보낸다는 뜻이기 때문입니다.</p>
   </div>
 </section>
 
@@ -645,7 +831,7 @@
   <div class="phase"><div class="id">C-3</div><div><div class="t">문진 채우기<span class="ai no">모델 불필요</span></div>
     <div class="d">사진·시점·횟수·복용 약. “주치의 확인 후” 왕복을 한 번으로 줄입니다.</div></div></div>
   <div class="phase"><div class="id">C-4</div><div><div class="t">기록 연계 (EMR)<span class="ai no">조회</span></div>
-    <div class="d">최근 회차·입원·검진·처방·영상 이력을 담당의 화면에 붙입니다.</div></div></div>
+    <div class="d">최근 회차·입원·검진·처방·영상 이력을 읽어 <b>갈래 2·되돌림 A·B를 가르고</b>, 같은 내용을 담당의 화면에 붙입니다.</div></div></div>
   <div class="phase"><div class="id">C-5</div><div><div class="t">담당의 인계 + 답장 초안<span class="ai yes">모델 사용</span></div>
     <div class="d">초안은 AI가, <b>발송은 사람이 누를 때만</b>. 입원 리포트와 같은 구조입니다.</div></div></div>
   <div class="phase"><div class="id">C-6</div><div><div class="t">1차 병원 회송 + 알림<span class="ai no">규칙</span></div>
@@ -655,6 +841,12 @@
 
   <p class="n-note" style="margin-top:18px">C-1·C-2가 먼저 나가면 그것만으로 지금의 자동응답을 대체합니다.
     순서·범위는 아직 의논 중이며, 아래 11번이 정해지는 대로 다시 잡겠습니다.</p>
+  <div class="warnbox">
+    <p><b>C-2 시점에는 05번의 기록 분기(C-4)와 담당의 인계(C-5)가 아직 없습니다.</b>
+      그래서 이 단계에서 내보내는 승인 목록은 <b>기록을 안 봐도 답이 서는 것</b>으로 좁힙니다.
+      갈래 2(우리 처치)·되돌림 A·B에 해당하는 답변은 <b>인계가 붙는 C-5 뒤로</b> 미룹니다 —
+      담당의에게 넘어가지 않는 채로 “흔합니다”가 나가면 안 됩니다.</p>
+  </div>
 </section>
 
 <!-- ══════ 11 ══════ -->
@@ -668,8 +860,9 @@
       <li><b>초안 32건 검토</b> <span style="color:var(--red);font-weight:800">— 가장 손이 많이 가는 작업</span>
         <span><b><a href="#appendix" style="color:var(--teal-d)">아래 부록</a></b>에서 승인 / 수정 / 삭제로 표시해 주시면 그대로 반영합니다. 이것이 끝나야 C-2가 시작됩니다.</span></li>
       <li><b>“지금 오세요” 목록 확정</b>
-        <span class="cur">현재안 · 발작·경련 / 호흡곤란 / 배뇨 못 함 / 다량 출혈 / 수술 부위 벌어짐 / 의식 저하 —
-          넓게 잡는 편이 안전하다고 보고 있습니다.</span></li>
+        <span class="cur">현재안 · 발작·경련(지금 하거나 오늘 있었던) / 호흡곤란·혀가 파래짐 / 배뇨 못 함 /
+          다량 출혈 / 수술 부위 벌어짐 / 의식 저하 / <b>중독 의심</b> / <b>배가 부풀고 헛구역질</b> —
+          넓게 잡는 편이 안전하다고 보고 있습니다. 05번 문 0의 목록과 같습니다.</span></li>
       <li><b>“경미” 목록 확정 — 1차 병원으로 돌려보낼 기준</b>
         <span class="cur">후보 · 단순 외이염 / 가벼운 피부 트러블 / 1회성 구토·설사로 활력 정상 / 발톱·항문낭.
           다만 <b>1회성 구토는 이물·췌장염 초기와 구분이 어려워</b> 빼는 것도 검토 부탁드립니다.</span></li>
@@ -734,7 +927,8 @@
     별도 단계(C-6)로 붙입니다. 지금은 <b>우리 병원 기준으로만</b> 봐주시면 됩니다.</p>
 
   <div class="legend">
-    <div class="lg"><span class="badge A">A</span><div><b>8건</b> · 병원이 실제로 같은 답을 한 <b>문장</b>이 대화 백업에 있습니다. 확인만 해주시면 바로 씁니다.</div></div>
+    <div class="lg"><span class="badge A">A</span><div><b>8건</b> · <b>핵심 문장</b>이 대화 백업에 있습니다. 다만 <b>4건은 그 위에 저희 문장이 더해져 있습니다</b> —
+      「기지개 자세」의 금식, 「녹변」의 유산균 간격, 「닭가슴살」의 지방 설명, 「3일 절뚝」의 내원 기준. <b>그 부분도 함께 봐 주세요.</b></div></div>
     <div class="lg"><span class="badge B">B</span><div><b>18건</b> · 교과서 근거는 있으나 <b>이 병원 답변 기록이 없는 것</b>입니다. 병원 기준으로 고쳐주셔야 합니다.</div></div>
     <div class="lg"><span class="badge C">C</span><div><b>6건</b> · 아이마다 답이 갈립니다. <b>자동답변을 내보내지 않고</b> 필요한 정보만 받아 넘깁니다. 무엇을 물어볼지만 봐주세요.</div></div>
   </div>
@@ -803,6 +997,7 @@
     <p><strong>먼저 — 변에 피가 섞이거나, 물처럼 쏟거나, 기운이 없거나, 잇몸이 창백하면 바로 연락 주세요.</strong></p>
     <p>그렇지 않다면: 항생제를 먹고 있을 때 <strong>녹변·묽은 변은 흔한 부작용</strong>입니다. 담즙이 장을 빨리 통과하면 녹색으로 보입니다.</p>
     <p>임의로 항생제를 끊지 마시고 <strong>3~4일 지켜봐 주세요.</strong> 유산균을 함께 준다면 항생제와 <strong>2시간 간격</strong>을 두세요.</p>
+    <p>지금 드시는 약과 관련된 내용이라 <strong>담당의에게 함께 전달해 두겠습니다.</strong></p>
   </div>
   <p class="evi"><b>병원 실제 답변</b> · “녹변의 경우 <b>항생제의 영향일 수 있으니 3-4일 정도 지켜봐주시고</b> 특이사항 있을 경우 바로 연락주시기 바랍니다.”</p>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
@@ -876,6 +1071,7 @@
     <p><strong>먼저 — 숨쉬기 힘들어 보이면 지금 오세요.</strong></p>
     <p>그렇지 않다면: 호흡 마취 시 <strong>기관 삽관 자극으로 3~5일 정도 기침</strong>이 날 수 있습니다. 대개 저절로 없어집니다.
       <strong>5일이 지나도 계속되면</strong> 내원해 주세요.</p>
+    <p>저희가 한 마취 뒤의 일이라 <strong>담당의에게 함께 전달해 두겠습니다.</strong></p>
   </div>
   <p class="evi"><b>병원 실제 답변</b> · “호흡마취시 <b>기관 삽관 자극으로 3~5일 동안 기침을 할 수 있습니다.</b> 시간이 지나면서 자연스럽게 사라질 증상이나 너무 심하거나 호흡이 곤란해 보이는 경우에는 내원해주세요.”</p>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
@@ -889,6 +1085,7 @@
     <p>그렇지 않다면: <strong>스테로이드에서 팬팅(헥헥거림)은 잘 알려진 부작용</strong>입니다. 물을 많이 마시고 소변량이 느는 것도 같이 옵니다.
       다만 심장·폐 문제로도 같은 증상이 나오므로 <strong>약 탓으로만 단정하지는 않습니다.</strong></p>
     <p>쉬고 있을 때(잠잘 때) <strong>1분 호흡수를 세어</strong> 알려주세요 — <strong>분당 30회를 넘으면</strong> 확인이 필요합니다.</p>
+    <p>지금 드시는 약과 관련된 내용이라 <strong>담당의에게 함께 전달해 두겠습니다.</strong></p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -897,9 +1094,9 @@
   <p class="q"><span class="badge B">B</span>숨을 너무 빨리 쉬는 것 같아요.</p>
   <p class="qmeta">오후 10시</p>
   <div class="a">
-    <p><strong>자는 동안 가슴이 오르내리는 횟수를 1분간 세어</strong> 주세요. 헐떡임이 아니라 <strong>안정 시</strong> 호흡수여야 합니다.</p>
-    <p><strong>분당 30회 이하</strong>면 대개 정상 범위입니다.</p>
-    <p><strong>배까지 크게 움직이며 숨쉬거나(복압 호흡) 잇몸이 창백·파랗다면 지금 오세요.</strong></p>
+    <p><strong>먼저 — 배까지 크게 움직이며 숨쉬거나(복압 호흡) 잇몸이 창백·파랗다면 지금 오세요.</strong></p>
+    <p>그렇지 않다면: <strong>자는 동안 가슴이 오르내리는 횟수를 1분간 세어</strong> 주세요. 헐떡임이 아니라 <strong>안정 시</strong> 호흡수여야 합니다.</p>
+    <p><strong>분당 30회를 넘으면 확인이 필요합니다.</strong> 30회 아래여도 숨쉬는 모습이 평소와 다르면 알려 주세요.</p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -911,6 +1108,7 @@
   <p class="q"><span class="badge B">B</span>얼마 전 새로 조제받고 나서부터 매일 새벽 발작을 합니다. 이전엔 한 번도 없었는데 벌써 3일째예요.</p>
   <p class="qmeta">오전 8시</p>
   <div class="a">
+    <p><strong>먼저 — 오늘도 발작이 있었다면 오늘 중 내원해 주세요.</strong> 사흘 연속 반복되는 발작은 그 자체로 위험합니다.</p>
     <p><strong>약을 바꾼 뒤 발작이 새로 생긴 것이라 약과의 관련을 먼저 봐야 합니다.</strong> 임의로 늘리거나 줄이지 마세요.</p>
     <p><strong>지금 전화 연결해 드리겠습니다.</strong> 담당의가 직접 확인해야 하는 사안입니다.</p>
     <p>그때까지 발작이 오면 <strong>시작·끝 시각과 지속 시간</strong>을 적어 주시고, 가능하면 <strong>영상</strong>을 찍어 주세요. 몸을 잡거나 입에 손을 넣지 마세요.</p>
@@ -923,6 +1121,7 @@
   <p class="q"><span class="badge B">B</span>5살 포메인데 종종 몸이 경직되고 발작 같은 걸 해서요. 동네 병원에서 머리 MRI를 찍어봐야 한다고 합니다.</p>
   <p class="qmeta">오후 2시 · 신규 보호자</p>
   <div class="a">
+    <p><strong>먼저 — 지금 발작을 하고 있다면 바로 오세요.</strong> 아래는 지나간 증상에 대한 안내입니다.</p>
     <p>그 나이대에 반복되는 경직·발작은 <strong>원인 검사가 필요한 것이 맞습니다.</strong></p>
     <p>다만 MRI 전에 <strong>혈액·심장 검사로 대사성·심혈관 원인을 먼저 배제</strong>하는 것이 순서입니다.</p>
     <p>예약을 도와드릴 수 있게 전화로 연결해 드리겠습니다. <strong>발작 영상</strong>이 있으면 꼭 가져와 주세요 — 진짜 발작인지 다른 움직임인지 가르는 데 가장 중요합니다.</p>
@@ -960,9 +1159,9 @@
   <p class="q"><span class="badge A">A</span>이번에는 3일 연속으로 오른쪽 뒷다리를 땅에 디디지를 못하네요.</p>
   <p class="qmeta">오후 1시</p>
   <div class="a">
-    <p>잠깐씩 드는 것과 <strong>3일 연속 못 디디는 것은 다릅니다.</strong> 재평가가 필요합니다.</p>
+    <p><strong>먼저 — 디딜 때 소리를 지르거나 다리가 붓거나 아예 움직이지 못하면 기다리지 마시고 오세요.</strong></p>
+    <p>그렇지 않다면: 잠깐씩 드는 것과 <strong>3일 연속 못 디디는 것은 다릅니다.</strong> 재평가가 필요합니다.</p>
     <p><strong>예약을 도와드릴 수 있게 전화로 연결해 드리겠습니다.</strong> 그때까지 점프·계단·미끄러운 바닥을 막아 주시고 산책은 짧게 해 주세요.</p>
-    <p>디딜 때 소리를 지르거나 다리가 붓거나 아예 움직이지 못하면 <strong>기다리지 마시고 오세요.</strong></p>
   </div>
   <p class="evi"><b>병원 실제 답변</b> · “잠깐씩 증상이 나타나는 게 아니라 <b>3일 연속, 지속적으로 증상이 나타나고 있기 때문에 다시 한번 체크</b> 받아보시는 게 좋을 것 같습니다.”</p>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
@@ -1117,9 +1316,9 @@
 <div class="qa gC">
   <p class="q"><span class="badge C">C</span>콧물이 나고 몸을 미세하게 떨어서요.</p>
   <div class="a">
-    <p>떨림은 추위·통증·불안·중독·신경 문제 어디서든 나와 이것만으로는 좁혀지지 않습니다.</p>
+    <p><strong>먼저 — 떨림과 함께 비틀거리거나 토하거나 의식이 흐리면 지금 오세요.</strong></p>
+    <p>그렇지 않다면: 떨림은 추위·통증·불안·중독·신경 문제 어디서든 나와 이것만으로는 좁혀지지 않습니다.</p>
     <p><strong>받아둘 것</strong> — ① 언제부터 ② 따뜻하게 해줘도 계속되는지 ③ 걷는 게 평소와 같은지 ④ 최근 새로 먹은 약·음식.</p>
-    <p>떨림과 함께 <strong>비틀거리거나 토하거나 의식이 흐리면 지금 오세요.</strong></p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>

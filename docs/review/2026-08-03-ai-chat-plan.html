@@ -193,6 +193,8 @@
   .qa{border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:16px 0; break-inside:avoid}
   .qa.gA{border-left:5px solid var(--teal)} .qa.gB{border-left:5px solid var(--amber)} .qa.gC{border-left:5px solid var(--red)}
   .qa h4{margin:0} 
+  .legend{display:grid; gap:10px; margin:22px 0}
+  .lg{display:flex; gap:12px; align-items:flex-start; font-size:.9rem; color:var(--ink2)}
   h3.qagrp{font-size:1.05rem; font-weight:800; margin:40px 0 6px; padding-bottom:9px; border-bottom:2px solid var(--line)}
   h3.qagrp .n{color:var(--muted); font-weight:600; font-size:.85rem; margin-left:8px}
   footer{margin-top:70px; padding-top:24px; border-top:1px solid var(--line); color:var(--faint); font-size:.83rem}
@@ -215,7 +217,7 @@
   <h1>보호자 AI 채팅<br>— 증상 문의를 받는 방법</h1>
   <div class="basis">
     <b>근거</b> · 채널 상담 백업 <b>약 100명분(대화 105건 · 메시지 12,738건)</b>을 한 건씩 읽었습니다.
-    전체 <b>1만여 건</b> 중 표본이며, 표본이 어디까지 말해주는지는 각 절에 적었습니다.
+    전체 <b>대화 1만여 건</b> 중 표본이며, 표본이 어디까지 말해주는지는 각 절에 적었습니다.
   </div>
   <p class="lead">
     지금 보호자가 증상을 물으면 <b>“증상 상담은 하지 않습니다”</b>라는 자동응답이 나가고,
@@ -238,10 +240,14 @@
   </div>
 
   <div class="quote">
-    <div class="lbl">현재 자동응답 전문</div>
+    <div class="lbl">현재 자동응답 ① — 진료시간 안내와 함께 나가는 것</div>
     <p>✅ 본 채널에서는 진료 예약과 입원 환자 사진·안내를 받아보실 수 있습니다. (14:00~16:00, 1회)<br><br>
        📌 다만, <b>진료·증상 상담은 채널에서 진행하지 않으며</b>, 내원 시 의료진과 직접 상담 부탁드립니다.</p>
     <p class="cnt">표본 105개 대화에서만 <b>1,952번</b> 발송</p>
+    <p style="margin-top:14px;padding-top:12px;border-top:1px dashed #f3c9c9"><b>자동응답 ② — 진료시간 밖</b><br>
+      “지금은 답변(채팅)이 가능한 시간이 아닙니다. 🌃 야간 중 채널 확인 및 전송이 불가능하오니
+      내용을 남겨주시면 채팅이 가능한 시간에 순차적으로 답변드리겠습니다.”</p>
+    <p class="cnt"><b>2,048번</b> 발송 · 둘을 합쳐 병원 메시지의 44%</p>
   </div>
 
   <p>채널을 막아 두었는데도 보호자는 계속 증상을 적습니다. <strong>물어볼 데가 여기뿐이기 때문입니다.</strong>
@@ -345,7 +351,7 @@
 
   <div class="callout">
     <div class="lbl">그래도 분명한 것</div>
-    <p><strong>채널로 온 증상 문의의 44%는 채널에서 답이 끝나지 않습니다.</strong>
+    <p><strong>사람이 답장한 것 중 44%는 채널에서 답이 끝나지 않습니다.</strong>
       받은 사람이 답할 수 없어 주치의를 거쳐야 하고, 그 사이 보호자는 기다립니다.
       진료시간 밖이면 더 벌어집니다.</p>
     <p style="margin-top:12px">바꿔야 하는 건 속도가 아니라 <span class="em">주치의를 거치지 않아도 되는 질문을 걸러내는 것</span>입니다.</p>
@@ -365,7 +371,7 @@
     <tr><td><b>목표</b></td><td>대화를 이어가는 것</td><td><b>분류해서 넘기는 것</b> — 대화를 오래 끌 이유가 없음</td></tr>
     <tr><td><b>말하는 범위</b></td><td>스스로 판단해 답을 만듦</td><td><b>원장님이 승인한 문장만</b> 나감</td></tr>
     <tr><td><b>“괜찮다”</b></td><td>쉽게 말함</td><td><b>자동으로는 하지 않음</b></td></tr>
-    <tr><td><b>대화의 끝</b></td><td>답변으로 끝</td><td><b>사람에게 인계 · 예약 · 1차 병원 안내</b> 중 하나로 반드시 이어짐</td></tr>
+    <tr><td><b>대화의 끝</b></td><td>답변으로 끝</td><td><b>지금 오세요 · 예약 · 1차 병원 안내 · 사람에게 인계</b> 넷 중 하나로 반드시 이어짐</td></tr>
     <tr><td><b>기록</b></td><td>남지 않음</td><td>주고받은 내용이 <b>진료 기록에 붙음</b></td></tr>
   </table></div>
 
@@ -391,7 +397,7 @@
 
     <div class="dsplit">
       <div class="branch b1">
-        <div class="bh"><span>② 우리 처치와 관련</span><span class="pct">29%</span></div>
+        <div class="bh"><span>② 우리 처치와 관련</span><span class="pct">29% (n=156)</span></div>
         <div class="bb">
           <p class="ex">“수술 부위가 좀 빨갛게 올라왔어요” · “마취하고 나서 자꾸 켁켁거려요” ·<br>“퇴원하고 집에 왔는데 혈변이에요”</p>
           <div class="first">
@@ -409,7 +415,7 @@
       </div>
 
       <div class="branch b2">
-        <div class="bh"><span>③ 새로 생긴 증상</span><span class="pct">63% · 앞으로 더</span></div>
+        <div class="bh"><span>③ 새로 생긴 증상</span><span class="pct">63% (n=156) · 앞으로 더</span></div>
         <div class="bb">
           <p class="ex">“오늘 아침에 혈변을 봐서 연락드립니다” ·<br>“배에서 소리가 크게 나고 기지개 자세를 하고 밥을 못 먹어요”</p>
           <div class="first">
@@ -417,11 +423,11 @@
             “기지개 자세는 <b>복부 통증에서 흔한 신호</b>입니다. 장염·췌장염 등 원인을 가려야 해 <b>오늘 내원이 필요합니다.</b>
             그때까지 금식하시고 물만 주세요.”
             <span>보호자가 원하는 건 안내가 아니라 <b>설명</b>입니다. 답을 먼저 주고, 그다음이 어디로 갈지입니다.
-              <br>※ 이 문장도 <b>실제로 병원이 하신 답변</b>을 옮긴 것입니다.</span>
+              <br>※ 앞의 두 문장은 <b>병원이 실제로 하신 답변</b>이고, <b>금식 부분은 저희 제안</b>입니다(11-6에서 확인 요청).</span>
           </div>
           <div class="outs">
+            <div class="out"><span class="ic ask">문진</span><span>답하기에 정보가 부족하면 <b>사진·언제부터·횟수·복용 약</b>부터 받습니다</span></div>
             <div class="out"><span class="ic now">그다음</span><span>증상의 무게에 따라 <b>어디로 갈지</b>를 붙입니다 — 아래 ④</span></div>
-            <div class="out"><span class="ic ask">문진</span><span>답하기에 정보가 부족하면 <b>사진·언제부터·횟수·복용 약</b>을 먼저 받습니다</span></div>
           </div>
           <div class="open"><b>? 미결정</b> 승인된 설명 다음에 <b>이어서 누가 답할 것인가</b> — <b>09번</b>에서 다룹니다.</div>
         </div>
@@ -430,26 +436,29 @@
 
     <div class="darrow"></div>
     <div class="dnode solid">④ 어디로 갈지 안내한다
-      <span>증상의 무게 + 의뢰 환자인지에 따라 넷 중 하나</span></div>
+      <span>증상의 무게로 먼저 가르고, <b>경미한데 의뢰받은 환자</b>면 1차 병원으로<br>
+        (경미하지만 의뢰 환자가 아니면 “우리 병원 예약”)</span></div>
 
     <div class="dests">
       <div class="dest d-now"><b>지금 우리 병원</b><span>발작·경련 · 호흡곤란 ·<br>배뇨 못 함 · 다량 출혈 ·<br>수술 부위 벌어짐 · 의식 저하<br><i>+ 전화 연결 · 접수 방법</i></span></div>
-      <div class="dest d-book"><b>우리 병원 예약</b><span>중등도<br>“내일 오전으로 잡아드릴게요”<br><i>+ 그때까지 지켜볼 것</i></span></div>
+      <div class="dest d-book"><b>우리 병원 예약</b><span>중등도<br>“내일 오전으로 도와드릴게요”<br><i>전화로 연결 · 자동으로 잡지 않음</i><br><i>+ 그때까지 지켜볼 것</i></span></div>
       <div class="dest d-ref"><b>1차 병원으로</b><span><b>경미 + 의뢰받은 환자</b><br>“○○동물병원이 빠릅니다”<br><i>+ 그쪽에 먼저 알림</i><br><i>+ [그래도 저희로] 항상</i></span></div>
-      <div class="dest d-vet"><b>담당의 확인 후</b><span>판단이 갈리는 것<br>문진을 채워 넘김<br><i>+ ② 갈래는 응급을 뺀 전부</i><br><i>+ 입원 중은 병동으로</i></span></div>
+      <div class="dest d-vet"><b>담당의 확인 후</b><span>판단이 갈리는 것<br>문진을 채워 넘김<br><i>+ ② 갈래는 응급을 뺀 전부</i></span></div>
     </div>
 
-    <div class="dmerge">⑤ 어느 쪽이든 끝은 사람입니다
-      <span>직원 “오늘 할 일”에 등록 · AI는 답장 초안까지 · 발송은 사람이 누를 때만</span></div>
+    <div class="dmerge">⑤ 승인된 답변은 즉시 나가고, 나머지는 사람이 이어받습니다
+      <span>승인된 것 = 자동 발송 · 그 밖의 것 = 직원 “오늘 할 일”에 등록, AI는 초안까지, <b>발송은 사람이 누를 때만</b><br>
+        ②(우리 처치) 갈래는 <b>응급을 뺀 전부</b>가 담당의 인계로 갑니다</span></div>
   </div>
 
   <h3>지켜야 할 선</h3>
   <ul class="rules">
-    <li><b>확정 진단을 하지 않습니다.</b>
-      <span class="sub">원장님이 승인하신 문장만 나갑니다. 그 문장에 병명이 들어가더라도
-        <b>“~에서 흔한 형태입니다” 수준</b>이고, 감별 목록을 늘어놓거나 새 병명을 붙이지 않습니다.</span></li>
-    <li><b>“괜찮다”고 하지 않습니다.</b>
-      <span class="sub">안심은 사람만 합니다 — 실제로도 10%뿐이고 그마저 주치의 확인을 거칩니다.</span></li>
+    <li><b>새 판단을 만들지 않습니다.</b>
+      <span class="sub"><b>원장님이 승인하신 문장만</b> 나갑니다. 승인된 문장 안에 병명이나 감별이 들어가는 것은 괜찮지만
+        (예: “복부 통증에서 흔한 신호입니다”), AI가 기록을 보고 <b>새로 병명을 붙이거나 감별을 덧붙이지 않습니다.</b></span></li>
+    <li><b>“괜찮습니다”로 끝내지 않습니다.</b>
+      <span class="sub">“흔합니다 · 대개 저절로 없어집니다” 같은 <b>경과 설명</b>은 승인된 범위에서 합니다.
+        다만 <b>“문제없습니다”라고 단정하거나, 지켜볼 조건 없이 끝내지 않습니다</b> — 안심은 사람이 합니다.</span></li>
     <li><b>약을 지시하지 않습니다.</b>
       <span class="sub">02번의 “조치 지시 13%”는 대부분 <b>투약 중단</b>입니다 — 그 아이의 약을 아는 주치의만 내릴 수 있는 판단입니다.
         자동답변에 들어가는 건 넥카라·소독처럼 <b>약과 무관한 조치</b>뿐입니다.</span></li>
@@ -472,7 +481,7 @@
   <p class="dek">흐름도 ①번 — 일반 챗봇이 할 수 없는 부분입니다.</p>
 
   <div class="tw"><table>
-    <tr><th>읽는 것</th><th>답이 어떻게 갈리는가</th></tr>
+    <tr><th>읽는 것</th><th>무엇이 달라지는가</th></tr>
     <tr><td>진행 중인 입원</td><td>입원 중이면 <b>흐름에서 빼고 병동으로</b> 넘깁니다</td></tr>
     <tr><td>최근 진료 회차·수술 이력</td><td>2주 전 슬개골 수술이 있으면 “절뚝임”은 <b>② 갈래</b>로 갑니다</td></tr>
     <tr><td>최근 검진 수치</td><td>신장 수치가 올라와 있던 아이의 “물을 많이 마셔요”는 우선순위가 다릅니다</td></tr>
@@ -529,12 +538,12 @@
 <!-- ══════ 08 ══════ -->
 <section>
   <h2><span class="num">08</span>답변은 어디까지 준비됐나</h2>
-  <p class="dek">일반 증상 문의 32건에 초안을 쓰고, 근거를 등급으로 나눴습니다.</p>
+  <p class="dek">증상·투약 문의 32건에 초안을 쓰고 등급을 나눴습니다. <b>A·B는 근거 등급이고, C는 “자동으로 답하지 않는다”는 처리 방식</b>입니다.</p>
 
   <div class="stats">
     <div class="stat"><div class="v">8</div><div class="k"><b>A</b> · 병원이 실제로<br>같은 답을 한 <b>문장</b>이 있음</div></div>
     <div class="stat"><div class="v">18</div><div class="k"><b>B</b> · 교과서 근거는 있으나<br>병원 답변 기록 없음</div></div>
-    <div class="stat"><div class="v">6</div><div class="k"><b>C</b> · 답하지 않고<br>문진만 받아 전달</div></div>
+    <div class="stat"><div class="v">6</div><div class="k"><b>C</b> · 근거와 무관하게<br><b>자동 발송하지 않음</b></div></div>
   </div>
 
   <div class="tw"><table>
@@ -552,15 +561,16 @@
   <div class="warnbox">
     <p><b>처음에 A로 세었던 12건에서 4건을 B로 내렸습니다.</b> 근거를 다시 보니
       “원장님께 전달드렸습니다” · “전화드렸으나 받지 않으셔서”처럼 <b>답변 내용이 채널에 남지 않은 것</b>이었고,
-      혈변·외상 두 건은 <b>저희 초안이 병원 답변보다 강했습니다</b>(병원은 “추가로 보이면 연락” / 당일 오후 예약,
-      초안은 “오늘 중 내원” / “바로 오세요”). 그 4건은 원장님 확인이 필요한 B입니다.</p>
+      혈변·외상 두 건은 <b>저희 초안이 병원 기준과 달랐습니다</b>(병원은 “추가로 보이면 연락” / 당일 오후 예약,
+      초안은 “오늘 중 내원” / “바로 오세요”). 더 강한 쪽이 안전하긴 하지만
+      <b>병원 기준을 저희가 정할 수는 없어</b> B로 두었습니다.</p>
   </div>
 
   <div class="banner">
     <p class="bl">데이터에 대한 요청</p>
     <h3 class="bh2">답변의 정확도는<br>“병원이 답한 기록”에서 옵니다</h3>
     <p class="bp">지금 초안의 대부분은 <b>교과서에는 맞지만 이 병원이 그렇게 답하시는지 모르는 것</b>입니다.
-      같은 질문에 병원이 실제로 답한 문장이 확인되면, 그게 곧 <b>승인된 답변</b>이 됩니다.</p>
+      같은 질문에 병원이 실제로 답한 문장이 확인되면 <b>승인 후보</b>가 되고, 원장님이 확인하시면 <b>승인된 답변</b>이 됩니다.</p>
     <div class="bsteps">
       <div class="bstep"><span class="bn">105건</span><span class="bk">지금 (표본 1%)</span>
         <span class="bd">A 8 · B 18<br>대부분 미확인</span></div>
@@ -583,9 +593,14 @@
 <!-- ══════ 09 ══════ -->
 <section>
   <h2><span class="num">09</span>새로 생긴 증상은 누가 답할 것인가 <span style="color:var(--amber)">— 미결정</span></h2>
-  <p class="dek">② 갈래(우리 처치와 관련)는 정해졌습니다 — 담당의에게 전달. 이쪽이 남은 문제입니다.</p>
+  <p class="dek">② 갈래는 정해졌습니다 — <b>응급을 뺀 전부</b>가 담당의에게 갑니다. 이쪽이 남은 문제입니다.</p>
+  <div class="callout" style="margin:0 0 22px">
+    <div class="lbl">여쭙는 것은 이것 하나입니다</div>
+    <p><b>승인된 답변(D)으로 시작하되, 1차 병원이 늘면 B로 옮겨갈 것인가?</b>
+      지금 기획은 D를 전제로 짜여 있고, 아래 표는 그 선택지를 늘어놓은 것입니다.</p>
+  </div>
 
-  <p><strong>이미 3분의 2(63%)입니다.</strong> 그리고 1차 병원을 늘리고 그 환자들이 앱을 쓰기 시작하면
+  <p><strong>이미 3분의 2(63% · 156건 기준)입니다.</strong> 그리고 1차 병원을 늘리고 그 환자들이 앱을 쓰기 시작하면
     — 그 아이들은 우리에게 처치받은 적이 없으므로 <strong>거의 전부가 이 갈래로 들어옵니다.</strong>
     <span class="em">지금 정해두지 않으면, 늘어난 다음에는 사람으로 막게 됩니다.</span></p>
 
@@ -601,7 +616,7 @@
       <td>의료진 시간을 안 씀. 응답 품질 일정</td>
       <td>인건비가 환자 수를 따라 늚. <b>사람이 없는 시간은 여전히 공백</b></td></tr>
     <tr class="hi"><td><b>D. 승인된 답변 + 사람 검수</b><br><span style="color:var(--muted);font-size:.85rem">이 기획의 기본안</span></td>
-      <td><b>승인된 질문은 사람 없이 끝납니다.</b> 발송 판단은 사람이 유지</td>
+      <td><b>승인된 질문은 사람 없이 끝납니다.</b> 승인 안 된 것만 사람에게 갑니다</td>
       <td>승인 안 된 질문은 결국 사람에게. <b>검수를 누가 하느냐</b>가 남음</td></tr>
     <tr><td><b>E. 답하지 않고 예약만</b></td>
       <td>가장 안전하고 무한히 확장됨</td>
@@ -626,7 +641,7 @@
   <div class="phase"><div class="id">C-1</div><div><div class="t">응급 분류 + 즉시 안내<span class="ai no">모델 불필요</span></div>
     <div class="d">지금 “안 합니다”가 나가는 자리를 대체합니다. <b>원장님 응급 목록 확정 후 착수.</b></div></div></div>
   <div class="phase"><div class="id">C-2</div><div><div class="t">승인된 답변 내보내기<span class="ai no">모델 불필요</span></div>
-    <div class="d">검토 끝난 32건을 증상 키워드에 연결. <b>검토가 끝나야 시작됩니다.</b></div></div></div>
+    <div class="d">검토 끝난 것 중 <b>A·B 26건</b>을 증상 키워드에 연결합니다(C 6건은 자동 발송하지 않습니다). <b>검토가 끝나야 시작됩니다.</b></div></div></div>
   <div class="phase"><div class="id">C-3</div><div><div class="t">문진 채우기<span class="ai no">모델 불필요</span></div>
     <div class="d">사진·시점·횟수·복용 약. “주치의 확인 후” 왕복을 한 번으로 줄입니다.</div></div></div>
   <div class="phase"><div class="id">C-4</div><div><div class="t">기록 연계 (EMR)<span class="ai no">조회</span></div>
@@ -659,14 +674,14 @@
         <span class="cur">후보 · 단순 외이염 / 가벼운 피부 트러블 / 1회성 구토·설사로 활력 정상 / 발톱·항문낭.
           다만 <b>1회성 구토는 이물·췌장염 초기와 구분이 어려워</b> 빼는 것도 검토 부탁드립니다.</span></li>
       <li><b>답변 속 숫자 기준</b>
-        <span class="cur">① 안정 시 호흡수 — 초안에 <b>30회</b>와 <b>35회</b>가 섞여 있어 하나로 정해주셔야 합니다<br>
-          ② 스스로 안 먹을 때 내원 기준 (초안 48시간)<br>
-          ③ 관찰 기간 — 항생제 녹변 3~4일 / 마취 후 기침 3~5일</span></li>
+        <span class="cur">① <b>안정 시 호흡수 30회</b> — 초안 두 곳(스테로이드·숨이 빠름)이 이 기준을 씁니다.
+          병원에서 쓰시는 값이 다르면 알려주세요<br>
+          ② <b>스스로 안 먹을 때 내원 기준</b> — 초안은 48시간입니다</span></li>
       <li><b>검체 보관 — 어떤 검사가 냉장이고 어떤 검사가 아닌지</b>
         <span class="cur">표본에서 병원 답변이 갈렸습니다. “밀폐해 냉장보관” / “냉장보관은 필요 없지만 햇빛 피해서”.</span></li>
-      <li><b>구토+복통일 때 금식인지 소량 급여인지</b>
-        <span class="cur">초안에 두 가지가 다 있습니다(고양이 헤어볼 → 금식하지 말 것 / 복통 → 금식).
-          자동으로 가르는 기준이 필요합니다.</span></li>
+      <li><b>구토만 있을 때와 복통이 함께 있을 때 — 금식인지 소량 급여인지</b>
+        <span class="cur">초안이 갈립니다(고양이 헤어볼·묽은 변 → 금식하지 말 것 / 복통 동반 → 금식).
+          <b>자동으로 가르는 기준</b>이 필요합니다.</span></li>
       <li><b>새로 생긴 증상은 누가 이어서 답할 것인가</b> <span style="color:var(--amber);font-weight:800">— 09번</span>
         <span>A 우리 의료진 · B 1차 병원 담당의 · C 전담 인력 · D 승인 답변+검수 · E 예약만.
           방향만이라도 정해주시면 나머지를 맞추겠습니다.</span></li>
@@ -715,6 +730,8 @@
 <section id="appendix">
   <h2><span class="num">부록</span>답변 초안 32건 — 여기에 표시해 주세요</h2>
   <p class="dek">11번 결정사항 1번이 이것입니다. 항목마다 <b>승인 / 수정 / 삭제</b>에 표시하시고, 고칠 문장은 메모란에 적어주세요.</p>
+  <p class="n-note">여기 초안에는 <b>1차 병원 회송 문구가 아직 없습니다</b> — 회송(07번)은 경미 목록이 확정된 뒤
+    별도 단계(C-6)로 붙입니다. 지금은 <b>우리 병원 기준으로만</b> 봐주시면 됩니다.</p>
 
   <div class="legend">
     <div class="lg"><span class="badge A">A</span><div><b>8건</b> · 병원이 실제로 같은 답을 한 <b>문장</b>이 대화 백업에 있습니다. 확인만 해주시면 바로 씁니다.</div></div>
@@ -723,9 +740,11 @@
   </div>
 
   <div class="warnbox">
-    <p><b>⚠️ 안정 시 호흡수는 초안 안에서 저희가 30회와 35회를 섞어 썼습니다.</b>
-      아래 「스테로이드」와 「숨이 빠름」 두 항목입니다. <b>하나로 정해 주셔야</b> 같은 보호자가 두 가지 답을 받는 일이 없습니다.</p>
-    <p style="margin-top:10px"><b>주황색 표시가 붙은 4건</b>은 처음에 A로 셌다가 B로 내린 것입니다. 이유를 각 항목에 적어두었습니다.</p>
+    <p><b>주황색 표시가 붙은 4건</b>은 처음에 A로 셌다가 B로 내린 것입니다. 이유를 각 항목에 적어두었습니다.</p>
+    <p style="margin-top:10px"><b>답변 끝의 “의료진 확인 전 자동 안내입니다”는 아직 안 붙였습니다.</b>
+      문구를 정해주시면(11-8) 32건 전부에 같은 문장으로 붙입니다.</p>
+    <p style="margin-top:10px"><b>C 6건 중 3건은 마지막 그룹에, 3건은 위 그룹 안에 섞여 있습니다</b>
+      (발작약 감량 · 집 비움 · 항암 구토).</p>
   </div>
 
 <!-- ───────────────── 소화기 ───────────────── -->
@@ -735,9 +754,9 @@
   <p class="q"><span class="badge B">B</span>헤어볼이랑 투명한 토를 연달아 3번 하고 변도 묽어졌는데 지켜봐야 하나요? 캣그라스는 안 먹이는 게 좋을까요?</p>
   <p class="qmeta">고양이 · 오후 1시</p>
   <div class="a">
-    <p>고양이가 헤어볼을 토하는 것 자체는 흔하지만 <strong>하루 3회 연달아는 흔한 범위를 넘습니다.</strong> 묽은 변이 함께 있어 단순 헤어볼보다는 위장관 자극을 의심할 수 있습니다.</p>
+    <p><strong>먼저 — 토가 더 늘거나, 물도 못 마시거나, 기운이 없거나, 변에 피가 섞이면 오늘 중 내원해 주세요.</strong></p>
+    <p>그렇지 않다면: 고양이가 헤어볼을 토하는 것 자체는 흔하지만 <strong>하루 3회 연달아는 흔한 범위를 넘습니다.</strong> 묽은 변이 함께 있어 단순 헤어볼보다는 위장관 자극을 의심할 수 있습니다.</p>
     <p><strong>오늘은 금식하지 마시고</strong> 평소 사료를 소량씩 여러 번 나눠 주세요. 캣그라스는 위를 더 자극할 수 있어 증상이 있는 동안은 중단하시는 게 좋습니다.</p>
-    <p><strong>오늘 중 내원이 필요한 경우</strong> — 토가 더 늘거나, 물도 못 마시거나, 기운이 없거나, 변에 피가 섞일 때.</p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -746,9 +765,9 @@
   <p class="q"><span class="badge B">B</span>밥을 거의 안 먹었는데 갑자기 노란 토가 입이랑 코로 살짝 나왔어요. 지켜볼까요 병원 갈까요?</p>
   <p class="qmeta">오후 6시</p>
   <div class="a">
-    <p>노란색은 <strong>담즙</strong>입니다. 위가 오래 비어 있을 때 잘 생기고, 그 자체로는 응급이 아닙니다.</p>
-    <p>다만 <strong>코로 나온 것은 다릅니다.</strong> 토가 코로 역류하면 흡인(폐로 넘어감) 위험이 있어 그냥 두지 않습니다.</p>
-    <p><strong>오늘 내원해 주세요.</strong> 그때까지 물은 계속 주시고, 억지로 먹이지는 마세요.</p>
+    <p><strong>먼저 — 토가 코로 나온 것이라 오늘 내원해 주세요.</strong> 코로 역류하면 흡인(폐로 넘어감) 위험이 있어 그냥 두지 않습니다.</p>
+    <p>노란색 자체는 <strong>담즙</strong>이고 위가 오래 비어 있을 때 잘 생깁니다. 그 부분만 놓고 보면 급한 것은 아닙니다.</p>
+    <p>오실 때까지 물은 계속 주시고, 억지로 먹이지는 마세요.</p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -781,9 +800,9 @@
   <p class="q"><span class="badge A">A</span>점성이 있어 보이는 진한 녹색 묽은 똥을 조금씩 빈번히 싸요.</p>
   <p class="qmeta">오후 1시 · 항생제 복용 중</p>
   <div class="a">
-    <p>항생제를 먹고 있다면 <strong>녹변·묽은 변은 흔한 부작용</strong>입니다. 담즙이 장을 빨리 통과하면 녹색으로 보입니다.</p>
+    <p><strong>먼저 — 변에 피가 섞이거나, 물처럼 쏟거나, 기운이 없거나, 잇몸이 창백하면 바로 연락 주세요.</strong></p>
+    <p>그렇지 않다면: 항생제를 먹고 있을 때 <strong>녹변·묽은 변은 흔한 부작용</strong>입니다. 담즙이 장을 빨리 통과하면 녹색으로 보입니다.</p>
     <p>임의로 항생제를 끊지 마시고 <strong>3~4일 지켜봐 주세요.</strong> 유산균을 함께 준다면 항생제와 <strong>2시간 간격</strong>을 두세요.</p>
-    <p><strong>연락 주셔야 할 때</strong> — 변에 피가 섞이거나, 물처럼 쏟거나, 기운이 없거나, 잇몸이 창백할 때.</p>
   </div>
   <p class="evi"><b>병원 실제 답변</b> · “녹변의 경우 <b>항생제의 영향일 수 있으니 3-4일 정도 지켜봐주시고</b> 특이사항 있을 경우 바로 연락주시기 바랍니다.”</p>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
@@ -795,7 +814,7 @@
   <div class="a">
     <p>설사가 <strong>1주일 이상 이어지면</strong> 단순 위장 탈이 아니라 만성 원인을 봐야 합니다.</p>
     <p>피부와 설사가 같이 나빠지는 조합은 <strong>식이 알레르기·기생충·내분비 문제</strong>를 함께 의심하게 합니다.</p>
-    <p>진료 예약을 잡아 드리겠습니다. <strong>변을 밀폐해</strong> 가져오시면 검사에 씁니다.</p>
+    <p>예약을 도와드릴 수 있게 전화로 연결해 드리겠습니다. <strong>변을 밀폐해</strong> 가져오시면 검사에 씁니다.</p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -816,8 +835,8 @@
   <p class="q"><span class="badge B">B</span>대변이 평소와 다르게 흑색변인 것과 침을 좀 흘리는 듯한 증상이 있어요.</p>
   <p class="qmeta">오후 3시</p>
   <div class="a">
+    <p><strong>먼저 — 오늘 내원해 주세요.</strong> 검은 변과 침 흘림이 함께 있으면 기다리지 않는 편이 좋습니다.</p>
     <p>검은 변은 <strong>상부 위장관 출혈</strong>을 의심하게 하고, 침 흘림은 <strong>메스꺼움·구강 통증</strong>에서 나옵니다.</p>
-    <p>두 가지가 같이 있으면 기다리지 않는 편이 좋습니다. <strong>오늘 내원해 주세요.</strong></p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -854,8 +873,9 @@
   <p class="q"><span class="badge A">A</span>자주 켁켁거려서요. (마취 후)</p>
   <p class="qmeta">오전 8시</p>
   <div class="a">
-    <p>호흡 마취 시 <strong>기관 삽관 자극으로 3~5일 정도 기침</strong>이 날 수 있습니다. 대개 저절로 없어집니다.</p>
-    <p>5일이 지나도 계속되거나 숨쉬기 힘들어 보이면 내원해 주세요.</p>
+    <p><strong>먼저 — 숨쉬기 힘들어 보이면 지금 오세요.</strong></p>
+    <p>그렇지 않다면: 호흡 마취 시 <strong>기관 삽관 자극으로 3~5일 정도 기침</strong>이 날 수 있습니다. 대개 저절로 없어집니다.
+      <strong>5일이 지나도 계속되면</strong> 내원해 주세요.</p>
   </div>
   <p class="evi"><b>병원 실제 답변</b> · “호흡마취시 <b>기관 삽관 자극으로 3~5일 동안 기침을 할 수 있습니다.</b> 시간이 지나면서 자연스럽게 사라질 증상이나 너무 심하거나 호흡이 곤란해 보이는 경우에는 내원해주세요.”</p>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
@@ -865,9 +885,10 @@
   <p class="q"><span class="badge B">B</span>MRI 찍고 약 먹은 뒤로 헥헥거림이 더 심해졌어요. 스테로이드 약 때문일 수도 있나요?</p>
   <p class="qmeta">오전 11시</p>
   <div class="a">
-    <p><strong>스테로이드에서 팬팅(헥헥거림)은 잘 알려진 부작용</strong>입니다. 물을 많이 마시고 소변량이 느는 것도 같이 옵니다.</p>
-    <p>다만 심장·폐 문제로도 같은 증상이 나오므로 <strong>약 탓으로만 단정하면 안 됩니다.</strong></p>
-    <p>쉬고 있을 때(잠잘 때) <strong>1분 호흡수를 세어</strong> 알려주세요 — <strong>분당 30회를 넘으면</strong> 확인이 필요합니다. <span style="color:var(--amber);font-weight:700">(기준 확정 필요)</span></p>
+    <p><strong>먼저 — 혀·잇몸이 파래지거나 눕지 못하고 앉아만 있으면 지금 오세요.</strong></p>
+    <p>그렇지 않다면: <strong>스테로이드에서 팬팅(헥헥거림)은 잘 알려진 부작용</strong>입니다. 물을 많이 마시고 소변량이 느는 것도 같이 옵니다.
+      다만 심장·폐 문제로도 같은 증상이 나오므로 <strong>약 탓으로만 단정하지는 않습니다.</strong></p>
+    <p>쉬고 있을 때(잠잘 때) <strong>1분 호흡수를 세어</strong> 알려주세요 — <strong>분당 30회를 넘으면</strong> 확인이 필요합니다.</p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -877,7 +898,7 @@
   <p class="qmeta">오후 10시</p>
   <div class="a">
     <p><strong>자는 동안 가슴이 오르내리는 횟수를 1분간 세어</strong> 주세요. 헐떡임이 아니라 <strong>안정 시</strong> 호흡수여야 합니다.</p>
-    <p><strong>분당 30회 이하</strong>면 대개 정상 범위입니다. <span style="color:var(--amber);font-weight:700">(위 항목과 기준이 달라 확정 필요)</span></p>
+    <p><strong>분당 30회 이하</strong>면 대개 정상 범위입니다.</p>
     <p><strong>배까지 크게 움직이며 숨쉬거나(복압 호흡) 잇몸이 창백·파랗다면 지금 오세요.</strong></p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
@@ -904,7 +925,7 @@
   <div class="a">
     <p>그 나이대에 반복되는 경직·발작은 <strong>원인 검사가 필요한 것이 맞습니다.</strong></p>
     <p>다만 MRI 전에 <strong>혈액·심장 검사로 대사성·심혈관 원인을 먼저 배제</strong>하는 것이 순서입니다.</p>
-    <p>예약을 도와드리겠습니다. <strong>발작 영상</strong>이 있으면 꼭 가져와 주세요 — 진짜 발작인지 다른 움직임인지 가르는 데 가장 중요합니다.</p>
+    <p>예약을 도와드릴 수 있게 전화로 연결해 드리겠습니다. <strong>발작 영상</strong>이 있으면 꼭 가져와 주세요 — 진짜 발작인지 다른 움직임인지 가르는 데 가장 중요합니다.</p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -940,7 +961,7 @@
   <p class="qmeta">오후 1시</p>
   <div class="a">
     <p>잠깐씩 드는 것과 <strong>3일 연속 못 디디는 것은 다릅니다.</strong> 재평가가 필요합니다.</p>
-    <p><strong>진료 예약을 잡아 드리겠습니다.</strong> 그때까지 점프·계단·미끄러운 바닥을 막아 주시고 산책은 짧게 해 주세요.</p>
+    <p><strong>예약을 도와드릴 수 있게 전화로 연결해 드리겠습니다.</strong> 그때까지 점프·계단·미끄러운 바닥을 막아 주시고 산책은 짧게 해 주세요.</p>
     <p>디딜 때 소리를 지르거나 다리가 붓거나 아예 움직이지 못하면 <strong>기다리지 마시고 오세요.</strong></p>
   </div>
   <p class="evi"><b>병원 실제 답변</b> · “잠깐씩 증상이 나타나는 게 아니라 <b>3일 연속, 지속적으로 증상이 나타나고 있기 때문에 다시 한번 체크</b> 받아보시는 게 좋을 것 같습니다.”</p>
@@ -966,7 +987,7 @@
   <div class="a">
     <p>냄새 + 열감은 <strong>외이염</strong>에서 흔합니다. 청소로 좋아지지 않는다는 건 감염이 이미 자리 잡았다는 뜻일 수 있습니다.</p>
     <p><strong>집에서 더 닦아내지 마세요</strong> — 자극으로 더 나빠지고, 검사할 때 원인균을 못 보게 됩니다.</p>
-    <p>진료를 잡아 드리겠습니다. 고개를 계속 기울이거나 비틀거리면 중이까지 간 것일 수 있어 우선순위가 올라갑니다.</p>
+    <p>예약을 도와드릴 수 있게 전화로 연결해 드리겠습니다. 고개를 계속 기울이거나 비틀거리면 중이까지 간 것일 수 있어 우선순위가 올라갑니다.</p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -975,8 +996,9 @@
   <p class="q"><span class="badge B">B</span>중이염인지 귀에서 냄새가 나요.</p>
   <p class="qmeta">오전 7시</p>
   <div class="a">
-    <p>냄새만으로는 외이염과 중이염을 가릴 수 없습니다. <strong>집에서 더 닦아내지 마세요</strong> — 자극으로 나빠지고 검사에서 원인균을 못 보게 됩니다.</p>
-    <p>진료를 잡아 드리겠습니다. <strong>고개를 계속 기울이거나 비틀거리면</strong> 중이까지 간 것일 수 있어 우선순위가 올라갑니다.</p>
+    <p><strong>먼저 — 고개를 계속 기울이거나 비틀거리거나 눈이 흔들리면 오늘 오세요.</strong> 중이·내이까지 간 신호일 수 있습니다.</p>
+    <p>그렇지 않다면: <strong>냄새만으로는 외이염과 중이염을 가릴 수 없습니다.</strong> 귀 안쪽은 검이경으로 봐야 알 수 있습니다.</p>
+    <p>예약을 도와드릴 수 있게 전화로 연결해 드리겠습니다.</p>
   </div>
   <div class="mark"><span class="box"><span class="sq"></span>승인</span><span class="box"><span class="sq"></span>수정</span><span class="box"><span class="sq"></span>삭제</span><span class="memo"></span></div>
 </div>
@@ -1057,7 +1079,7 @@
 
 <div class="qa gC">
   <p class="q"><span class="badge C">C</span>다음 주에 집을 비우는데 약을 못 먹이게 될 경우가 생겨도 괜찮을까요?</p>
-  <p class="qmeta">오후 1시 · <b>자동답변 없이 담당의 확인</b></p>
+  <p class="qmeta">오후 1시 · <b>병원 답변 기록은 있으나(아래) 아이마다 약이 달라 자동 발송하지 않습니다</b></p>
   <div class="a">
     <p>약마다 다릅니다. <strong>먹이지 못할 상황이 예상되면 미리 알려주시는 것이 맞습니다.</strong></p>
     <p>이 병원은 이런 경우 <strong>투여 우선순위</strong>를 정해 주십니다(예: 항암제 → 스테로이드 → 간보호제).
@@ -1079,7 +1101,8 @@
 </div>
 
 <!-- ───────────────── C 항목 ───────────────── -->
-<h3 class="qagrp">자동답변을 하지 않을 것 <span class="n">C · 문진만 받고 넘김</span></h3>
+<h3 class="qagrp">자동답변을 하지 않을 것 <span class="n">C · 아래 3건 + 위 그룹에 섞인 3건 = 6건</span></h3>
+<p class="n-note">위 그룹에 있는 나머지 C 3건 — 「발작약 감량」 · 「집을 비움」 · 「항암 후 구토」.</p>
 
 <div class="qa gC">
   <p class="q"><span class="badge C">C</span>계속 재채기를 해서 진료 보려 합니다.</p>
@@ -1117,7 +1140,7 @@
 </section>
 
 <footer>
-  분석 대상 · 채널 상담 백업 <b>약 100명분</b> — 대화 105건 / 메시지 12,738건 (2023-08-01 ~ 2026-07-30, 전체 1만여 건 중 표본)<br>
+  분석 대상 · 채널 상담 백업 <b>약 100명분</b> — 대화 105건 / 메시지 12,738건 (2023-08-01 ~ 2026-07-30, 전체 <b>대화</b> 1만여 건 중 표본)<br>
   원본 대화는 저장소에 보관하지 않았으며, 이 문서에 인용된 문장에서 이름·연락처는 삭제했습니다.
 </footer>
 

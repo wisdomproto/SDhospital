@@ -9,6 +9,7 @@
     --ink:#12212f; --ink2:#3d4f5c; --muted:#6c7a88; --faint:#95a3b0;
     --line:#e4e9ef; --soft:#f5f8f9; --paper:#fff;
     --teal:#0f9b8e; --teal-d:#0b6f66; --teal-l:#e6f5f3;
+    --blue:#2563eb; --blue-l:#eff5ff;
     --amber:#d97706; --amber-l:#fff7ed; --red:#dc2626; --red-l:#fef2f2;
   }
   *{box-sizing:border-box}
@@ -18,36 +19,35 @@
     font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",system-ui,sans-serif;
     line-height:1.75; letter-spacing:-.012em; word-break:keep-all; font-feature-settings:"tnum";
   }
-  .wrap{max-width:860px; margin:0 auto}
+  .wrap{max-width:880px; margin:0 auto}
 
-  /* ── 표지 ── */
+  /* 표지 */
   .cover{padding:80px 0 44px; border-bottom:4px solid var(--ink)}
   .kicker{display:inline-block; background:var(--teal); color:#fff; font-size:.72rem; font-weight:800;
           letter-spacing:.1em; padding:5px 12px; border-radius:999px; margin-bottom:20px}
   h1{font-size:2.5rem; line-height:1.25; font-weight:800; margin:0 0 18px; letter-spacing:-.03em}
-  .lead{font-size:1.08rem; color:var(--ink2); margin:0 0 26px; max-width:640px}
+  .lead{font-size:1.08rem; color:var(--ink2); margin:0 0 22px; max-width:660px}
   .lead b{color:var(--ink); background:linear-gradient(transparent 62%, var(--teal-l) 62%)}
+  .basis{display:inline-flex; align-items:center; gap:10px; padding:11px 16px; border:1px solid var(--teal);
+         background:var(--teal-l); border-radius:10px; font-size:.88rem; color:var(--teal-d); font-weight:700; margin-bottom:22px}
+  .basis .dot{width:7px; height:7px; border-radius:50%; background:var(--teal); flex:none}
   .meta{display:flex; flex-wrap:wrap; gap:8px 26px; color:var(--muted); font-size:.85rem; margin:0}
 
-  /* ── 섹션 ── */
   section{padding-top:60px}
   h2{font-size:1.5rem; font-weight:800; margin:0 0 6px; letter-spacing:-.02em}
   h2 .num{color:var(--teal); font-size:.9rem; font-weight:800; display:block; margin-bottom:6px; letter-spacing:.06em}
   .dek{color:var(--muted); font-size:.95rem; margin:0 0 26px}
   h3{font-size:1.05rem; font-weight:800; margin:34px 0 10px}
-
   p{margin:0 0 14px}
   strong{color:var(--ink)}
   .em{background:linear-gradient(transparent 62%, #ffe9b8 62%); font-weight:700}
 
-  /* ── 큰 숫자 ── */
   .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:26px 0}
   .stat{border:1px solid var(--line); border-radius:14px; padding:18px 16px; background:var(--soft)}
   .stat .v{font-size:2rem; font-weight:800; letter-spacing:-.03em; line-height:1.1; color:var(--teal-d)}
   .stat .v.warn{color:var(--red)}
   .stat .k{font-size:.82rem; color:var(--muted); margin-top:6px}
 
-  /* ── 인용/강조 박스 ── */
   .quote{margin:22px 0; padding:20px 22px; border-left:5px solid var(--red); background:var(--red-l); border-radius:0 12px 12px 0}
   .quote .lbl{font-size:.75rem; font-weight:800; color:var(--red); letter-spacing:.06em; margin-bottom:8px}
   .quote p{margin:0; font-size:.97rem; color:var(--ink2)}
@@ -56,19 +56,19 @@
   .callout{margin:22px 0; padding:20px 22px; border:1px solid var(--teal); border-radius:12px; background:var(--teal-l)}
   .callout p:last-child{margin:0}
   .callout .lbl{font-size:.75rem; font-weight:800; color:var(--teal-d); letter-spacing:.06em; margin-bottom:8px}
-
   .warnbox{margin:22px 0; padding:18px 20px; border:1px solid var(--amber); border-radius:12px; background:var(--amber-l); font-size:.93rem}
   .warnbox p:last-child{margin:0}
 
-  /* ── 표 ── */
   .tw{overflow-x:auto; margin:20px 0}
   table{width:100%; border-collapse:collapse; font-size:.9rem; min-width:420px}
   th,td{padding:11px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top}
   th{background:var(--soft); color:var(--muted); font-size:.78rem; font-weight:700; white-space:nowrap}
   td.n{text-align:right; font-weight:700; white-space:nowrap}
   tr.hi td{background:#fffbf3}
+  table.compare td:nth-child(2){color:var(--muted)}
+  table.compare td:nth-child(3){font-weight:600}
+  table.compare th:nth-child(3){color:var(--teal-d); background:var(--teal-l)}
 
-  /* ── 대비(전/후) ── */
   .vs{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin:24px 0}
   .vs .card{border:1px solid var(--line); border-radius:14px; padding:18px 20px}
   .vs .card.bad{border-color:#f3c9c9; background:var(--red-l)}
@@ -78,22 +78,37 @@
   .vs .msg{font-size:.9rem; line-height:1.65; color:var(--ink2)}
   .vs .msg .who{display:block; font-size:.72rem; color:var(--faint); margin:10px 0 2px; font-weight:700}
 
-  /* ── 분류 흐름 ── */
-  .flow{display:grid; gap:10px; margin:24px 0}
-  .step{display:grid; grid-template-columns:88px minmax(0,1fr); border:1px solid var(--line); border-radius:14px; overflow:hidden}
-  .step .lv{display:grid; place-items:center; text-align:center; padding:14px 8px; font-weight:800; font-size:.82rem; color:#fff; line-height:1.35}
-  .step.l1 .lv{background:var(--red)} .step.l2 .lv{background:var(--amber)} .step.l3 .lv{background:var(--teal)}
-  .step .bd{padding:14px 18px}
-  .step .bd b{display:block; margin-bottom:4px}
-  .step .bd span{font-size:.88rem; color:var(--ink2)}
+  /* ── 전체 흐름 모식도 ── */
+  .diagram{border:1px solid var(--line); border-radius:16px; padding:26px 20px; margin:26px 0; background:var(--soft)}
+  .dnode{max-width:420px; margin:0 auto; border-radius:12px; padding:13px 18px; text-align:center; font-weight:800; font-size:.95rem}
+  .dnode.start{background:var(--ink); color:#fff}
+  .dnode.read{background:#fff; border:2px dashed var(--teal); color:var(--teal-d)}
+  .dnode.read span{display:block; font-weight:600; font-size:.8rem; color:var(--muted); margin-top:4px}
+  .darrow{width:2px; height:22px; background:var(--faint); margin:0 auto}
+  .dsplit{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:6px}
+  .branch{border:2px solid var(--line); border-radius:14px; background:#fff; overflow:hidden}
+  .branch.b1{border-color:var(--blue)} .branch.b2{border-color:var(--teal)}
+  .branch .bh{padding:12px 16px; font-weight:800; font-size:.92rem; color:#fff; display:flex; justify-content:space-between; align-items:center}
+  .branch.b1 .bh{background:var(--blue)} .branch.b2 .bh{background:var(--teal)}
+  .branch .bh .pct{font-size:.8rem; opacity:.9}
+  .branch .bb{padding:14px 16px}
+  .branch .ex{font-size:.82rem; color:var(--muted); font-style:italic; margin:0 0 12px; padding-bottom:10px; border-bottom:1px dashed var(--line)}
+  .outs{display:grid; gap:7px}
+  .out{display:grid; grid-template-columns:20px minmax(0,1fr); gap:9px; font-size:.86rem; color:var(--ink2); align-items:start}
+  .out .ic{width:20px; height:20px; border-radius:6px; display:grid; place-items:center; font-size:.68rem; font-weight:800; color:#fff}
+  .ic.now{background:var(--red)} .ic.am{background:var(--amber)} .ic.ask{background:var(--teal)}
+  .ic.rec{background:var(--blue)} .ic.ref{background:#7c3aed}
+  .dmerge{margin-top:18px; border-radius:12px; background:var(--ink); color:#fff; padding:14px 18px; text-align:center; font-size:.9rem; font-weight:700}
+  .dmerge span{display:block; font-weight:500; font-size:.8rem; opacity:.75; margin-top:3px}
+  .settled,.open{margin-top:12px; padding:10px 12px; border-radius:9px; font-size:.82rem; line-height:1.6}
+  .settled{background:var(--blue-l); color:#1e40af} .settled b{color:var(--blue)}
+  .open{background:var(--amber-l); color:#92400e} .open b{color:var(--amber)}
 
-  /* ── 규칙 리스트 ── */
   ul.rules{list-style:none; padding:0; margin:18px 0; display:grid; gap:12px}
   ul.rules li{padding-left:30px; position:relative; font-size:.95rem; color:var(--ink2)}
   ul.rules li::before{content:"✕"; position:absolute; left:6px; top:0; color:var(--red); font-weight:800}
   ul.rules.ok li::before{content:"✓"; color:var(--teal)}
 
-  /* ── 회송 다이어그램 ── */
   .route{border:1px solid var(--line); border-radius:14px; padding:22px; margin:24px 0; background:var(--soft)}
   .route .row{display:grid; grid-template-columns:minmax(0,1fr) 26px minmax(0,1.4fr); align-items:center; gap:8px; padding:12px 0; border-bottom:1px dashed var(--line)}
   .route .row:last-child{border:0}
@@ -102,7 +117,6 @@
   .route .to{font-size:.9rem; color:var(--ink2)}
   .route .to b{color:var(--teal-d)}
 
-  /* ── 단계 ── */
   .phase{display:grid; grid-template-columns:64px minmax(0,1fr); gap:14px; padding:16px 0; border-bottom:1px solid var(--line)}
   .phase:last-child{border:0}
   .phase .id{font-weight:800; color:var(--teal); font-size:.95rem}
@@ -112,7 +126,6 @@
   .phase .ai.no{background:var(--soft); color:var(--muted)}
   .phase .ai.yes{background:var(--teal); color:#fff}
 
-  /* ── 결정 요청 ── */
   .decide{border:2px solid var(--ink); border-radius:16px; padding:6px 24px 24px; margin-top:26px}
   .decide h3{border-bottom:1px solid var(--line); padding-bottom:12px}
   .decide ol{padding-left:20px; margin:0}
@@ -125,37 +138,37 @@
   @media print{
     body{padding:0; font-size:10.5pt}
     .cover{padding-top:0}
-    section{page-break-inside:auto} h2{page-break-after:avoid}
-    .vs .card,.step,.quote,.callout,.decide,.route{page-break-inside:avoid}
+    h2{page-break-after:avoid}
+    .vs .card,.quote,.callout,.decide,.route,.diagram,.branch{page-break-inside:avoid}
   }
   @media (max-width:560px){
-    h1{font-size:1.9rem} .step{grid-template-columns:1fr} .step .lv{padding:8px}
-    .route .row{grid-template-columns:1fr; gap:2px} .route .ar{display:none; }
+    h1{font-size:1.9rem}
+    .route .row{grid-template-columns:1fr; gap:2px} .route .ar{display:none}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<!-- ══════════ 표지 ══════════ -->
+<!-- ══════ 표지 ══════ -->
 <div class="cover">
   <span class="kicker">보호자 앱 · 기획서</span>
   <h1>보호자 AI 채팅<br>— 증상 문의를 받는 방법</h1>
+  <div class="basis"><span class="dot"></span>약 100명분 채널 상담 샘플 데이터 기반 · 105개 대화 / 12,738 메시지 전수 분석</div>
   <p class="lead">
-    실제 채널 상담 <b>12,738건</b>을 전수 분석했습니다.
     지금 보호자가 새벽에 증상을 물으면 <b>“증상 상담은 하지 않습니다”</b>라는 자동응답이 나갑니다.
     그 자리에 무엇을 넣을지에 대한 기획입니다.
   </p>
   <p class="meta">
     <span>2026-08-03</span><span>대상 · 대표원장</span>
-    <span>근거 · 채널 대화 백업 105건 (2023-08 ~ 2026-07, 전체 1만여 건 중 표본)</span>
+    <span>표본 기간 · 2023-08 ~ 2026-07 (전체 1만여 건 중 105건)</span>
   </p>
 </div>
 
-<!-- ══════════ 1 ══════════ -->
+<!-- ══════ 01 ══════ -->
 <section>
   <h2><span class="num">01</span>지금 일어나고 있는 일</h2>
-  <p class="dek">먼저 데이터를 열었을 때 제일 놀란 것부터 말씀드립니다.</p>
+  <p class="dek">약 100명분 상담을 열었을 때 제일 놀란 것부터 말씀드립니다.</p>
 
   <div class="stats">
     <div class="stat"><div class="v">44%</div><div class="k">병원이 보낸 메시지 중<br>자동응답·광고</div></div>
@@ -171,42 +184,60 @@
     <p class="cnt">표본 105개 대화에서만 <b>1,952번</b> 발송</p>
   </div>
 
-  <p>
-    채널을 막아 두었는데도 보호자는 계속 증상을 적습니다. <strong>물어볼 데가 여기뿐이기 때문입니다.</strong>
-    그래서 이 기획은 <span class="em">새로운 기능을 만드는 것이 아니라, 이미 나가고 있는 “안 해드립니다”를 쓸모 있는 것으로 바꾸는 일</span>입니다.
-  </p>
+  <p>채널을 막아 두었는데도 보호자는 계속 증상을 적습니다. <strong>물어볼 데가 여기뿐이기 때문입니다.</strong>
+    이 기획은 <span class="em">새 기능을 만드는 것이 아니라, 이미 나가고 있는 “안 해드립니다”를 쓸모 있는 것으로 바꾸는 일</span>입니다.</p>
 
-  <h3>새벽 2시에 아이가 토했을 때</h3>
+  <h3>새벽 4시에 아이가 토했을 때</h3>
   <div class="vs">
     <div class="card bad">
       <div class="tag">지금</div>
       <div class="msg">
-        <span class="who">보호자 · 새벽 4시</span>
-        “지금 공복 중이긴 한데 토했어요. 이따 수술 예정인데…”
-        <span class="who">병원</span>
-        <i>(자동응답) 지금은 답변이 가능한 시간이 아닙니다…</i>
-        <span class="who">사람 답변</span>
-        아침까지 대기
+        <span class="who">보호자 · 새벽 4시</span>“지금 공복 중이긴 한데 토했어요. 이따 수술 예정인데…”
+        <span class="who">병원</span><i>(자동응답) 지금은 답변이 가능한 시간이 아닙니다…</i>
+        <span class="who">사람 답변</span>아침까지 대기
       </div>
     </div>
     <div class="card good">
       <div class="tag">바꾸면</div>
       <div class="msg">
-        <span class="who">보호자 · 새벽 4시</span>
-        “지금 공복 중이긴 한데 토했어요. 이따 수술 예정인데…”
-        <span class="who">자동답변 · 즉시</span>
-        수술 전 구토는 <b>그날 마취 판단에 직접 영향</b>을 줍니다. 예정대로 오시되 <b>오시기 전 전화</b>를 주세요.
-        물도 주지 마시고 토한 내용물을 사진으로 남겨 주세요.
-        <span class="who">동시에</span>
-        담당의 “오늘 할 일”에 자동 등록
+        <span class="who">보호자 · 새벽 4시</span>“지금 공복 중이긴 한데 토했어요. 이따 수술 예정인데…”
+        <span class="who">자동답변 · 즉시</span>수술 전 구토는 <b>그날 마취 판단에 직접 영향</b>을 줍니다.
+        예정대로 오시되 <b>오시기 전 전화</b>를 주세요. 물도 주지 마시고 토한 내용물을 사진으로 남겨 주세요.
+        <span class="who">동시에</span>담당의 “오늘 할 일”에 자동 등록
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════ 2 ══════════ -->
+<!-- ══════ 02 ══════ -->
 <section>
-  <h2><span class="num">02</span>보호자는 무엇을 묻는가</h2>
+  <h2><span class="num">02</span>흔한 AI 챗봇과 무엇이 다른가</h2>
+  <p class="dek">“AI 채팅”이라는 이름 때문에 생기는 오해를 먼저 끊고 시작하겠습니다.</p>
+
+  <div class="tw"><table class="compare">
+    <tr><th>　</th><th>일반 AI 챗봇</th><th>우리가 만들 것</th></tr>
+    <tr><td><b>아는 것</b></td><td>인터넷의 일반 지식</td><td><b>이 아이의 진료 기록</b> — 회차·입원·검진 수치·처방·영상</td></tr>
+    <tr class="hi"><td><b>“밥을 안 먹어요”에</b></td><td>일반적인 원인을 나열</td>
+      <td><b>어제 수술한 아이</b>인지 <b>항암 3차 중</b>인지 <b>3년째 건강하던 아이</b>인지 보고 갈라서 답</td></tr>
+    <tr><td><b>목표</b></td><td>대화를 이어가는 것</td><td><b>분류해서 넘기는 것</b> — 대화를 오래 끌 이유가 없음</td></tr>
+    <tr><td><b>진단</b></td><td>합니다 (“~일 수 있습니다”)</td><td><b>하지 않습니다.</b> 병명을 말하지 않습니다</td></tr>
+    <tr><td><b>“괜찮다”</b></td><td>쉽게 말합니다</td><td><b>사람만 합니다.</b> 자동으로는 절대 안 함</td></tr>
+    <tr><td><b>틀렸을 때</b></td><td>아무도 책임지지 않음</td><td><b>병원이 책임집니다</b> — 그래서 판단을 최소화</td></tr>
+    <tr><td><b>대화의 끝</b></td><td>답변으로 끝</td><td><b>사람에게 인계 · 예약 · 1차 병원 회송</b> 중 하나로 반드시 이어짐</td></tr>
+    <tr><td><b>기록</b></td><td>남지 않음</td><td>주고받은 내용이 <b>그대로 진료 기록에 붙음</b></td></tr>
+  </table></div>
+
+  <div class="callout">
+    <div class="lbl">한 줄로</div>
+    <p>일반 챗봇은 <strong>“무슨 병일까요”</strong>에 답하려 합니다.
+       우리는 <strong>“지금 병원에 가야 하나요”</strong>에만 답합니다.
+       보호자가 밤에 정말 알고 싶은 것도 그것이고, 병원이 책임질 수 있는 것도 그것뿐입니다.</p>
+  </div>
+</section>
+
+<!-- ══════ 03 ══════ -->
+<section>
+  <h2><span class="num">03</span>보호자는 무엇을 묻는가</h2>
   <p class="dek">194건을 하나씩 읽었습니다. 키워드로 뽑은 숫자라 실제와 달라 다시 세었습니다.</p>
 
   <div class="tw"><table>
@@ -216,20 +247,26 @@
     <tr><td>증상 아님</td><td class="n">86</td><td>약 떨어졌어요 · 면회 가도 되나요</td></tr>
   </table></div>
 
-  <div class="tw"><table>
-    <tr><th>증상</th><th class="n">건수</th><th>증상</th><th class="n">건수</th></tr>
-    <tr><td>식욕 부진</td><td class="n">20</td><td>호흡·기침</td><td class="n">6</td></tr>
-    <tr><td>피부·발적</td><td class="n">17</td><td>부기·혹</td><td class="n">6</td></tr>
-    <tr><td>구토</td><td class="n">12</td><td><b>수술 부위</b></td><td class="n">5</td></tr>
-    <tr><td>발작·신경</td><td class="n">9</td><td>통증·절뚝</td><td class="n">3</td></tr>
-    <tr><td>설사·혈변</td><td class="n">8</td><td>기력·소변·열</td><td class="n">5</td></tr>
-  </table></div>
+  <h3>그리고 대부분이 “입원·수술 전후”입니다</h3>
+  <div class="stats">
+    <div class="stat"><div class="v">83%</div><div class="k">입원·수술 전후 맥락에서<br>나온 증상 문의</div></div>
+    <div class="stat"><div class="v">17%</div><div class="k">집에 있는 아이에게<br>새로 생긴 증상</div></div>
+    <div class="stat"><div class="v">100<span style="font-size:1rem">/105</span></div><div class="k">입원 얘기가 오간 대화</div></div>
+  </div>
 
   <div class="callout">
-    <div class="lbl">이 병원의 특징</div>
-    <p>수술 부위 관련 문의(실밥·발적·소독 포함)를 따로 모으면 <strong>가장 큰 덩어리</strong>가 됩니다.
-       수술을 많이 하는 2차 병원이라 그렇습니다 — <strong>매주 같은 질문이 반복됩니다.</strong>
-       그리고 이 질문들은 답이 정해져 있어 <strong>자동답변이 가장 잘 듣는 영역</strong>입니다.</p>
+    <div class="lbl">이것이 설계의 출발점입니다</div>
+    <p>같은 <strong>“밥을 안 먹어요”</strong>도 —<br>
+      <strong>입원 중</strong>이면 “우리 아이 오늘 병원에서 밥 먹었나요”라는 <b>기록 조회</b>이고,<br>
+      <strong>집에 있는 아이</strong>면 “병원에 가야 하나요”라는 <b>증상 분류</b>입니다.<br>
+      <span class="em">두 개를 같은 흐름으로 처리하면 둘 다 못 합니다.</span></p>
+  </div>
+
+  <div class="warnbox">
+    <p><b>⚠️ 다만 이 83:17은 “오늘의 환자 구성”이지 앞으로의 비율이 아닙니다.</b></p>
+    <p>이 표본은 <b>이미 우리 병원에 입원·수술한 환자</b>들의 채널입니다. 당연히 입원 맥락이 많습니다.<br>
+      1차 병원을 늘리고 <b>그곳에 다니는 환자까지 우리 앱을 쓰게 되면</b> — 그 아이들은 입원한 적이 없습니다.
+      <span class="em">일반 증상 질문이 주력이 됩니다. 지금 비율로 일반 증상 갈래를 작게 설계하면 안 됩니다.</span></p>
   </div>
 
   <h3>지금은 어떻게 답하고 계신가</h3>
@@ -241,19 +278,15 @@
     <tr><td>괜찮다</td><td class="n">10%</td></tr>
     <tr class="hi"><td><b>내원 안내 없이 원격으로 끝난 것</b></td><td class="n">3%</td></tr>
   </table></div>
-
-  <p>
-    <strong>접수 데스크는 증상에 답할 수 없습니다.</strong> 44%가 주치의에게 넘어갔다 돌아옵니다.
-    그리고 최종 답은 대부분 <strong>“오세요”</strong>입니다 — 원격으로 끝나는 건 3%뿐입니다.
-    <span class="em">그러니 AI가 진료를 대신하게 만드는 기획은 애초에 성립하지 않습니다.</span>
-  </p>
+  <p><strong>접수 데스크는 증상에 답할 수 없습니다.</strong> 44%가 주치의에게 넘어갔다 돌아옵니다.
+    최종 답은 대부분 <strong>“오세요”</strong>이고 원격으로 끝나는 건 3%뿐입니다.
+    <span class="em">AI가 진료를 대신하는 기획은 애초에 성립하지 않습니다.</span></p>
 </section>
 
-<!-- ══════════ 3 ══════════ -->
+<!-- ══════ 04 ══════ -->
 <section>
-  <h2><span class="num">03</span>밤에는 기다리게 됩니다</h2>
+  <h2><span class="num">04</span>밤에는 기다리게 됩니다</h2>
   <p class="dek">자동응답을 걷어내고 <b>사람이 친 답장만</b> 세었습니다.</p>
-
   <div class="tw"><table>
     <tr><th>증상 문의 → 사람 답장</th><th class="n">낮 (9~19시)</th><th class="n">밤 (19~9시)</th></tr>
     <tr><td>중앙값</td><td class="n">8분</td><td class="n">64분</td></tr>
@@ -261,36 +294,56 @@
     <tr><td>1시간 넘게 기다림</td><td class="n">12%</td><td class="n"><b>51%</b></td></tr>
     <tr><td>6시간 넘게 기다림</td><td class="n">3%</td><td class="n"><b>30%</b></td></tr>
   </table></div>
-
-  <p>
-    낮에는 8분입니다. <strong>이건 굉장히 빠른 것이고 병원의 강점입니다.</strong>
+  <p>낮에는 8분입니다. <strong>이건 굉장히 빠른 것이고 병원의 강점입니다.</strong>
     문제는 그 속도를 <strong>사람이 만들고 있다</strong>는 것과, 밤에는 그게 안 된다는 것입니다.
-    표본에서 병원이 친 메시지는 <strong>7,104건</strong> — 환자 한 명당 <strong>68건</strong>입니다.
-  </p>
+    표본에서 병원이 친 메시지는 <strong>7,104건</strong> — 환자 한 명당 <strong>68건</strong>입니다.</p>
 </section>
 
-<!-- ══════════ 4 ══════════ -->
+<!-- ══════ 05 ══════ -->
 <section>
-  <h2><span class="num">04</span>자동답변은 진단하지 않습니다. 분류만 합니다</h2>
-  <p class="dek">데이터가 말하는 답은 세 갈래뿐입니다.</p>
+  <h2><span class="num">05</span>전체 흐름</h2>
+  <p class="dek">질문이 들어와서 나가기까지. <b>기록을 먼저 읽고, 두 갈래로 나눕니다.</b></p>
 
-  <div class="flow">
-    <div class="step l1">
-      <div class="lv">지금<br>오세요</div>
-      <div class="bd"><b>발작 · 호흡곤란 · 배뇨 못 함 · 다량 출혈 · 수술 부위 벌어짐 · 의식 저하</b>
-        <span>즉시 안내 + 야간 접수 방법 + 전화 연결. <b>넓게 잡습니다</b> — 놓치는 쪽이 과하게 부르는 쪽보다 훨씬 나쁩니다.</span></div>
+  <div class="diagram">
+    <div class="dnode start">보호자 증상 메시지</div>
+    <div class="darrow"></div>
+    <div class="dnode read">① 이 아이의 기록을 먼저 읽는다
+      <span>진행 중 입원 · 최근 수술/회차 · 검진 수치 · 처방 · 영상 · 의뢰 병원</span></div>
+    <div class="darrow"></div>
+
+    <div class="dsplit">
+      <div class="branch b1">
+        <div class="bh"><span>② 입원 · 수술 전후</span><span class="pct">지금 83%</span></div>
+        <div class="bb">
+          <p class="ex">“링고 아직 아무것도 안 먹었을까요?” · “수술 부위가 좀 빨갛게 올라왔어요”</p>
+          <div class="outs">
+            <div class="out"><span class="ic rec">기록</span><span><b>리포트로 답합니다.</b> 오늘 식사·배변·경과는 이미 기록에 있습니다</span></div>
+            <div class="out"><span class="ic ask">수술</span><span><b>수술 후 관리 답변</b> + 사진 요청 (실밥·발적·소독 — 답이 정형적)</span></div>
+            <div class="out"><span class="ic now">응급</span><span>수술 부위 벌어짐·출혈 → <b>지금 오세요</b></span></div>
+          </div>
+          <div class="settled"><b>✓ 확정</b> 이 갈래는 <b>채팅 내용을 그대로 담당의에게 전달</b>합니다.
+            자동답변이 무엇을 답했든, 주치의가 그 대화를 봅니다.</div>
+        </div>
+      </div>
+
+      <div class="branch b2">
+        <div class="bh"><span>③ 일반 증상</span><span class="pct">지금 17% → 늘어날 것</span></div>
+        <div class="bb">
+          <p class="ex">“오늘 아침에 혈변을 봐서 연락드립니다” · “켁켁거리는 게 너무 심해요”</p>
+          <div class="outs">
+            <div class="out"><span class="ic now">지금</span><span><b>지금 오세요</b> — 발작·호흡곤란·배뇨 못 함·다량 출혈·의식 저하 + 전화 연결</span></div>
+            <div class="out"><span class="ic am">아침</span><span><b>아침에 오세요</b> — 예약 안내 + 그때까지 지켜볼 것</span></div>
+            <div class="out"><span class="ic ask">문진</span><span><b>문진 먼저</b> — 사진·언제부터·횟수·복용 약을 받음</span></div>
+            <div class="out"><span class="ic ref">회송</span><span><b>경미 + 의뢰 환자</b> → 1차 병원 안내 <i>(선택은 보호자가)</i></span></div>
+          </div>
+          <div class="open"><b>? 미결정</b> 문진 뒤에 <b>누가 답할 것인가.</b> 우리 의료진 · 1차 병원 담당의 ·
+            채팅 전담 인력 · AI 초안 + 검수 — 아래 <b>10번</b>에서 다룹니다.</div>
+        </div>
+      </div>
     </div>
-    <div class="step l2">
-      <div class="lv">아침에<br>오세요</div>
-      <div class="bd"><b>3일 이상 안 먹음 · 반복 구토 · 혈변 · 절뚝임 지속</b>
-        <span>예약 안내 + 그때까지 지켜볼 것 + 하면 안 되는 것. 밤새 불안하지 않게 기준을 같이 줍니다.</span></div>
-    </div>
-    <div class="step l3">
-      <div class="lv">문진<br>먼저</div>
-      <div class="bd"><b>피부 발적 · 실밥 부위 · 눈곱 · 재채기 …</b>
-        <span>사진 · 언제부터 · 횟수 · 복용 중인 약을 받아 <b>주치의께 넘깁니다.</b> 답은 사람이 합니다 —
-          왕복 44%가 한 번으로 줄고, 물어볼 것은 이미 채워져 있습니다.</span></div>
-    </div>
+
+    <div class="dmerge">④ 어느 갈래든 끝은 사람입니다
+      <span>직원 “오늘 할 일”에 등록 · AI는 답장 초안까지 · 발송은 사람이 누를 때만</span></div>
   </div>
 
   <h3>절대 하지 않는 것</h3>
@@ -303,28 +356,24 @@
   <ul class="rules ok">
     <li>답변 끝에 항상 <b>“의료진 확인 전 자동 안내입니다”</b>를 붙입니다.</li>
     <li>모든 분류에 <b>“이런 변화가 보이면 바로 오세요”</b>를 함께 넣습니다.</li>
+    <li><b>응급은 넓게 잡습니다.</b> 놓치는 쪽이 과하게 부르는 쪽보다 훨씬 나쁩니다.</li>
   </ul>
 </section>
 
-<!-- ══════════ 5 ══════════ -->
+<!-- ══════ 06 ══════ -->
 <section>
-  <h2><span class="num">05</span>기록을 보고 답합니다</h2>
-  <p class="dek">이것이 인터넷 검색이나 일반 AI와 갈리는 지점입니다.</p>
-
-  <div class="callout">
-    <div class="lbl">같은 질문, 다른 답</div>
-    <p>“밥을 안 먹어요”는 <strong>어제 수술한 아이 · 항암 3차 중인 아이 · 3년째 건강하던 아이</strong>가 전부 다른 문제입니다.
-       <strong>그 셋을 구분할 수 있는 건 우리뿐입니다 — 기록이 우리한테 있으니까요.</strong></p>
-  </div>
+  <h2><span class="num">06</span>기록을 보고 답합니다</h2>
+  <p class="dek">흐름도 ①번 — 일반 챗봇이 할 수 없는 부분입니다.</p>
 
   <div class="tw"><table>
     <tr><th>읽는 것</th><th>답이 어떻게 갈리는가</th></tr>
-    <tr><td>최근 진료 회차·주 증상</td><td>2주 전 슬개골 수술 → “절뚝임”은 수술 부위부터 봅니다</td></tr>
-    <tr><td>진행 중인 입원</td><td>입원 중이면 채팅이 아니라 병동에 물을 일입니다</td></tr>
+    <tr><td>진행 중인 입원</td><td>입원 중이면 <b>기록 조회</b> 갈래로. 채팅이 아니라 병동에 물을 일입니다</td></tr>
     <tr><td>입원 일일 리포트</td><td>“밥 먹었나요”는 이미 답이 있습니다 — 리포트로 답합니다</td></tr>
+    <tr><td>최근 진료 회차·주 증상</td><td>2주 전 슬개골 수술 → “절뚝임”은 수술 부위부터 봅니다</td></tr>
     <tr><td>최근 검진 수치</td><td>신장 수치가 올라와 있던 아이의 “물을 많이 마셔요”는 우선순위가 다릅니다</td></tr>
     <tr><td>처방</td><td>스테로이드 복용 중이면 팬팅·다음다뇨는 부작용 후보입니다</td></tr>
     <tr><td>영상 (PACS)</td><td>최근 흉부 촬영이 있으면 “기침”에 그 소견을 붙입니다</td></tr>
+    <tr><td>의뢰 병원</td><td>있으면 <b>회송 판단</b> 대상이 됩니다</td></tr>
   </table></div>
 
   <div class="warnbox">
@@ -333,9 +382,9 @@
   </div>
 </section>
 
-<!-- ══════════ 6 ══════════ -->
+<!-- ══════ 07 ══════ -->
 <section>
-  <h2><span class="num">06</span>경미하면 1차 병원으로 돌려보냅니다</h2>
+  <h2><span class="num">07</span>경미하면 1차 병원으로 돌려보냅니다</h2>
   <p class="dek">이 기획에서 가장 중요한 결정입니다.</p>
 
   <div class="route">
@@ -348,12 +397,10 @@
         ① 1차 병원에 <b>먼저 알림</b> &nbsp;② <b>[그래도 저희 병원으로 갈게요]</b> 를 항상 같이</div></div>
   </div>
 
-  <p>
-    <strong>우리 매출을 남에게 넘기는 것처럼 보이지만 반대입니다.</strong>
+  <p><strong>우리 매출을 남에게 넘기는 것처럼 보이지만 반대입니다.</strong>
     이 앱의 목적은 우리 예약을 늘리는 것이 아니라 <span class="em">1차 병원이 안심하고 의뢰하게 만드는 것</span>입니다.
     2차 병원이 환자를 가져간다는 의심이 생기는 순간 의뢰가 끊깁니다.
-    <strong>경미한 건을 돌려보내는 것이 의뢰가 계속 들어오게 하는 값</strong>이고, 그게 우리가 만들려는 유통망의 본체입니다.
-  </p>
+    <strong>경미한 건을 돌려보내는 것이 의뢰가 계속 들어오게 하는 값</strong>이고, 그게 우리가 만들려는 유통망의 본체입니다.</p>
 
   <h3>지켜야 할 세 가지</h3>
   <div class="tw"><table>
@@ -372,9 +419,9 @@
   </div>
 </section>
 
-<!-- ══════════ 7 ══════════ -->
+<!-- ══════ 08 ══════ -->
 <section>
-  <h2><span class="num">07</span>답변은 이미 절반쯤 준비되어 있습니다</h2>
+  <h2><span class="num">08</span>답변은 이미 절반쯤 준비되어 있습니다</h2>
   <p class="dek">일반 증상 문의 30건에 초안을 쓰고 근거 등급을 매겼습니다.</p>
 
   <div class="stats">
@@ -392,40 +439,82 @@
     <tr><td>3일 연속 다리를 못 디뎌요</td><td>“3일 연속, 지속적으로… 다시 체크 받아보시는 게”</td></tr>
   </table></div>
 
-  <p>
-    <strong>A 12건은 병원이 이미 그렇게 답하신 것</strong>이라 확인만 해주시면 바로 씁니다.
+  <p><strong>A 12건은 병원이 이미 그렇게 답하신 것</strong>이라 확인만 해주시면 바로 씁니다.
     <strong>B 13건</strong>은 교과서 근거는 분명한데 이 병원 답변 기록이 표본에 없던 것들이라
-    <span class="em">1만 건 전체를 주시면 상당수가 A로 옮겨갑니다.</span>
-  </p>
+    <span class="em">1만 건 전체를 주시면 상당수가 A로 옮겨갑니다.</span></p>
   <p style="color:var(--muted); font-size:.9rem">
-    문답 30건 전체와 승인/수정 체크칸은 별도 문서 <b>「증상 자동답변 초안 — 검토 요청」</b>에 있습니다.
-  </p>
+    문답 30건 전체와 승인/수정 체크칸은 별도 문서 <b>「증상 자동답변 초안 — 검토 요청」</b>에 있습니다.</p>
 </section>
 
-<!-- ══════════ 8 ══════════ -->
+<!-- ══════ 09 ══════ -->
 <section>
-  <h2><span class="num">08</span>만드는 순서</h2>
-  <p class="dek">앞의 넷은 AI 모델이 필요 없습니다. 규칙과 조회입니다.</p>
+  <h2><span class="num">09</span>일반 증상은 누가 답할 것인가 <span style="color:var(--amber)">— 미결정</span></h2>
+  <p class="dek">입원 갈래는 정해졌습니다(담당의에게 전달). 이쪽이 남은 문제입니다.</p>
+
+  <div class="warnbox">
+    <p><b>이 질문이 지금 급하지 않아 보이는 이유는 표본 때문입니다.</b></p>
+    <p>지금 일반 증상 문의는 17%뿐입니다. 하지만 <b>1차 병원을 늘리고 그 환자들이 우리 앱을 쓰기 시작하면</b>
+      — 입원한 적 없는 아이들이라 <b>거의 전부가 이 갈래로 들어옵니다.</b>
+      <span class="em">지금 정해두지 않으면, 늘어난 다음에는 사람으로 막게 됩니다.</span></p>
+  </div>
+
+  <p>표본에서 병원이 친 메시지는 환자 한 명당 <strong>68건</strong>이었습니다.
+    환자가 늘면 채팅량은 <strong>사람 수가 아니라 환자 수에 비례해</strong> 늡니다.
+    그래서 이 질문의 진짜 조건은 <span class="em">“사람을 늘리지 않고도 되는 구조인가”</span>입니다.</p>
+
+  <div class="tw"><table>
+    <tr><th>안</th><th>장점</th><th>깨지는 지점</th></tr>
+    <tr><td><b>A. 우리 의료진이 답</b><br><span style="color:var(--muted);font-size:.85rem">지금 방식</span></td>
+      <td>가장 정확. 기록도 우리가 봄</td>
+      <td><b>확장하면 반드시 깨짐.</b> 지금도 44%가 “주치의 확인 후”로 넘어가고 있음</td></tr>
+    <tr><td><b>B. 1차 병원 담당의가 답</b></td>
+      <td>그 아이의 주치의가 맞음. <b>회송 논리와 일치</b></td>
+      <td>1차 병원이 이걸 할 여력·의지가 있는지 <b>모름.</b> 먼저 물어봐야 함</td></tr>
+    <tr><td><b>C. 채팅 전담 인력</b></td>
+      <td>의료진 시간을 안 씀. 응답 품질 일정</td>
+      <td>인건비가 환자 수를 따라 늚. <b>야간은 여전히 공백</b></td></tr>
+    <tr class="hi"><td><b>D. AI 초안 + 사람 검수</b><br><span style="color:var(--muted);font-size:.85rem">이 기획의 기본안</span></td>
+      <td><b>물량이 늘어도 사람 수가 안 늚.</b> 발송 판단은 사람이 유지</td>
+      <td>검수도 결국 사람 시간. <b>검수를 누가 하느냐</b>는 여전히 남음</td></tr>
+    <tr><td><b>E. 답하지 않고 예약만</b></td>
+      <td>가장 안전하고 무한히 확장됨</td>
+      <td>보호자가 <b>“여기도 안 알려주네”</b>로 느낌. 지금 자동응답과 크게 다르지 않음</td></tr>
+  </table></div>
+
+  <div class="callout">
+    <div class="lbl">한 가지 관점</div>
+    <p><strong>1차 병원 환자가 늘수록 B가 자연스러워집니다.</strong> 그 아이의 주치의는 1차 병원이고,
+      일반 증상은 원래 1차 병원 몫입니다. 그렇게 보면 우리 채팅의 역할은 <strong>답을 주는 것이 아니라
+      “1차 병원으로 잘 보내주는 것”</strong>이 되고, <span class="em">그게 오히려 플랫폼이 하려는 일과 맞습니다.</span></p>
+    <p>다만 <strong>응급 분류만은 우리가 합니다.</strong> 그건 1차 병원에 넘길 수 없습니다 —
+      밤에 안 열려 있고, 넘겼다가 늦으면 그 책임은 앱을 만든 쪽에 옵니다.</p>
+  </div>
+</section>
+
+<!-- ══════ 10 ══════ -->
+<section>
+  <h2><span class="num">10</span>만드는 순서</h2>
+  <p class="dek">앞의 것들은 AI 모델이 필요 없습니다. 규칙과 조회입니다.</p>
 
   <div class="phase"><div class="id">C-1</div><div><div class="t">응급 분류 + 야간 즉시 안내<span class="ai no">모델 불필요</span></div>
     <div class="d">지금 “안 합니다”가 나가는 자리를 대체합니다. 여기만 해도 지금보다 낫습니다.</div></div></div>
-  <div class="phase"><div class="id">C-2</div><div><div class="t">문진 채우기<span class="ai no">모델 불필요</span></div>
+  <div class="phase"><div class="id">C-2</div><div><div class="t">입원·수술 전후 갈래 — 기록으로 답 + <b>담당의 전달</b><span class="ai no">조회</span></div>
+    <div class="d">지금 문의의 83%. 오늘 식사·배변·경과는 이미 리포트에 있고, <b>채팅 내용은 그대로 주치의에게 갑니다.</b></div></div></div>
+  <div class="phase"><div class="id">C-3</div><div><div class="t">수술 후 관리 전용 흐름<span class="ai no">모델 불필요</span></div>
+    <div class="d">가장 많이 반복되고 답이 정형적입니다 — 사진 + 며칠째 + 벌어짐 여부.</div></div></div>
+  <div class="phase"><div class="id">C-4</div><div><div class="t">일반 증상 문진 채우기<span class="ai no">모델 불필요</span></div>
     <div class="d">사진·시점·횟수·복용 약. “주치의 확인 후” 왕복 44%를 한 번으로 줄입니다.</div></div></div>
-  <div class="phase"><div class="id">C-3</div><div><div class="t">직원 화면 인계 + 답장 초안<span class="ai yes">모델 사용</span></div>
+  <div class="phase"><div class="id">C-5</div><div><div class="t">직원 화면 인계 + 답장 초안<span class="ai yes">모델 사용</span></div>
     <div class="d">초안은 AI가, <b>발송은 사람이 누를 때만</b>. 입원 리포트와 같은 구조입니다.</div></div></div>
-  <div class="phase"><div class="id">C-4</div><div><div class="t">수술 부위 전용 흐름<span class="ai no">모델 불필요</span></div>
-    <div class="d">가장 많이 반복되는 질문이고 답이 정형적입니다 — 사진 + 며칠째 + 벌어짐 여부.</div></div></div>
-  <div class="phase"><div class="id">C-5</div><div><div class="t">기록 연계 (EMR · PACS)<span class="ai no">조회</span></div>
-    <div class="d">최근 회차·입원·검진·처방·영상을 읽고 답을 가릅니다. 데이터는 이미 우리 DB 안에 있습니다.</div></div></div>
   <div class="phase"><div class="id">C-6</div><div><div class="t">1차 병원 회송 + 알림<span class="ai no">규칙</span></div>
     <div class="d">경미 + 의뢰 환자 → 1차 병원 안내, 그쪽 포털에 알림.</div></div></div>
   <div class="phase"><div class="id">C-7</div><div><div class="t">예약은 전화 연결<span class="ai no">—</span></div>
     <div class="d">자동으로 잡지 않습니다.</div></div></div>
 </section>
 
-<!-- ══════════ 9 ══════════ -->
+<!-- ══════ 10 ══════ -->
 <section>
-  <h2><span class="num">09</span>원장님이 정해주셔야 하는 것</h2>
+  <h2><span class="num">11</span>원장님이 정해주셔야 하는 것</h2>
   <p class="dek">이 아래는 저희가 정할 수 없는 것들입니다.</p>
 
   <div class="decide">
@@ -439,6 +528,9 @@
         <span>야간 접수 방법과 야간 진료비 안내를 자동답변 끝에 붙이려 합니다.</span></li>
       <li><b>답변 속 숫자 기준</b>
         <span>안정 시 호흡수 30회, 48시간, 3~4일 관찰 등을 교과서 기준으로 넣었습니다. 병원 기준으로 고쳐 주세요.</span></li>
+      <li><b>일반 증상은 누가 답할 것인가</b> <span style="color:var(--amber);font-weight:800">— 09번</span>
+        <span>A 우리 의료진 · B 1차 병원 담당의 · C 채팅 전담 인력 · D AI 초안+검수 · E 예약만.
+          1차 병원이 늘면 이 갈래가 주력이 되므로 <b>지금 방향만이라도 정해야</b> 합니다.</span></li>
       <li><b>초안 30건 검토</b>
         <span>별도 문서에서 승인 / 수정 / 삭제로 표시해 주시면 그대로 반영합니다.</span></li>
     </ol>
@@ -447,15 +539,15 @@
   <h3>저희가 확인해야 할 것</h3>
   <div class="tw"><table>
     <tr><th>항목</th><th>왜</th></tr>
-    <tr><td>1만 건 전체 데이터</td><td>표본 105건은 재활·항암 장기 환자에 치우쳐 있습니다. 특히 <b>응급 사례가 34건뿐</b>이라 분류 기준을 세우기엔 얇습니다.</td></tr>
-    <tr><td>1차 병원의 반응</td><td>“환자 갑니다” 알림이 도움으로 읽힐지 통보로 읽힐지는 원장님들께 먼저 여쭤봐야 합니다.</td></tr>
+    <tr><td>1만 건 전체 데이터</td><td>이 표본 약 100명은 <b>이미 입원·수술한 환자</b>에 치우쳐 있어 일반 증상 문의가 과소 대표됐습니다. 특히 <b>응급 사례가 34건뿐</b>이라 분류 기준을 세우기엔 얇습니다.</td></tr>
+    <tr><td>1차 병원의 반응</td><td>“환자 갑니다” 알림이 도움으로 읽힐지 통보로 읽힐지, 그리고 <b>그쪽에서 증상 문의에 답할 의향이 있는지</b>(09번 B안) 먼저 여쭤봐야 합니다.</td></tr>
     <tr><td>회송 후 되돌아온 비율</td><td>경미 판정이 맞았는지는 이 숫자로만 검증됩니다. 높으면 기준을 조입니다.</td></tr>
     <tr><td>비식별화</td><td>대화 백업에 보호자 이름·전화번호가 평문으로 들어 있습니다. 학습 재료로 쓰려면 먼저 지워야 합니다.</td></tr>
   </table></div>
 </section>
 
 <footer>
-  분석 대상 · 채널 대화 백업 105건 / 메시지 12,738건 (2023-08-01 ~ 2026-07-30)<br>
+  분석 대상 · <b>약 100명분 채널 상담 샘플</b> — 105개 대화 / 12,738 메시지 (2023-08-01 ~ 2026-07-30, 전체 1만여 건 중 표본)<br>
   원본 대화는 저장소에 보관하지 않았으며, 이 문서에 인용된 문장에서 이름·연락처는 삭제했습니다.
 </footer>
 

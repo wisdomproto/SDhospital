@@ -17,7 +17,8 @@
   *{box-sizing:border-box; margin:0; padding:0}
   html,body{height:100%; overflow:hidden; background:var(--bg)}
   body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",system-ui,sans-serif;
-    color:var(--ink); letter-spacing:-.02em; word-break:keep-all; -webkit-font-smoothing:antialiased}
+    color:var(--ink); letter-spacing:-.02em; word-break:keep-all; line-height:1.7;
+    -webkit-font-smoothing:antialiased}
 
   #stage{position:absolute; left:50%; top:50%; width:1280px; height:720px; transform-origin:center;
          background:#fff; overflow:hidden; box-shadow:0 24px 70px rgba(18,33,47,.16); border-radius:6px}
@@ -29,36 +30,41 @@
   .eyebrow{display:flex; align-items:center; gap:10px; margin-bottom:18px;
            font-size:13px; font-weight:800; letter-spacing:.14em; color:var(--teal)}
   .eyebrow::after{content:""; flex:1; height:1px; background:var(--line)}
-  h1{font-size:46px; line-height:1.2; font-weight:800; letter-spacing:-.035em}
-  h2{font-size:36px; line-height:1.24; font-weight:800; letter-spacing:-.035em; margin-bottom:8px}
+  h1{font-size:45px; line-height:1.34; font-weight:800; letter-spacing:-.035em}
+  h2{font-size:35px; line-height:1.36; font-weight:800; letter-spacing:-.03em; margin-bottom:12px}
   h2 em{font-style:normal; color:var(--teal-d)}
   h2 .r{color:var(--red)}
-  .sub{font-size:16.5px; color:var(--muted); line-height:1.6; margin-bottom:22px; max-width:920px}
+  .sub{font-size:16.5px; color:var(--muted); line-height:1.75; margin-bottom:22px; max-width:920px}
   /* 본문 덩어리를 머리글과 꼬리글 사이 가운데로 — auto 여백 둘이 남는 공간을 반씩 나눈다 */
   .slide:not(.cover) > .eyebrow + *{margin-top:auto}
   .kicker{margin-top:auto; padding-top:18px; border-top:1px solid var(--line);
-          font-size:18px; font-weight:700; color:var(--ink2); line-height:1.55}
+          font-size:18px; font-weight:700; color:var(--ink2); line-height:1.7}
   .kicker b{color:var(--teal-d)} .kicker.warn b{color:var(--red)}
 
   .cover{background:var(--ink); color:#fff; justify-content:center}
   .cover .eyebrow{color:#5fd3c5} .cover .eyebrow::after{background:rgba(255,255,255,.2)}
   .cover h1{color:#fff}
-  .cover .quote{font-size:24px; color:#a9c0cc; line-height:1.55; font-weight:500; max-width:880px}
-  .cover .quote b{color:#fff; font-weight:800}
+  /* 표지 전용 — 본문 .quote(분홍 박스)와 절대 겹치지 않게 클래스를 분리했다.
+     같은 이름을 쓰면 어두운 배경 위에 밝은 박스가 깔려 글자가 묻힌다 (실제로 겪었다) */
+  .cover .lead{font-size:26px; color:#dbe7ed; line-height:1.7; font-weight:600; max-width:880px;
+    background:none; border:0; padding:0}
+  .cover .lead b{color:#fff; font-weight:800}
+  .cover .goal{margin-top:18px; font-size:18px; color:#8fb9c4; line-height:1.7; font-weight:600}
+  .cover .goal b{color:#5fd3c5; font-weight:800}
   .cover .meta{margin-top:auto; font-size:14.5px; color:#7d94a3; display:flex; gap:26px}
 
   .bignum{display:flex; align-items:baseline; gap:20px; margin:2px 0}
   .bignum .n{font-size:124px; font-weight:800; letter-spacing:-.06em; line-height:.9; color:var(--red)}
   .bignum .n.teal{color:var(--teal)} .bignum .n.amber{color:var(--amber)}
-  .bignum .lab{font-size:19px; color:var(--ink2); line-height:1.5; font-weight:600; padding-bottom:12px}
+  .bignum .lab{font-size:19px; color:var(--ink2); line-height:1.65; font-weight:600; padding-bottom:12px}
   .bignum .lab b{display:block; font-size:14.5px; color:var(--faint); font-weight:600; margin-top:6px}
 
   .grid{display:grid; gap:13px}
   .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)}
   .g4{grid-template-columns:repeat(4,1fr)}
   .card{border:1px solid var(--line); border-radius:14px; padding:17px 19px; background:#fff; min-width:0}
-  .card .t{font-size:16.5px; font-weight:800; margin-bottom:7px}
-  .card .d{font-size:14px; color:var(--muted); line-height:1.62}
+  .card .t{font-size:16.5px; font-weight:800; margin-bottom:9px; line-height:1.4}
+  .card .d{font-size:14px; color:var(--muted); line-height:1.75}
   .card .d b{color:var(--ink)}
   .card.tint{background:var(--soft)}
   .card.now{border-color:var(--red); background:var(--red-l)} .card.now .t{color:var(--red)}
@@ -67,20 +73,20 @@
   .card.vet{border-color:var(--blue); background:var(--blue-l)} .card.vet .t{color:var(--blue)}
   .card.good{border-color:var(--teal); background:var(--teal-l)} .card.good .t{color:var(--teal-d)}
 
-  .done{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700;
-        padding:10px 12px; border-radius:10px; background:var(--teal-l); color:var(--teal-d)}
+  .done{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; line-height:1.4;
+        padding:11px 12px; border-radius:10px; background:var(--teal-l); color:var(--teal-d)}
   .done.todo{background:var(--soft); color:var(--muted)}
   .done .ck{flex:none; width:18px; height:18px; border-radius:50%; background:var(--teal); color:#fff;
             display:grid; place-items:center; font-size:10px}
   .done.todo .ck{background:var(--faint)}
 
   ul.pts{list-style:none; display:grid; gap:12px}
-  ul.pts li{display:grid; grid-template-columns:24px 1fr; gap:11px; font-size:16px; line-height:1.55; color:var(--ink2)}
+  ul.pts li{display:grid; grid-template-columns:24px 1fr; gap:11px; font-size:16px; line-height:1.75; color:var(--ink2)}
   ul.pts li i{font-style:normal; font-weight:800; color:var(--teal); font-size:14px; padding-top:2px}
   ul.pts li b{color:var(--ink)}
 
   table{width:100%; border-collapse:collapse; font-size:14.5px}
-  th,td{padding:10px 12px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top}
+  th,td{padding:11px 12px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.65}
   th{font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--muted); background:var(--soft); white-space:nowrap}
   td b{color:var(--ink)}
   .yes{color:var(--teal); font-weight:800; text-align:center}
@@ -89,7 +95,7 @@
 
   .bars{display:grid; gap:14px}
   .bar{display:grid; grid-template-columns:132px 1fr auto; gap:14px; align-items:center}
-  .bar .bl{font-size:14.5px; font-weight:700; color:var(--ink2); text-align:right; line-height:1.35}
+  .bar .bl{font-size:14.5px; font-weight:700; color:var(--ink2); text-align:right; line-height:1.45}
   .bar .track{height:34px; background:var(--soft); border-radius:8px; overflow:hidden}
   .bar .fill{height:100%; border-radius:8px; background:var(--teal)}
   .bar .fill.red{background:var(--red)} .bar .fill.amber{background:var(--amber)}
@@ -99,8 +105,8 @@
   .gate{border:2px solid var(--line); border-radius:11px; padding:11px 8px; background:#fff; text-align:center}
   .gate .gn{font-size:10.5px; font-weight:800; letter-spacing:.07em; color:#fff; background:var(--ink);
             border-radius:999px; padding:3px 8px; display:inline-block; margin-bottom:7px}
-  .gate .gt{font-size:13.5px; font-weight:800; line-height:1.3}
-  .gate .gd{font-size:11px; color:var(--muted); margin-top:4px; line-height:1.4}
+  .gate .gt{font-size:13.5px; font-weight:800; line-height:1.42}
+  .gate .gd{font-size:11px; color:var(--muted); margin-top:5px; line-height:1.5}
   .gate.g0{border-color:var(--red)} .gate.g0 .gn{background:var(--red)}
   .gate.g1{border-color:var(--teal)} .gate.g1 .gn{background:var(--teal)}
   .gate.g6{border-color:var(--ink)}
@@ -117,20 +123,20 @@
   .chip.on.a{background:var(--amber); border-color:var(--amber)}
 
   .note{border-left:4px solid var(--amber); background:var(--amber-l); border-radius:0 12px 12px 0;
-        padding:15px 19px; font-size:15.5px; line-height:1.6; color:var(--ink2)}
+        padding:16px 19px; font-size:15.5px; line-height:1.75; color:var(--ink2)}
   .note b{color:#92400e}
   .note.red{border-color:var(--red); background:var(--red-l)} .note.red b{color:var(--red)}
   .note.teal{border-color:var(--teal); background:var(--teal-l)} .note.teal b{color:var(--teal-d)}
 
   .quote{border-left:5px solid var(--red); background:var(--red-l); border-radius:0 12px 12px 0;
-         padding:17px 21px; font-size:16.5px; line-height:1.65; color:var(--ink2)}
+         padding:18px 21px; font-size:16.5px; line-height:1.8; color:var(--ink2)}
   .quote .lb{font-size:11.5px; font-weight:800; letter-spacing:.06em; color:var(--red); margin-bottom:7px}
 
   /* 담당의 초안 목업 */
   .draft{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#fff}
   .draft .dh{background:var(--soft); padding:10px 15px; font-size:13px; font-weight:800; color:var(--ink2);
              border-bottom:1px solid var(--line); display:flex; justify-content:space-between}
-  .draft .db{padding:15px; font-size:14px; line-height:1.65; color:var(--ink2)}
+  .draft .db{padding:16px; font-size:14px; line-height:1.8; color:var(--ink2)}
   .draft .db b{color:var(--ink)}
   .refs{border-top:1px dashed var(--line); margin-top:12px; padding-top:11px; display:grid; gap:7px}
   .refln{display:grid; grid-template-columns:auto 1fr; gap:9px; font-size:12px; color:var(--muted); align-items:start}
@@ -177,8 +183,8 @@
 <section class="slide cover" data-sec="표지" data-t="SD동물의료센터 플랫폼">
   <p class="eyebrow">SD동물의료센터 · 플랫폼 기획 보고</p>
   <h1>2차 병원 · 1차 병원 · 보호자<br><span style="color:#5fd3c5">셋 다 이득인 구조</span>를 만듭니다</h1>
-  <p class="quote">그래야 <b>레퍼가 계속 들어옵니다.</b><br>
-    <span style="font-size:19px">목표는 <b>왕십리 반경에서 서울 전역 · 경기 · 인천으로</b>.</span></p>
+  <p class="lead">그래야 <b>레퍼가 계속 들어옵니다.</b></p>
+  <p class="goal">지금은 <b>왕십리 반경</b> · 목표는 <b>서울 전역 · 경기 · 인천</b></p>
   <div class="meta"><span>2026-08-04</span><span>대표원장님 보고용</span><span>실제 상담 105건 분석 기반</span></div>
 </section>
 

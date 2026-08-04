@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { NEWS_SEEN_COOKIE } from "@/lib/seen";
 import { MarkNewsSeen } from "../../MarkNewsSeen";
+import { kstToday } from "@/lib/worklist";
+import { FIELDS, choiceOf } from "@/lib/life-log";
 
 export default async function PortalPatientOverview({
   params,
@@ -50,9 +52,43 @@ export default async function PortalPatientOverview({
   const feed = await ownerReportFeed(supabase, id, `/portal/patients/${id}`, 3);
   const unread = feed.filter((f) => f.unread).length;
 
+  // 생활기록은 **홈에서 시작한다.** 탭을 여섯 개로 늘리지 않고,
+  // "내 정보"(가끔 보는 화면)에 넣지도 않는다 — 매일 쓰는 것은 매일 여는 화면에 있어야 한다.
+  const today = kstToday();
+  const { data: todayLog } = await supabase
+    .from("life_log")
+    .select("appetite, stool, energy, meds")
+    .eq("patient_id", id)
+    .eq("logged_on", today)
+    .maybeSingle();
+  const doneCount = todayLog
+    ? FIELDS.filter((f) => todayLog[f.key as keyof typeof todayLog]).length
+    : 0;
+
   return (
     <>
       <MarkNewsSeen hasNew={(notices ?? []).some((n) => isNew(n.starts_on))} />
+
+      <Link href={`/portal/patients/${id}/life`} className="portal-card life-today" aria-label="오늘 기록">
+        <div className="life-today-head">
+          <b>오늘 {p.name}는 어땠나요</b>
+          <span>{doneCount > 0 ? `${doneCount}개 적음` : "기록하기 →"}</span>
+        </div>
+        {doneCount > 0 ? (
+          <div className="life-today-chips">
+            {FIELDS.map((f) => {
+              const c = choiceOf(f.key, todayLog?.[f.key as keyof typeof todayLog] ?? null);
+              return c ? (
+                <span key={f.key} className={`pill ${c.tone === "good" ? "success" : c.tone === "alert" ? "danger" : "warning"}`}>
+                  {f.label} {c.label}
+                </span>
+              ) : null;
+            })}
+          </div>
+        ) : (
+          <p className="life-today-sub">밥·배변·기운만 골라 두시면 진료 때 담당의가 함께 봅니다.</p>
+        )}
+      </Link>
       {(pendingConsents ?? []).length > 0 && (
         <div className="portal-card" style={{ borderLeft: "4px solid #b4541f" }}>
           <div style={{ fontWeight: 800, marginBottom: 8 }}>서명이 필요합니다</div>

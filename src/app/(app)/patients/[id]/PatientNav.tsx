@@ -45,6 +45,14 @@ export function PatientNav({
       <Link href={base} className={`pnav-item${overviewActive ? " active" : ""}`}>
         개요
       </Link>
+      {/* 생활기록은 회차에 딸린 기록이 아니다 — 보호자가 집에서 남기는 것이라
+          진료 사이를 메운다. 그래서 회차 목록 위, 개요 옆에 둔다. */}
+      <Link
+        href={`${base}/life`}
+        className={`pnav-item${pathname.startsWith(`${base}/life`) ? " active" : ""}`}
+      >
+        생활기록
+      </Link>
 
       <div className="pnav-section">진료 회차 · {visits.length}</div>
       {visits.length === 0 && <span className="pnav-meta" style={{ padding: "4px 11px" }}>없음</span>}

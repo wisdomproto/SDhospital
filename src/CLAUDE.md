@@ -46,6 +46,15 @@
   미발송 검진은 **오늘 할 일**에 올라오고(소견 없으면 "소견 작성 필요"),
   재검일은 `src/app/api/cron/recheck/route.ts` 가 하루 한 번 보호자·직원에게 민다
   (`recheck_notified_at` 이 두 번 보내는 걸 막는다). ⚠️ `src/lib/supabase/service.ts` 는 **이 경로 전용** — 화면에서 쓰면 그 화면엔 RLS 가 없다
+- `src/lib/life-log.ts` — **생활기록**: 선택지(식사·배변·활력·약)와 tone, 일/주/월 집계(`aggregate`),
+  채팅이 쓰는 `baseline`(기록이 적으면 `enough=false` — 근거 없이 "평소보다 적다"고 말하지 않는다),
+  `recentChanges`(먹이는 것이 최근 2주 안에 바뀌었나). 순수 함수라 양쪽 화면이 같은 코드를 쓴다.
+  보호자 `portal/patients/[id]/life/`(`DayEntry.tsx` 칩 = **저장 버튼 없이 누르면 저장** · `IntakeList.tsx`) ·
+  홈(`portal/patients/[id]/page.tsx`)에 **오늘 카드** · 직원 `(app)/patients/[id]/life/` + `components/LifeChart.tsx`(일/주/월).
+  ⚠️ **탭을 늘리지 않았다** — 여섯 개가 되면 모바일에서 글자가 뭉개지고, "내 정보"에 넣으면
+  가끔 보는 화면 안에 매일 쓰는 기능이 숨는다. 그래서 `/life` 는 **병원 소식(홈) 탭에 속한다**(`PortalTabBar` 의 match).
+  ⚠️ **보호자가 직접 쓰는 첫 테이블**이라 DEFINER 함수를 안 거친다 — 자기가 만든 자기 행이라 RLS 로 충분하다.
+  Storage 는 `life/<patient_id>/...` 경로에만 보호자 쓰기를 연다(`can_read_patient_file` 이 두 번째 칸을 읽는다).
 - `src/lib/auth/roles.ts` — 역할 모델
 - `supabase/migrations/` — 스키마·RLS, `supabase/tests/` — RLS 테스트
 

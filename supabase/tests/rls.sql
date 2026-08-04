@@ -244,6 +244,72 @@ begin
   if r is null then raise exception 'mark_checkup_read must stamp read_at'; end if;
 end $$;
 
+-- 생활기록 — **보호자가 직접 쓰는 첫 테이블**이다.
+-- 다른 외부 역할 쓰기는 전부 DEFINER 함수를 거치므로, 여기가 정책만으로 막히는 유일한 곳이다.
+-- 그래서 "자기 것은 쓸 수 있다"와 "남의 것은 못 쓴다"를 둘 다 확인한다.
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}', true);
+
+-- ① 자기 반려동물 것은 넣을 수 있다
+insert into life_log (patient_id, logged_on, appetite, stool, weight_kg)
+values ('cccccccc-0000-0000-0000-000000000001', current_date, 'well', 'loose', 6.10);
+insert into life_intake (patient_id, label, started_on)
+values ('cccccccc-0000-0000-0000-000000000001', '사과', current_date);
+
+-- ② 고칠 수 있다 (하루 한 행 — 다시 열면 고치는 것이지 새로 쌓는 게 아니다)
+update life_log set appetite = 'little'
+ where patient_id = 'cccccccc-0000-0000-0000-000000000001' and logged_on = current_date;
+
+do $$
+declare n int; a text;
+begin
+  select count(*), max(appetite) into n, a from life_log;
+  if n <> 1 then raise exception 'ownerX should see exactly its own life_log, saw %', n; end if;
+  if a <> 'little' then raise exception 'ownerX should be able to update its own life_log, got %', a; end if;
+end $$;
+
+-- ③ 남의 반려동물 것은 못 넣는다
+do $$
+begin
+  begin
+    insert into life_log (patient_id, logged_on, appetite)
+    values ('cccccccc-0000-0000-0000-000000000002', current_date, 'well');
+    raise exception 'ownerX must NOT be able to log for another owner''s pet';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
+-- ④ 남이 넣은 것은 보이지도 않는다
+reset role;
+insert into life_log (patient_id, logged_on, appetite)
+values ('cccccccc-0000-0000-0000-000000000002', current_date, 'well');
+
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}', true);
+do $$
+declare n int;
+begin
+  select count(*) into n from life_log;
+  if n <> 1 then raise exception 'ownerX must not see another pet''s life_log, saw %', n; end if;
+end $$;
+
+-- ⑤ 1차 병원 원장은 자기가 의뢰한 환자 것만 **읽고**, 쓰지는 못한다
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}', true);
+do $$
+declare n int;
+begin
+  select count(*) into n from life_log;
+  if n <> 1 then raise exception 'vetA should see only its referred pet life_log, saw %', n; end if;
+  begin
+    insert into life_log (patient_id, logged_on, appetite)
+    values ('cccccccc-0000-0000-0000-000000000001', current_date - 1, 'well');
+    raise exception 'referring_vet must NOT be able to write life_log';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
 reset role;
 select 'RLS TESTS PASSED' as result;
 rollback;

@@ -296,6 +296,136 @@ export type Database = {
           },
         ]
       }
+      life_intake: {
+        Row: {
+          created_at: string
+          id: string
+          label: string | null
+          patient_id: string
+          photo_path: string | null
+          started_on: string
+          stopped_on: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          patient_id: string
+          photo_path?: string | null
+          started_on?: string
+          stopped_on?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          patient_id?: string
+          photo_path?: string | null
+          started_on?: string
+          stopped_on?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "life_intake_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      life_log: {
+        Row: {
+          appetite: string | null
+          created_at: string
+          energy: string | null
+          id: string
+          logged_on: string
+          meds: string | null
+          note: string | null
+          patient_id: string
+          stool: string | null
+          updated_at: string
+          weight_kg: number | null
+          weight_source: string
+        }
+        Insert: {
+          appetite?: string | null
+          created_at?: string
+          energy?: string | null
+          id?: string
+          logged_on?: string
+          meds?: string | null
+          note?: string | null
+          patient_id: string
+          stool?: string | null
+          updated_at?: string
+          weight_kg?: number | null
+          weight_source?: string
+        }
+        Update: {
+          appetite?: string | null
+          created_at?: string
+          energy?: string | null
+          id?: string
+          logged_on?: string
+          meds?: string | null
+          note?: string | null
+          patient_id?: string
+          stool?: string | null
+          updated_at?: string
+          weight_kg?: number | null
+          weight_source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "life_log_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      life_photo: {
+        Row: {
+          created_at: string
+          id: string
+          log_id: string
+          patient_id: string
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_id: string
+          patient_id: string
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_id?: string
+          patient_id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "life_photo_log_id_fkey"
+            columns: ["log_id"]
+            isOneToOne: false
+            referencedRelation: "life_log"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "life_photo_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media: {
         Row: {
           admission_id: string | null

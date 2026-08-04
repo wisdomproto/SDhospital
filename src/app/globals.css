@@ -1941,3 +1941,84 @@ button.media-thumb.media-open {
 .checkup-entry input { padding: 4px 8px; font-size: .82rem; }
 .checkup-entry .vd.high, .checkup-entry .vd.low { color: #b4541f; }
 .checkup-entry .vd.watch { color: var(--danger); }
+
+/* ── 생활기록 ─────────────────────────────────────────────────────────────
+   매일 여는 화면이라 "탭 몇 번이면 끝"이어야 한다. 저장 버튼을 두지 않는 대신
+   상태 줄로 저장을 알린다. 항목은 나타났다 사라지지 않는다 —
+   어느 날은 있고 어느 날은 없으면 "오늘은 왜 없지"가 된다. */
+.life-day { display: grid; gap: 16px; }
+.life-row { display: grid; gap: 8px; min-width: 0; }
+.life-row-inline { grid-template-columns: minmax(0, 1fr); }
+.life-row-label { font-weight: 700; font-size: .88rem; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.life-hint { font-weight: 500; font-size: .78rem; color: var(--muted-2); }
+.life-chip {
+  display: inline-block; padding: 10px 14px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text);
+  font: inherit; font-size: .88rem; cursor: pointer;
+}
+.life-chip.on { color: #fff; font-weight: 700; }
+.life-chip.on.tone-good { background: #16a34a; border-color: #16a34a; }
+.life-chip.on.tone-watch { background: #d97706; border-color: #d97706; }
+.life-chip.on.tone-alert { background: #dc2626; border-color: #dc2626; }
+.life-weight { display: flex; gap: 8px; align-items: center; }
+.life-weight input {
+  width: 130px; padding: 12px 14px; border: 1px solid var(--line);
+  border-radius: 12px; font: inherit; background: var(--surface); color: var(--text);
+}
+.life-status { margin: 0; font-size: .8rem; color: var(--muted-2); min-height: 1.2em; }
+.life-err { color: var(--danger); font-size: .82rem; }
+.life-photos { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.life-photos img { width: 72px; height: 72px; object-fit: cover; border-radius: 12px; }
+.life-addphoto {
+  display: inline-grid; place-items: center; min-width: 72px; height: 72px; padding: 0 12px;
+  border: 1px dashed var(--line); border-radius: 12px; font-size: .82rem;
+  color: var(--muted-2); cursor: pointer; text-align: center;
+}
+.life-addphoto.busy { opacity: .6; }
+
+.life-sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.life-date { font-size: .8rem; color: var(--muted-2); }
+.life-linkbtn {
+  background: none; border: 0; padding: 0; font: inherit; font-size: .84rem;
+  font-weight: 700; color: var(--primary); cursor: pointer;
+}
+.life-note { margin: 0 0 10px; font-size: .8rem; color: var(--muted-2); line-height: 1.6; }
+.life-empty { margin: 0; font-size: .88rem; color: var(--muted-2); }
+.life-add { display: grid; gap: 10px; margin-bottom: 12px; }
+.life-add-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 12px; }
+
+.life-intake { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.life-intake li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.life-intake img { width: 44px; height: 44px; object-fit: cover; border-radius: 10px; }
+.life-intake-noimg { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; background: var(--surface-soft); }
+.life-intake-name { font-weight: 700; font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.life-intake-since { font-size: .76rem; color: var(--muted-2); }
+.life-intake.past { opacity: .65; margin-top: 8px; }
+
+.life-history { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.life-history li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; font-size: .88rem; line-height: 1.5; }
+.life-hist-date { font-size: .78rem; font-weight: 700; color: var(--muted-2); }
+.life-hist-text em { display: block; font-style: normal; font-size: .82rem; color: var(--muted-2); }
+.life-history li.tone-watch .life-hist-text { color: #b4541f; }
+.life-history li.tone-alert .life-hist-text { color: var(--danger); font-weight: 600; }
+.life-foot { margin: 0; font-size: .8rem; color: var(--muted-2); line-height: 1.7; text-align: center; }
+
+/* 홈의 오늘 카드 — 생활기록은 여기서 시작한다 */
+.life-today { display: block; text-decoration: none; color: inherit; }
+.life-today-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; font-size: .95rem; }
+.life-today-head span { font-size: .82rem; font-weight: 700; color: var(--primary); white-space: nowrap; }
+.life-today-sub { margin: 6px 0 0; font-size: .84rem; color: var(--muted-2); line-height: 1.6; }
+.life-today-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+/* 직원 화면 — 일/주/월 전환 */
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg-btn {
+  padding: 7px 14px; font-size: .85rem; font-weight: 600; color: var(--muted);
+  text-decoration: none; border-right: 1px solid var(--line); background: var(--surface);
+}
+.seg-btn:last-child { border-right: 0; }
+.seg-btn.active { background: var(--primary); color: #fff; }
+.callout-warn {
+  border: 1px solid #f0c98a; background: #fffaf0; border-radius: 12px;
+  padding: 12px 14px; font-size: .88rem; margin-bottom: 12px;
+}

@@ -45,10 +45,19 @@ export function PortalTabBar({
   const pathname = usePathname();
   const base = `/portal/patients/${patientId}`;
   /** 진료 기록이 **아닌** 화면들. 새 탭이 생기면 여기에만 추가한다 */
-  const OTHERS = ["cases", "chat", "profile"];
+  const OTHERS = ["cases", "chat", "profile", "life"];
   // 입원은 따로 두지 않는다 — 입원은 진료 회차에 딸린 기록이라 "진료 기록" 안에서 이어 보는 게 맞다.
   const tabs = [
-    { href: base, label: "병원 소식", icon: "home", match: (p: string) => p === base, badge: news },
+    {
+      href: base,
+      label: "병원 소식",
+      icon: "home",
+      // 생활기록은 탭을 새로 만들지 않는다. 여섯 개가 되면 모바일에서 글자가 뭉개지고,
+      // "내 정보" 안에 넣으면 가끔 보는 화면 안에 매일 쓰는 기능이 숨는다.
+      // 홈은 매일 여는 곳이고 입력 카드가 거기 있으므로 같은 탭으로 둔다.
+      match: (p: string) => p === base || p.startsWith(`${base}/life`),
+      badge: news,
+    },
     {
       href: `${base}/visits`,
       label: "진료 기록",

@@ -2,6 +2,20 @@
 
 앱은 **Railway**, DB 는 이미 **Supabase 클라우드**라 앱만 배포하면 된다.
 
+## 배포 주소
+
+**https://sdhospital-production.up.railway.app** — `main` 에 푸시하면 자동 배포된다.
+
+| | |
+|---|---|
+| 직원 EMR | `/login` |
+| 보호자 앱 | `/login/portal` |
+| **자료실** | `/login` 오른쪽 위 드롭다운 → `/deck/*.html` |
+
+⚠️ **`/deck/` 는 인증 가드에서 빠져 있다**(`src/proxy.ts`). 원장님·1차 병원에 링크로 보내는
+자료라 로그인 없이 열려야 하지만, **주소를 아는 사람은 누구나 본다.** 검색엔진만 `noindex` 로 막았다.
+로그인 뒤로 넣으려면 `proxy.ts` 의 `/deck/` 한 줄을 빼면 된다.
+
 `railway.json`(Nixpacks, start `npm run start`, healthcheck `/login`) + `.nvmrc`(Node 22).
 GitHub 리포 연결 → 환경변수 설정 → Generate Domain → **Supabase Auth → URL Configuration 에 배포 도메인 등록.**
 

@@ -149,6 +149,25 @@ export function shiftDate(iso: string, days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+/**
+ * 보려는 날짜를 정한다. **미래는 열지 않는다** — 아직 안 지난 하루를 적을 수는 없다.
+ * 형식이 틀렸거나 앞날이면 오늘로 되돌린다.
+ */
+export function clampDay(d: string | null | undefined, today: string): string {
+  if (!d || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return today;
+  return d > today ? today : d;
+}
+
+const WD = ["일", "월", "화", "수", "목", "금", "토"];
+
+/** 화면에 쓰는 날짜 이름. 어제·오늘은 이름으로 부르는 게 날짜보다 빨리 읽힌다 */
+export function dayLabel(d: string, today: string): string {
+  if (d === today) return "오늘";
+  if (d === shiftDate(today, -1)) return "어제";
+  const w = WD[new Date(d + "T00:00:00Z").getUTCDay()];
+  return `${Number(d.slice(5, 7))}월 ${Number(d.slice(8, 10))}일 (${w})`;
+}
+
 /** 그 주의 월요일 */
 export function weekStart(iso: string): string {
   const d = new Date(`${iso}T00:00:00Z`);

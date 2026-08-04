@@ -2,8 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { kstToday } from "@/lib/worklist";
 import { signedUrl } from "@/lib/storage";
-import { isActive, summarize, worstTone, shiftDate, type Intake, type LifeLog } from "@/lib/life-log";
+import { clampDay, dayLabel, isActive, summarize, worstTone, shiftDate,
+  type Intake, type LifeLog } from "@/lib/life-log";
 import { DayEntry } from "./DayEntry";
+import { DayNav } from "./DayNav";
 import { IntakeList } from "./IntakeList";
 
 /**
@@ -15,11 +17,20 @@ import { IntakeList } from "./IntakeList";
  * ⚠️ **"지켜보고 있다"고 말하지 않는다.** 올렸는데 아무도 안 보면 "무시당했다"가 된다.
  * 사람이 상시로 보지는 않고, 채팅은 **물어봤을 때만** 읽는다 — 그 구분을 화면에 그대로 쓴다.
  */
-export default async function LifePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function LifePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ d?: string }>;
+}) {
   const { id } = await params;
+  const { d } = await searchParams;
   const supabase = await createClient();
   const today = kstToday();
-  const since = shiftDate(today, -13);
+  // ⚠️ 앞날은 열지 않는다. 주소를 직접 고쳐 와도 여기서 오늘로 되돌린다.
+  const day = clampDay(d, today);
+  const since = shiftDate(day, -13);
 
   const { data: patient } = await supabase
     .from("patient")
@@ -34,6 +45,7 @@ export default async function LifePage({ params }: { params: Promise<{ id: strin
       .select("id, logged_on, appetite, stool, energy, weight_kg, meds, note")
       .eq("patient_id", id)
       .gte("logged_on", since)
+      .lte("logged_on", day)
       .order("logged_on", { ascending: false }),
     supabase
       .from("life_intake")
@@ -51,7 +63,7 @@ export default async function LifePage({ params }: { params: Promise<{ id: strin
   ]);
 
   const rows = (logs ?? []) as (LifeLog & { id: string })[];
-  const todayRow = rows.find((l) => l.logged_on === today);
+  const todayRow = rows.find((l) => l.logged_on === day);
 
   const { data: photoRows } = todayRow
     ? await supabase.from("life_photo").select("id, storage_path").eq("log_id", todayRow.id)
@@ -64,19 +76,24 @@ export default async function LifePage({ params }: { params: Promise<{ id: strin
   const withUrl = await Promise.all(
     list.map(async (i) => ({ ...i, url: i.photo_path ? await signedUrl(i.photo_path) : null }))
   );
-  const active = withUrl.filter((i) => isActive(i, today));
-  const stopped = withUrl.filter((i) => !isActive(i, today));
+  // 그 날 기준으로 무엇을 주고 있었나 — 지난 날을 열면 그때의 목록이 맞다
+  const active = withUrl.filter((i) => isActive(i, day));
+  const stopped = withUrl.filter((i) => !isActive(i, day));
 
   return (
     <div className="portal-body" style={{ display: "grid", gap: 14 }}>
       <div className="portal-card">
-        <div className="life-sec-head">
-          <b>오늘 {patient.name}는 어땠나요</b>
-          <span className="life-date">{today}</span>
+        <DayNav base={`/portal/patients/${id}/life`} day={day} today={today} />
+        <div className="life-sec-head" style={{ marginTop: 14 }}>
+          <b>
+            {day === today ? `오늘 ${patient.name}는 어땠나요` : `${dayLabel(day, today)} ${patient.name}는 어땠나요`}
+          </b>
         </div>
         <DayEntry
+          /* 날짜를 옮기면 화면 상태를 새로 만든다 — 안 그러면 어제 화면에 오늘 고른 게 남는다 */
+          key={day}
           patientId={id}
-          loggedOn={today}
+          loggedOn={day}
           species={patient.species}
           hasPrescription={(rx ?? []).length > 0}
           photos={photos}
@@ -95,7 +112,7 @@ export default async function LifePage({ params }: { params: Promise<{ id: strin
 
       <div className="portal-card">
         <div className="life-sec-head">
-          <b>지난 2주</b>
+          <b>{day === today ? "지난 2주" : `${day}까지 2주`}</b>
         </div>
         {rows.length === 0 ? (
           <p className="life-empty">아직 기록이 없어요.</p>

@@ -24,6 +24,8 @@ function Icon({ name }: { name: string }) {
       return (<svg {...c}><path d="M20 15a3 3 0 0 1-3 3H8l-4 3V6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3Z" /><path d="M9 10h6M9 13h4" /></svg>);
     case "case":
       return (<svg {...c}><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2Z" /><path d="M9 7.5h6M9 11h4" /></svg>);
+    case "diary":
+      return (<svg {...c}><path d="M6 3h11a2 2 0 0 1 2 2v16H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" /><path d="M9 3v18" /><path d="M12.5 8.5h4M12.5 12h3" /></svg>);
     default:
       return null;
   }
@@ -52,10 +54,8 @@ export function PortalTabBar({
       href: base,
       label: "병원 소식",
       icon: "home",
-      // 생활기록은 탭을 새로 만들지 않는다. 여섯 개가 되면 모바일에서 글자가 뭉개지고,
-      // "내 정보" 안에 넣으면 가끔 보는 화면 안에 매일 쓰는 기능이 숨는다.
-      // 홈은 매일 여는 곳이고 입력 카드가 거기 있으므로 같은 탭으로 둔다.
-      match: (p: string) => p === base || p.startsWith(`${base}/life`),
+      // 치료 사례가 이 탭 안으로 들어왔다 — 둘 다 "읽는 것"이고, 비운 자리에 다이어리를 넣었다.
+      match: (p: string) => p === base || p.startsWith(`${base}/cases`),
       badge: news,
     },
     {
@@ -67,7 +67,9 @@ export function PortalTabBar({
       // 그러면 그 화면에서만 탭이 아무것도 안 켜져 앱 밖으로 나온 것처럼 보인다.
       match: (p: string) => p !== base && !OTHERS.some((o) => p.startsWith(`${base}/${o}`)),
     },
-    { href: `${base}/cases`, label: "치료 사례", icon: "case", match: (p: string) => p.startsWith(`${base}/cases`) },
+    // 매일 쓰는 것이라 탭이어야 한다. 홈 카드만 있을 때는 아무도 못 찾았다.
+    // 보호자에게는 "생활기록"(병원 말)이 아니라 **다이어리**로 부른다.
+    { href: `${base}/life`, label: "다이어리", icon: "diary", match: (p: string) => p.startsWith(`${base}/life`) },
     { href: `${base}/chat`, label: "AI 채팅", icon: "chat", match: (p: string) => p.startsWith(`${base}/chat`) },
     { href: `${base}/profile`, label: "내 정보", icon: "me", match: (p: string) => p.startsWith(`${base}/profile`) },
   ];

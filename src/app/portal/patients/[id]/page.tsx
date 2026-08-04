@@ -69,10 +69,11 @@ export default async function PortalPatientOverview({
     <>
       <MarkNewsSeen hasNew={(notices ?? []).some((n) => isNew(n.starts_on))} />
 
-      <Link href={`/portal/patients/${id}/life`} className="portal-card life-today" aria-label="오늘 기록">
+      <Link href={`/portal/patients/${id}/life`} className="portal-card life-today" aria-label="다이어리 쓰기">
         <div className="life-today-head">
           <b>오늘 {p.name}는 어땠나요</b>
-          <span>{doneCount > 0 ? `${doneCount}개 적음` : "기록하기 →"}</span>
+          {/* ⚠️ 화살표는 항상 둔다. 적고 나면 사라지게 했더니 눌리는 줄을 아무도 몰랐다 */}
+          <span>{doneCount > 0 ? "고치기 ›" : "기록하기 ›"}</span>
         </div>
         {doneCount > 0 ? (
           <div className="life-today-chips">
@@ -106,6 +107,15 @@ export default async function PortalPatientOverview({
           </div>
         </div>
       )}
+
+      {/* 치료 사례는 탭에서 내려와 여기 들어왔다 — 소식과 같이 "읽는 것"이라 한 탭에 둔다 */}
+      <Link href={`/portal/patients/${id}/cases`} className="portal-card life-today" aria-label="치료 사례">
+        <div className="life-today-head">
+          <b>치료 사례</b>
+          <span>찾아보기 ›</span>
+        </div>
+        <p className="life-today-sub">같은 문제로 치료받은 아이들의 이야기를 증상·병명으로 찾아볼 수 있어요.</p>
+      </Link>
 
       {(notices ?? []).length > 0 && (
         <div className="notice-list">

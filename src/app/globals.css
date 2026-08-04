@@ -2022,3 +2022,26 @@ button.media-thumb.media-open {
   border: 1px solid #f0c98a; background: #fffaf0; border-radius: 12px;
   padding: 12px 14px; font-size: .88rem; margin-bottom: 12px;
 }
+
+/* ── 다이어리 날짜 이동 ──────────────────────────────────────────────────
+   ⚠️ 앞날로는 못 간다. 아직 안 지난 하루를 적을 수는 없다 —
+   다음 날 버튼은 오늘에 서 있으면 죽고, 달력도 max 로 막는다. */
+.daynav { display: flex; align-items: center; gap: 8px; }
+.daynav-btn {
+  flex: none; width: 34px; height: 34px; display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--surface);
+  color: var(--text); text-decoration: none; font-size: 1.1rem; line-height: 1;
+}
+.daynav-btn:active { background: var(--surface-soft); }
+.daynav-btn.off { color: var(--line); background: var(--surface-soft); cursor: default; }
+.daynav-now { position: relative; flex: 1; text-align: center; cursor: pointer; }
+.daynav-now input {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0; border: 0; padding: 0; cursor: pointer;
+}
+.daynav-label { display: block; font-weight: 800; font-size: .95rem; }
+.daynav-date { display: block; font-size: .72rem; color: var(--muted-2); font-variant-numeric: tabular-nums; }
+.daynav-today {
+  flex: none; font-size: .78rem; font-weight: 700; color: var(--primary);
+  text-decoration: none; padding: 6px 9px; border-radius: 8px; background: var(--surface-soft);
+}

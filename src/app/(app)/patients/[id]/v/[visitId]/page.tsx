@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { FormField, inputClass } from "@/components/FormField";
 import { SubmitButton } from "@/components/SubmitButton";
-import { updateVisit, updatePrescription, deletePrescription, deleteFile, saveVisitReport, toggleVisitClosed, referBack, saveReferralDraft, createCheckup } from "./actions";
+import { updateVisit, updatePrescription, deletePrescription, deleteFile, saveVisitReport, toggleVisitClosed, referBack, saveReferralDraft, createCheckup, approveImages } from "./actions";
 import { PrescriptionForm } from "./PrescriptionForm";
 import { SoapTemplate } from "./SoapTemplate";
 import { ConsentIssue } from "./ConsentIssue";
@@ -30,7 +30,7 @@ export default async function VisitDetail({
     .single();
   if (!v) notFound();
 
-  const [{ data: drugs }, { data: rxs }, { data: images }, { data: mediaRows }, { data: admissions }, { data: consents }, { data: checkup }] =
+  const [{ data: drugs }, { data: rxs }, { data: images }, { data: imgReq }, { data: mediaRows }, { data: admissions }, { data: consents }, { data: checkup }] =
     await Promise.all([
       supabase.from("drug").select("id, name").order("name"),
       supabase
@@ -38,6 +38,7 @@ export default async function VisitDetail({
         .select("id, drug_id, dose, frequency, duration")
         .eq("visit_id", visitId),
       supabase.from("medical_image").select("id, modality, file_name, storage_path").eq("visit_id", visitId),
+      supabase.from("image_request").select("requested_at, approved_at").eq("visit_id", visitId).maybeSingle(),
       supabase.from("media").select("id, kind, file_name, storage_path").eq("visit_id", visitId),
       supabase
         .from("admission")
@@ -356,7 +357,20 @@ export default async function VisitDetail({
 
       <div className="quickadd-grid">
         <div className="card">
-          <div className="card-head"><h2 className="section-title">의료영상</h2></div>
+          <div className="card-head">
+            <h2 className="section-title">의료영상</h2>
+            {/* ⚠️ 보호자에게는 **기본으로 안 나간다**(원장님 요구). 여기서 눌러야 열린다.
+                요청이 없어도 누를 수 있다 — 진료 중에 "보여드릴게요"가 되는 경우가 있다. */}
+            {imgReq?.approved_at ? (
+              <span className="pill success">보호자에게 공개됨</span>
+            ) : (
+              <form action={approveImages.bind(null, patientId, v.id)}>
+                <button className={imgReq ? "btn-primary" : "link-btn"}>
+                  {imgReq ? "보호자 요청 있음 · 보내기" : "보호자에게 보내기"}
+                </button>
+              </form>
+            )}
+          </div>
           <ul style={{ display: "grid", gap: 6, fontSize: ".9rem", listStyle: "none", padding: 0, margin: 0 }}>
             {imageLinks.map((i) => (
               <li key={i.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>

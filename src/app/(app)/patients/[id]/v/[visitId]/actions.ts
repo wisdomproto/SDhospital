@@ -11,6 +11,31 @@ import { redirect } from "next/navigation";
 const vpath = (patientId: string, visitId: string) =>
   `/patients/${patientId}/v/${visitId}`;
 
+/**
+ * 보호자가 요청한 의료영상을 보내준다.
+ *
+ * ⚠️ 승인 전까지 보호자 화면은 **서명 URL 자체를 안 만든다.** 이 한 줄이 그걸 연다.
+ * 요청 없이도 누를 수 있게 해 둔다 — 진료 중에 "영상 보여드릴게요"가 되는 경우가 있다.
+ */
+export async function approveImages(patientId: string, visitId: string) {
+  const supabase = await createClient();
+  const { data: me } = await supabase.auth.getUser();
+  const { error } = await supabase
+    .from("image_request")
+    .upsert(
+      { visit_id: visitId, approved_at: new Date().toISOString(), approved_by: me.user?.id ?? null },
+      { onConflict: "visit_id" }
+    );
+  if (error) redirect(vpath(patientId, visitId) + "?error=" + encodeURIComponent(error.message));
+  // 알림이 실패해도 공개는 이미 됐다 — 여기서 되돌리면 더 이상하다.
+  await notifyOwner(supabase, patientId, {
+    title: "의료영상을 보내드렸어요",
+    body: "요청하신 촬영 영상을 진료 기록에서 보실 수 있어요.",
+    url: `/portal/patients/${patientId}/visits/${visitId}`,
+  }).catch(() => {});
+  revalidatePath(vpath(patientId, visitId));
+}
+
 export async function updateVisit(
   patientId: string,
   visitId: string,

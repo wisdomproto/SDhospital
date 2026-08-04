@@ -9,7 +9,8 @@ export default async function TodayWorklist() {
   const supabase = await createClient();
   const today = kstToday();
 
-  const [{ data: visitRows }, { data: admRows }, { data: todayReports }, { data: checkupRows }] = await Promise.all([
+  const [{ data: visitRows }, { data: admRows }, { data: todayReports }, { data: checkupRows }, { data: imgReqRows }] =
+    await Promise.all([
     // 진료가 끝났는데 아직 리포트가 안 나간 회차 (오늘 것 + 밀린 것)
     supabase
       .from("visit")
@@ -28,6 +29,12 @@ export default async function TodayWorklist() {
       .select("id, patient_id, checked_on, conclusion, patient:patient_id(id, name, species)")
       .is("sent_at", null)
       .order("checked_on", { ascending: true }),
+    // 보호자가 보내 달라고 한 의료영상. 승인할 때까지 목록에서 안 사라진다.
+    supabase
+      .from("image_request")
+      .select("visit_id, requested_at, visit:visit_id(id, patient_id, visit_date, patient:patient_id(id, name, species))")
+      .is("approved_at", null)
+      .order("requested_at", { ascending: true }),
   ]);
 
   const sentToday = new Set(
@@ -80,6 +87,25 @@ export default async function TodayWorklist() {
         subtitle: c.conclusion ? "건강검진 · 발송 대기" : "건강검진 · 소견 작성 필요",
       };
     }),
+    ...(imgReqRows ?? []).map((r) => {
+      const vi = r.visit as unknown as {
+        id: string;
+        patient_id: string;
+        visit_date: string;
+        patient: Pet | null;
+      } | null;
+      // ⚠️ 밀린 날짜는 **요청한 날** 기준이다. 몇 달 전 진료의 영상을 오늘 요청할 수 있다.
+      const reqDay = new Date(r.requested_at).toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+      return {
+        kind: "image_request" as const,
+        href: `/patients/${vi?.patient_id}/v/${vi?.id}`,
+        patientName: vi?.patient?.name ?? "-",
+        species: vi?.patient?.species ?? null,
+        date: reqDay,
+        overdueDays: Math.max(0, daysBetween(reqDay, today)),
+        subtitle: `의료영상 요청 · ${vi?.visit_date ?? ""} 진료`,
+      };
+    }),
   ];
 
   const list = sortWorkItems(items);
@@ -92,7 +118,7 @@ export default async function TodayWorklist() {
       <div>
         <p className="eyebrow">오늘 할 일</p>
         <h1 className="page-title" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          보호자 리포트
+          보호자에게 보낼 것
           {list.length > 0 ? (
             <span className="pill warning">{list.length}건 남음</span>
           ) : (

@@ -3,6 +3,7 @@ import { signedUrl, signMedicalImages } from "@/lib/storage";
 import { MediaGrid, type SignedFile } from "../../MediaGrid";
 import { buildOwnerReport } from "@/lib/owner-report";
 import { matchCaseStories, type CaseStory } from "@/lib/case-stories";
+import { ImageRequest } from "./ImageRequest";
 import { ReportActions } from "./ReportActions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -70,11 +71,15 @@ export default async function PortalVisitDetail({
     : { count: 0 };
   const unreadDaily = unreadDailyCount ?? 0;
 
-  const [{ data: images }, { data: media }] = await Promise.all([
+  const [{ data: images }, { data: media }, { data: imgReq }] = await Promise.all([
     supabase.from("medical_image").select("id, modality, file_name, storage_path, preview_path").eq("visit_id", visitId),
     supabase.from("media").select("id, kind, file_name, storage_path").eq("visit_id", visitId),
+    supabase.from("image_request").select("requested_at, approved_at").eq("visit_id", visitId).maybeSingle(),
   ]);
-  const imageLinks = await signMedicalImages(images ?? []);
+  // ⚠️ **승인 전에는 서명 URL 자체를 만들지 않는다.** 만들어 놓고 화면에서만 감추면
+  //    주소는 이미 나간 것이다 — 숨기는 게 아니라 안 만드는 것으로 막는다.
+  const imagesApproved = Boolean(imgReq?.approved_at);
+  const imageLinks = imagesApproved ? await signMedicalImages(images ?? []) : [];
   // 보호자에게는 "무슨 검사를 했는지"만 보여준다.
   // 약품·용량 같은 처방 상세는 분쟁 소지가 있어 내보내지 않는다.
   const MODALITY_KO: Record<string, string> = { xray: "X-ray", ct: "CT", mri: "MRI", other: "영상 검사" };
@@ -184,10 +189,23 @@ export default async function PortalVisitDetail({
         </Link>
       ))}
 
-      <div className="portal-card">
-        <div style={{ fontWeight: 800, marginBottom: 8 }}>의료영상</div>
-        <MediaGrid files={imageLinks} />
-      </div>
+      {/* 의료영상은 **요청해야 나간다** — 판독 소견 없이 X-ray 를 그냥 띄우면
+          보호자가 스스로 해석한다. 아래 「사진 / 영상」(아이 사진)은 그대로 나간다. */}
+      {(images ?? []).length > 0 && (
+        <div className="portal-card">
+          <div style={{ fontWeight: 800, marginBottom: 8 }}>의료영상</div>
+          {imagesApproved ? (
+            <MediaGrid files={imageLinks} />
+          ) : (
+            <ImageRequest
+              patientId={id}
+              visitId={visitId}
+              summary={examSummary}
+              requested={Boolean(imgReq)}
+            />
+          )}
+        </div>
+      )}
 
       <div className="portal-card">
         <div style={{ fontWeight: 800, marginBottom: 8 }}>사진 / 영상</div>

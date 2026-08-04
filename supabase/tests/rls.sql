@@ -312,4 +312,41 @@ end $$;
 
 reset role;
 select 'RLS TESTS PASSED' as result;
+-- ── image_request: 의료영상은 요청해야 나간다 ──────────────────────────────
+-- ⚠️ 여기서 5번이 깨지면 보호자가 스스로 승인해 영상을 연다.
+insert into visit (id, patient_id, visit_date) values
+  ('dddddddd-0000-0000-0000-0000000000f1', 'cccccccc-0000-0000-0000-000000000001', current_date),
+  ('dddddddd-0000-0000-0000-0000000000f2', 'cccccccc-0000-0000-0000-000000000002', current_date);
+
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+
+select request_medical_images('dddddddd-0000-0000-0000-0000000000f1');
+select request_medical_images('dddddddd-0000-0000-0000-0000000000f1');  -- 두 번 눌러도 하나
+do $$ begin
+  if (select count(*) from image_request) <> 1 then
+    raise exception 'image_request: 자기 회차 요청/중복 방지 실패';
+  end if;
+  begin
+    perform request_medical_images('dddddddd-0000-0000-0000-0000000000f2');
+    raise exception 'image_request: 남의 회차를 요청할 수 있다';
+  exception when sqlstate 'P0001' then null; when others then null;
+  end;
+  begin
+    insert into image_request (visit_id) values ('dddddddd-0000-0000-0000-0000000000f2');
+    raise exception 'image_request: 보호자가 직접 INSERT 할 수 있다';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
+-- 자가 승인 시도 — 정책상 UPDATE 대상 행이 없어 조용히 0건이어야 한다
+update image_request set approved_at = now()
+ where visit_id = 'dddddddd-0000-0000-0000-0000000000f1';
+do $$ begin
+  if (select approved_at from image_request
+       where visit_id = 'dddddddd-0000-0000-0000-0000000000f1') is not null then
+    raise exception 'image_request: 보호자가 스스로 승인할 수 있다 (영상이 열린다)';
+  end if;
+end $$;
+
 rollback;

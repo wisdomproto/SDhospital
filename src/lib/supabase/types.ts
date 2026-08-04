@@ -245,6 +245,30 @@ export type Database = {
         }
         Relationships: []
       }
+      image_request: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          id: string
+          requested_at: string
+          visit_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          id?: string
+          requested_at?: string
+          visit_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          id?: string
+          requested_at?: string
+          visit_id?: string
+        }
+        Relationships: []
+      }
       invite: {
         Row: {
           created_at: string
@@ -1087,6 +1111,7 @@ export type Database = {
       current_hospital_id: { Args: never; Returns: string }
       current_owner_id: { Args: never; Returns: string }
       current_role_name: { Args: never; Returns: string }
+      request_medical_images: { Args: { p_visit: string }; Returns: undefined }
       set_patient_photo: { Args: { p_patient_id: string; p_photo: string | null }; Returns: undefined }
       push_targets_staff: {
         Args: Record<PropertyKey, never>

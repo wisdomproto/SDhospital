@@ -340,6 +340,7 @@ export type Database = {
           created_at: string
           energy: string | null
           id: string
+          intakes: string[]
           logged_on: string
           meds: string | null
           note: string | null
@@ -354,6 +355,7 @@ export type Database = {
           created_at?: string
           energy?: string | null
           id?: string
+          intakes?: string[]
           logged_on?: string
           meds?: string | null
           note?: string | null
@@ -368,6 +370,7 @@ export type Database = {
           created_at?: string
           energy?: string | null
           id?: string
+          intakes?: string[]
           logged_on?: string
           meds?: string | null
           note?: string | null

@@ -2045,3 +2045,11 @@ button.media-thumb.media-open {
   flex: none; font-size: .78rem; font-weight: 700; color: var(--primary);
   text-decoration: none; padding: 6px 9px; border-radius: 8px; background: var(--surface-soft);
 }
+
+/* 다이어리 입력은 가로를 꽉 쓴다 — 좁으면 답답해 보이고, 답답하면 안 쓴다 */
+.portal-card:has(.life-day) { padding: 16px 12px; }
+.life-weight { width: 100%; }
+/* input 이 flex:1 로 늘면서 kg 를 밀어냈다 — 단위는 안 줄어들게 고정 */
+.life-weight input { flex: 1 1 auto; width: auto; min-width: 0; }
+.life-weight > span { flex: 0 0 auto; }
+.life-chip { padding: 10px 13px; }

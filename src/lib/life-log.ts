@@ -65,6 +65,8 @@ export function energyHint(species: string | null | undefined): string | null {
 
 export type LifeLog = {
   logged_on: string;
+  /** 그 날 준 것 — life_intake 의 id 목록. **기본은 빈 배열**(미리 채워 두지 않는다) */
+  intakes?: string[] | null;
   appetite: string | null;
   stool: string | null;
   energy: string | null;
@@ -76,7 +78,8 @@ export type LifeLog = {
 /** 하나라도 있으면 저장할 값이 있는 것 */
 export function hasAnything(v: Partial<LifeLog>): boolean {
   return Boolean(
-    v.appetite || v.stool || v.energy || v.meds || v.note?.trim() || v.weight_kg != null
+    v.appetite || v.stool || v.energy || v.meds || v.note?.trim() ||
+    v.weight_kg != null || (v.intakes?.length ?? 0) > 0
   );
 }
 

@@ -3,7 +3,13 @@ import { useState, useTransition } from "react";
 import { FIELDS, energyHint, type FieldKey } from "@/lib/life-log";
 import { saveDay, addPhoto } from "./actions";
 
-type Values = Record<FieldKey, string | null> & { weight_kg: number | null; note: string | null };
+type Values = Record<FieldKey, string | null> & {
+  weight_kg: number | null;
+  note: string | null;
+  intakes: string[];
+};
+
+export type IntakeOption = { id: string; label: string | null };
 
 /**
  * 오늘 한 줄. **저장 버튼이 없다** —
@@ -19,6 +25,7 @@ export function DayEntry({
   initial,
   hasPrescription,
   photos,
+  intakeOptions,
 }: {
   patientId: string;
   loggedOn: string;
@@ -27,6 +34,8 @@ export function DayEntry({
   /** 우리 처방이 살아 있을 때만 "약" 줄을 띄운다 — 없는 약을 매일 물으면 안 적는다 */
   hasPrescription: boolean;
   photos: { id: string; url: string | null }[];
+  /** 「먹이는 것」 목록. 그 날 준 것만 골라 담는다 — **미리 채워 두지 않는다** */
+  intakeOptions: IntakeOption[];
 }) {
   const [v, setV] = useState<Values>(initial);
   const [pending, start] = useTransition();
@@ -53,6 +62,10 @@ export function DayEntry({
   const toggle = (field: FieldKey, key: string) =>
     push({ [field]: v[field] === key ? null : key } as Partial<Values>);
 
+  /** 먹인 것은 여러 개를 고를 수 있다 (위 항목들과 달리 하나만 고르는 게 아니다) */
+  const toggleIntake = (id: string) =>
+    push({ intakes: v.intakes.includes(id) ? v.intakes.filter((x) => x !== id) : [...v.intakes, id] });
+
   const rows = FIELDS.filter((f) => f.key !== "meds" || hasPrescription);
 
   return (
@@ -78,6 +91,28 @@ export function DayEntry({
           </div>
         </div>
       ))}
+
+      {intakeOptions.length > 0 && (
+        <div className="life-row">
+          <div className="life-row-label">
+            먹인 것
+            <span className="life-hint">준 것만 고르세요 · 여러 개 가능</span>
+          </div>
+          <div className="chip-group">
+            {intakeOptions.map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                onClick={() => toggleIntake(o.id)}
+                className={`life-chip tone-good${v.intakes.includes(o.id) ? " on" : ""}`}
+                aria-pressed={v.intakes.includes(o.id)}
+              >
+                {o.label ?? "사진으로 기록"}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="life-row life-row-inline">
         <div className="life-row-label">체중</div>

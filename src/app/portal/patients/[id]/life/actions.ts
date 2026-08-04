@@ -11,6 +11,7 @@ import { revalidatePath } from "next/cache";
 
 type DayPatch = {
   appetite?: string | null;
+  intakes?: string[];
   stool?: string | null;
   energy?: string | null;
   meds?: string | null;

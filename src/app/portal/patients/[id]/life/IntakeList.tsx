@@ -6,7 +6,7 @@ import { addIntake, stopIntake, resumeIntake } from "./actions";
 type Row = Intake & { url: string | null };
 
 /**
- * 먹이는 것 — **바뀔 때만** 손대는 목록.
+ * 먹이는 것 **목록(선택지)** — 매일 고르는 건 위 다이어리에서 하고, 여기서는 목록만 관리한다.
  *
  * 사료·간식·과일·영양제·다른 병원 약을 **구분하지 않는다.** 칸을 나누면
  * "과일은 어디 넣나"가 생기고, 그때부터 아무도 안 적는다.
@@ -42,13 +42,14 @@ export function IntakeList({
   return (
     <div className="portal-card">
       <div className="life-sec-head">
-        <b>지금 먹이는 것</b>
+        <b>먹이는 것 목록</b>
         <button type="button" className="life-linkbtn" onClick={() => setOpen((o) => !o)}>
           {open ? "닫기" : "＋ 추가"}
         </button>
       </div>
       <p className="life-note">
         사료·간식·영양제·다른 병원에서 받은 약 — <b>입에 들어가는 건 전부 여기</b>.
+        여기 담아 두면 <b>위에서 그 날 준 것만 골라</b> 두시면 됩니다.
         <br />
         <b>기록해 두는 곳이고, 계속 먹여도 되는지는 진료 때 담당의가 확인합니다.</b>
       </p>
@@ -75,7 +76,7 @@ export function IntakeList({
               disabled={pending}
               onClick={() => act(() => stopIntake(patientId, i.id, today))}
             >
-              끊었어요
+              빼기
             </button>
           </li>
         ))}
@@ -84,7 +85,7 @@ export function IntakeList({
       {stopped.length > 0 && (
         <>
           <button type="button" className="life-linkbtn" onClick={() => setShowPast((s) => !s)}>
-            {showPast ? "지난 것 접기" : `지난 것 ${stopped.length}개 보기`}
+            {showPast ? "뺀 것 접기" : `뺀 것 ${stopped.length}개 보기`}
           </button>
           {showPast && (
             <ul className="life-intake past">
@@ -103,7 +104,7 @@ export function IntakeList({
                     disabled={pending}
                     onClick={() => act(() => resumeIntake(patientId, i.id))}
                   >
-                    다시 줘요
+                    다시 넣기
                   </button>
                 </li>
               ))}

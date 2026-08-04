@@ -2,8 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { kstToday } from "@/lib/worklist";
 import { signedUrl } from "@/lib/storage";
-import { clampDay, dayLabel, isActive, summarize, worstTone, shiftDate,
-  type Intake, type LifeLog } from "@/lib/life-log";
+import { clampDay, dayLabel, isActive, shiftDate, type Intake, type LifeLog } from "@/lib/life-log";
 import { DayEntry } from "./DayEntry";
 import { DayNav } from "./DayNav";
 import { IntakeList } from "./IntakeList";
@@ -30,7 +29,7 @@ export default async function LifePage({
   const today = kstToday();
   // ⚠️ 앞날은 열지 않는다. 주소를 직접 고쳐 와도 여기서 오늘로 되돌린다.
   const day = clampDay(d, today);
-  const since = shiftDate(day, -13);
+  const since = shiftDate(day, -13); // 그 날 행 하나만 있으면 되지만 범위로 받아 캐시를 태운다
 
   const { data: patient } = await supabase
     .from("patient")
@@ -42,7 +41,7 @@ export default async function LifePage({
   const [{ data: logs }, { data: intakes }, { data: rx }] = await Promise.all([
     supabase
       .from("life_log")
-      .select("id, logged_on, appetite, stool, energy, weight_kg, meds, note")
+      .select("id, logged_on, appetite, stool, energy, weight_kg, meds, note, intakes")
       .eq("patient_id", id)
       .gte("logged_on", since)
       .lte("logged_on", day)
@@ -76,9 +75,14 @@ export default async function LifePage({
   const withUrl = await Promise.all(
     list.map(async (i) => ({ ...i, url: i.photo_path ? await signedUrl(i.photo_path) : null }))
   );
-  // 그 날 기준으로 무엇을 주고 있었나 — 지난 날을 열면 그때의 목록이 맞다
-  const active = withUrl.filter((i) => isActive(i, day));
-  const stopped = withUrl.filter((i) => !isActive(i, day));
+  // 목록 관리(아래 카드)는 "지금" 기준이다 — 뺀 것만 접어 둔다
+  const active = withUrl.filter((i) => isActive(i, today));
+  const stopped = withUrl.filter((i) => !isActive(i, today));
+  // 고를 수 있는 것은 **지금 목록 + 그 날 이미 골라 둔 것**.
+  // 목록 기준을 그 날로 잡았더니 지난 날을 채워 넣을 때 선택지가 하나도 없었다.
+  // 뺀 항목도 그 날 골라 뒀다면 보여야 한다 — 안 그러면 고른 게 화면에서 사라진다.
+  const picked = new Set(todayRow?.intakes ?? []);
+  const options = withUrl.filter((i) => isActive(i, today) || picked.has(i.id));
 
   return (
     <div className="portal-body" style={{ display: "grid", gap: 14 }}>
@@ -97,7 +101,11 @@ export default async function LifePage({
           species={patient.species}
           hasPrescription={(rx ?? []).length > 0}
           photos={photos}
+          intakeOptions={options.map((i) => ({ id: i.id, label: i.label }))}
           initial={{
+            /* ⚠️ 기본은 전부 비어 있다. 어제 값을 끌어오거나 목록을 미리 체크해 두지 않는다 —
+               안 적은 날과 "평소만큼이었던 날"은 다른 것이고, 그걸 우리가 지어내면 안 된다 */
+            intakes: todayRow?.intakes ?? [],
             appetite: todayRow?.appetite ?? null,
             stool: todayRow?.stool ?? null,
             energy: todayRow?.energy ?? null,
@@ -109,33 +117,6 @@ export default async function LifePage({
       </div>
 
       <IntakeList patientId={id} today={today} active={active} stopped={stopped} />
-
-      <div className="portal-card">
-        <div className="life-sec-head">
-          <b>{day === today ? "지난 2주" : `${day}까지 2주`}</b>
-        </div>
-        {rows.length === 0 ? (
-          <p className="life-empty">아직 기록이 없어요.</p>
-        ) : (
-          <ul className="life-history">
-            {rows.map((l) => {
-              const tone = worstTone(l);
-              const text = summarize(l);
-              return (
-                <li key={l.logged_on} className={tone ? `tone-${tone}` : undefined}>
-                  <span className="life-hist-date">
-                    {Number(l.logged_on.slice(5, 7))}/{Number(l.logged_on.slice(8, 10))}
-                  </span>
-                  <span className="life-hist-text">
-                    {text || "메모만"}
-                    {l.note && <em>{l.note}</em>}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
 
       <p className="life-foot">
         여기 적어 두시면 <b>진료 때 담당의가 함께 봅니다.</b>

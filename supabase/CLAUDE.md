@@ -1,0 +1,97 @@
+# supabase — 스키마 · RLS · 시드
+
+루트 `CLAUDE.md` 의 설계 결정을 먼저 읽을 것. 여기는 **데이터가 어떻게 생겼고 누가 뭘 할 수 있는지**다.
+
+## 데이터 모델 — 모든 것의 기본은 진료 회차
+
+```
+환자
+ └─ 진료 회차 (visit)        ← 항상 먼저 생긴다
+      ├─ 처방 · 의료영상 · 사진
+      ├─ 입원 (admission)     ← 그 회차에 입원이 필요하면 딸려 붙는다
+      │    └─ 바이털 · 일일 리포트
+      ├─ 건강검진 (checkup)   ← 회차당 1건
+      └─ 동의서 (consent)
+환자
+ └─ 생활기록 (life_log / life_intake / life_photo)  ← 회차에 안 딸린다. 보호자가 집에서 남긴다
+```
+
+- **입원하러 온 환자도 진료 기록이 먼저 만들어진다.** 입원은 "다른 종류의 방문"이 아니라
+  그 회차에 딸린 **추가 기록**이다(`admission.visit_id` 필수). 입원 생성은 **회차 화면에서만**.
+- `patient_id` 도 남아 있지만 복합 FK `(visit_id, patient_id) → visit(id, patient_id)` 로
+  **DB 가 정합성을 강제한다.** 검진도 같은 방식.
+- **의뢰 진행 상태는 컬럼으로 저장하지 않는다.** `closed_at` + `admission.status` + `referred_back_at`
+  에서 전부 파생된다. 저장하면 실제와 어긋나는 순간이 오고 그걸 맞추는 코드를 또 짜야 한다.
+  파생 불가능한 "환송했는가"만 컬럼이다.
+- `visit.closed_at` = 진료 종료. "오늘 할 일"은 **종료됐는데 미발송**인 회차를 올린다.
+  리포트를 보내면 종료도 같이 찍는다.
+
+## 보호자 리포트는 두 종류
+
+| | 테이블 | 언제 | 보낼 수 있는 조건 |
+|---|---|---|---|
+| **회차 리포트** | `visit.report_comment/sent_at/read_at` | **모든 진료마다** | **코멘트 필수** — 사람 말 한 줄 없이 나가면 통보로 읽힌다 |
+| **입원 일일 리포트** | `admission_report` `unique(admission_id, report_date)` | 입원한 회차에만 매일 | **식사·배변만 골라도 발송** — 매일 문장을 쓰게 하면 며칠 만에 끊긴다 |
+
+- **입원 리포트는 작성과 발송을 나눈다.** 병동에서 채우는 사람(간호사)과 내보낼지 정하는 사람(수의사)이 다르다.
+  `ready_at` = 준비 완료(수의사에게 알림) · `sent_at` = 발송.
+  수의사가 직접 입력하면 준비를 건너뛴다. **회차 리포트는 수의사가 직접 쓰므로 이 단계가 없다.**
+- **보호자에게 바이털 수치는 안 나간다.** 38.4는 안심을 주지 못하고 검색 후 더 불안해진다.
+  수치는 계속 `vital` 에 쌓고 의료진 화면에서만 본다.
+
+## 생활기록 (`0025_life_log.sql`)
+
+- `life_log` **하루 한 행**(`unique(patient_id, logged_on)`) — 다시 열면 고치는 것이지 새로 쌓는 게 아니다.
+- `life_intake` — 입에 들어가는 것 **전부 한 테이블**. 사료·간식·과일·영양제·남의 병원 약을 구분하지 않는다.
+  **행을 추가한 날이 곧 시작일**이라 "최근에 사료 바꾸셨나요"를 따로 물을 필요가 없다.
+  끊으면 `stopped_on` 만 찍고 **지우지 않는다** — 지난 원인을 되짚어야 한다.
+- `life_photo` — 본문은 Storage 로. 매일 한 장씩만 쌓여도 3년이면 1,000장이라 컬럼에 base64 는 못 담는다.
+- ⚠️ **`weight_source`** 로 집 저울과 병원 저울을 구분한다. 섞이면 회차 리포트의 "지난 방문 대비"가 오염된다.
+
+## 권한 — 누가 무엇을 할 수 있나
+
+- 헬퍼: `current_role_name()` · `current_owner_id()` · `current_hospital_id()` (`0002_rls_helpers.sql`)
+- **외부 역할(보호자·1차병원 원장)의 쓰기는 전부 DEFINER 함수를 거친다** —
+  `redeem_invite` · `mark_visit_report_read` · `mark_admission_report_read` · `mark_checkup_read` ·
+  `sign_consent`(두 번 서명 불가) · `set_patient_photo` · `log_access`.
+  **볼 수 없는 남의 행을 고치기 때문**이다.
+- ⚠️ **단 하나의 예외 — 생활기록.** 보호자가 만든 보호자 자기 행이라 **RLS 정책으로 충분하다.**
+  DEFINER 로 감싸도 검사는 똑같다. Storage 도 `life/<patient_id>/` 경로에만 보호자 쓰기를 연다
+  (`can_read_patient_file()` 이 경로 두 번째 칸에서 환자를 읽는다).
+- **접근 로그는 외부 역할이 남길 수만 있다** (`log_access` DEFINER). 읽지도 고치지도 못한다 —
+  로그 자체가 감사 대상이다. 열람은 우리가 하고, 요청 시 해당 병원분을 뽑아 준다.
+- **푸시 대상 조회는 전부 직원 전용 DEFINER** — `push_targets_for_patient`(owner_id) ·
+  `push_targets_for_hospital`(referring_hospital_id) · `push_targets_staff`.
+  **구독 테이블은 직원도 직접 못 읽는다** — 그건 "그 기기로 알림을 보낼 수 있는 열쇠"다.
+- **동의서는 서명 시점 본문을 통째로 보관**(`consent.body_snapshot`). 양식 문구가 바뀌어도 과거 서명은 그대로 —
+  증빙에서 중요한 건 서명 그림이 아니라 **"무엇에 동의했는지"** 다. 주민번호는 암호화(`CONSENT_ENC_KEY`).
+
+**새 외부 역할 기능을 만들면 `tests/rls.sql` 에 케이스를 추가한다.** "자기 것은 되고 남의 것은 안 된다"를
+둘 다 확인해야 한다 — 보이는 것만 확인하면 쓰기 구멍을 못 잡는다.
+
+## 마이그레이션
+
+- 파일은 `migrations/NNNN_이름.sql`. 클라우드 적용은 Supabase MCP `apply_migration`.
+- ⚠️ **지금은 개발과 운영이 같은 프로젝트다** (Docker 미설치 → 로컬 스택 없음).
+  적용하는 순간 그게 운영이다. **실제 환자 데이터가 들어가면 프로젝트를 나눠야 한다** —
+  그때 이 폴더의 파일을 순서대로 밀면 재현된다.
+
+## 시연용 데이터 (`seed/`)
+
+| 파일 | 내용 | id 접두사 |
+|---|---|---|
+| `demo_history.sql` | 환자 12명 × 3~8년치 회차 236건 · 과거 입원 · 바이털 · 일일 리포트 | `d0000000-` |
+| `life_log_demo.sql` | 생활기록 90일치 (슈슈, 최근 3주가 나빠지는 이야기) | `a0000000-` |
+| `seed_from_website.mjs` | 치료 사례 **442건** — 홈페이지 `/Story` 147편 + 네이버 블로그 416편(겹치는 132편 제외, `logNo` 로 판정) · 병원 소식 10건 | — |
+| `seed_xray.mjs` | 방사선 7장 → 슈슈 검진 회차 | `f0000000-` |
+| — | 건강검진 시드 | `e0000000-` |
+
+- 환자별 **"질환 스토리"**(주 증상 배열·체중 시작/끝·방문 횟수)만 적고 DB 가 펼친다.
+- 되돌리기는 각각 `*_rollback.sql`. ⚠️ **운영 DB 에 넣지 말 것.**
+
+## 로컬 개발
+- Docker 미설치 → 로컬 Supabase 스택 대신 클라우드 프로젝트를 그대로 쓴다.
+- `.env.local` 은 gitignore (Supabase URL + publishable 키).
+- 테스트 계정 ⚠️ **DEMO ONLY** — `NEXT_PUBLIC_ENABLE_DEMO=1` 일 때만 노출 (`src/app/login/demo.ts`):
+  직원 `staff@sdhospital.test` / `sdhospital123!` · 보호자 `1@example.com` / `1234` ·
+  원장 애니컴 `2@example.com`, 아이원 `3@example.com` (둘 다 `1234`)

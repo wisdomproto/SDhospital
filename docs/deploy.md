@@ -1,0 +1,54 @@
+# 배포 · 환경변수
+
+앱은 **Railway**, DB 는 이미 **Supabase 클라우드**라 앱만 배포하면 된다.
+
+`railway.json`(Nixpacks, start `npm run start`, healthcheck `/login`) + `.nvmrc`(Node 22).
+GitHub 리포 연결 → 환경변수 설정 → Generate Domain → **Supabase Auth → URL Configuration 에 배포 도메인 등록.**
+
+## 환경변수
+
+| | 필수 | |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | ✅ | |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | ✅ | 웹 푸시 |
+| `VAPID_PRIVATE_KEY` | ✅ | `npx web-push generate-vapid-keys` 로 만든다 |
+| `VAPID_SUBJECT` | ✅ | `mailto:...` |
+| `CONSENT_ENC_KEY` | ✅ | 주민등록번호 암호화 |
+| `CRON_SECRET` | 재검 알림용 | |
+| `SUPABASE_SERVICE_ROLE_KEY` | 재검 알림용 | |
+| `NEXT_PUBLIC_ENABLE_DEMO` | ❌ **넣지 말 것** | |
+
+### ⚠️ 잃어버리면 안 되는 것
+
+- **`CONSENT_ENC_KEY`** — 잃어버리면 **저장된 주민번호를 복구할 수 없다.**
+  Railway 에 로컬과 다른 값으로 넣고 **별도로 백업**해 둔다.
+- **`NEXT_PUBLIC_VAPID_PUBLIC_KEY`** — **공개키를 바꾸면 기존 구독이 전부 무효**가 된다.
+  보호자가 알림을 다시 켜야 하고, 그 사람들은 대부분 다시 안 켠다.
+
+### ⚠️ 데모 로그인 게이트
+
+원클릭 로그인 버튼·서버액션은 `NEXT_PUBLIC_ENABLE_DEMO=1` 일 때만 동작한다.
+로컬 `.env.local` 엔 켜 두고 **프로덕션엔 넣지 않는다** → 자동으로 비활성화된다.
+
+## 재검 알림 (스케줄러)
+
+하루 한 번 **`GET /api/cron/recheck`** 를 불러야 돈다 — `Authorization: Bearer $CRON_SECRET`.
+
+- `CRON_SECRET` 과 **`SUPABASE_SERVICE_ROLE_KEY`** 를 넣는다.
+  스케줄러엔 세션이 없어 RLS 를 못 통과한다 — **서비스 키를 쓰는 유일한 경로다**
+  (`src/lib/supabase/service.ts`, 화면 코드에서 쓰면 그 화면엔 RLS 가 없어진다).
+- 안 넣으면 **503 을 돌려주고 아무 일도 안 한다.**
+- 지난 날짜도 같이 집으므로 **하루 걸러도 재검이 사라지지 않는다.**
+- `recheck_notified_at` 이 두 번 보내는 걸 막는다.
+
+## 도입 전 체크
+
+- [ ] `NEXT_PUBLIC_ENABLE_DEMO` 가 프로덕션에 **없는지** 확인
+- [ ] `CONSENT_ENC_KEY` 백업
+- [ ] `CRON_SECRET` + `SUPABASE_SERVICE_ROLE_KEY` 등록 + 스케줄러 연결
+- [ ] Supabase Auth URL Configuration 에 도메인 등록
+- [ ] **도입 커트라인** — 도입일 이전 회차를 리포트 대상에서 빼야 첫날 "밀린 것 200건"이 안 뜬다
+      (`report_sent_at` 일괄 채우기 또는 `closed_at >= 도입일` 조건)
+- [ ] 시연용 데이터가 운영 DB 에 없는지 (`d0000000-` · `a0000000-` · `e0000000-` · `f0000000-`)
+- [ ] 검진 템플릿을 원장님이 훑어봤는지 — **없는 항목은 입력칸 자체가 없다**

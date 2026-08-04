@@ -30,8 +30,14 @@ export async function proxy(request: NextRequest) {
   const isAppShell =
     path === "/sw.js" || path === "/offline.html" || path === "/manifest.webmanifest";
   // 스케줄러가 부르는 경로는 세션이 아니라 `CRON_SECRET` 으로 자기를 증명한다 (라우트 안에서 확인)
+  // 발표자료(`/deck/…`)는 로그인 없이 열린다 — 원장님·1차 병원에 링크로 보내는 물건이다.
+  // ⚠️ 주소를 아는 사람은 누구나 본다. 검색엔진만 noindex 로 막아 두었다.
   const isPublic =
-    isAppShell || path.startsWith("/login") || path.startsWith("/invite") || path.startsWith("/api/cron");
+    isAppShell ||
+    path.startsWith("/login") ||
+    path.startsWith("/invite") ||
+    path.startsWith("/api/cron") ||
+    path.startsWith("/deck/");
 
   // Public pages need no session — skip the Supabase getUser() round trip
   // entirely so the login screen (and its post-login redirects) don't each

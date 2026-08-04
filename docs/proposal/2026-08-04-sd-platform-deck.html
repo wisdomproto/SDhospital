@@ -162,6 +162,38 @@
     box-shadow:0 8px 22px rgba(18,33,47,.12)}
   .shotwide img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block}
 
+
+  /* ── 채팅 시나리오 ── */
+  .chat{display:grid; gap:9px; align-content:start}
+  .bub{max-width:94%; padding:12px 15px; border-radius:16px; font-size:14px; line-height:1.7}
+  .bub.owner{background:#fee500; color:#2f2600; border-bottom-right-radius:5px; justify-self:end}
+  .bub.app{background:#fff; border:1px solid var(--line); color:var(--ink2); border-bottom-left-radius:5px}
+  .bub.app b{color:var(--ink)}
+  .bub .who{display:block; font-size:10.5px; font-weight:800; letter-spacing:.04em;
+    color:var(--faint); margin-bottom:5px}
+  .bub.owner .who{color:#8a7a00}
+  .bub.sys{background:var(--soft); border:1px dashed var(--line); font-size:12.5px; color:var(--muted);
+    max-width:100%; border-radius:12px}
+  .bub.sys b{color:var(--ink2)}
+
+  .pipe{display:grid; gap:7px; align-content:start}
+  .step{display:grid; grid-template-columns:56px minmax(0,1fr); gap:11px; align-items:start;
+    font-size:13.5px; line-height:1.6; color:var(--ink2)}
+  .step .sn{font-size:10.5px; font-weight:800; color:#fff; background:var(--faint);
+    border-radius:999px; padding:3px 0; text-align:center; margin-top:2px}
+  .step.hit .sn{background:var(--ink)}
+  .step.stop .sn{background:var(--red)}
+  .step.out .sn{background:var(--teal)}
+  .step.skip{color:var(--faint)}
+  .step.skip .sn{background:#e2e8ee; color:#9aa8b4}
+  .step b{color:var(--ink)}
+  .reads{display:flex; flex-wrap:wrap; gap:5px; margin-top:4px}
+  .reads span{font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px;
+    background:var(--blue-l); color:var(--blue)}
+  .reads span.life{background:var(--teal-l); color:var(--teal-d)}
+  .reads span.none{background:var(--soft); color:var(--faint)}
+  .scn{display:grid; grid-template-columns:1.06fr 1fr; gap:26px; align-items:start}
+
   #bar{position:fixed; left:0; right:0; bottom:0; height:4px; background:rgba(18,33,47,.1); z-index:9}
   #bar i{display:block; height:100%; background:var(--teal); transition:width .3s}
   #hud{position:fixed; right:18px; bottom:18px; z-index:10; display:flex; gap:8px; align-items:center;
@@ -498,6 +530,130 @@
     사람이 기억해야 하는 규칙은 언젠가 빠집니다.</p>
 </section>
 
+<!-- 시나리오 ① -->
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="시나리오① 응급 — 문 0에서 끝">
+  <p class="eyebrow">Ⅲ. AI 채팅 — 시나리오 ① <b style="color:var(--red)">응급</b></p>
+  <h2>급한 것은 <em>기록을 기다리지 않습니다</em></h2>
+  <div class="scn">
+    <div class="chat">
+      <div class="bub owner"><span class="who">보호자</span>
+        고양이가 화장실에 계속 들어가는데 소변이 안 나와요. 자꾸 울어요.</div>
+      <div class="bub app"><span class="who">SD 자동 안내 · 즉시</span>
+        <b>지금 바로 병원으로 와 주세요.</b> 수컷 고양이가 소변을 못 보는 것은
+        <b>몇 시간 단위로 위험해지는 상황</b>입니다.<br>
+        오시는 길에 전화 주시면 준비해 두겠습니다. ☎ 연결하기<br>
+        <span style="font-size:11.5px;color:var(--faint)">※ 의료진 확인 전 자동 안내입니다</span></div>
+      <div class="bub sys">🔔 동시에 <b>당직 직원에게 알림</b> — “슈슈 · 배뇨 곤란 · 지금 옵니다”</div>
+    </div>
+    <div class="pipe">
+      <div class="step stop"><span class="sn">문 0</span>
+        <span><b>응급 신호에 걸림 → 여기서 끝.</b> 아래 문을 지나지 않습니다.</span></div>
+      <div class="step skip"><span class="sn">문 1</span><span>기록 조회 — 지나감</span></div>
+      <div class="step skip"><span class="sn">문 2~4</span><span>상황·무게 판정 — 지나감</span></div>
+      <div class="step out"><span class="sn">문 5</span><span><b>지금 SD 로</b> + 전화 + 직원 알림</span></div>
+      <div class="note red" style="margin-top:12px">
+        <b>왜 기록보다 먼저인가</b> — 조회가 느리거나 실패해도, <b>처음 오는 아이여도</b>
+        이 답은 나가야 합니다. 놓치는 쪽이 과하게 부르는 쪽보다 훨씬 나쁩니다.</div>
+    </div>
+  </div>
+  <p class="kicker">이 한 갈래만 나가도 <b>지금의 “증상 상담은 하지 않습니다”를 대체합니다</b> —
+    답변 검토를 기다릴 필요가 없습니다.</p>
+</section>
+
+<!-- 시나리오 ② -->
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="시나리오② 우리 처치의 경과">
+  <p class="eyebrow">Ⅲ. AI 채팅 — 시나리오 ② <b style="color:var(--blue)">우리 처치의 경과</b></p>
+  <h2>우리가 한 처치는 <em>답이 이미 정해져</em> 있습니다</h2>
+  <div class="scn">
+    <div class="chat">
+      <div class="bub owner"><span class="who">보호자 · 퇴원 사흘째</span>
+        수술하고 온 뒤로 자꾸 켁켁거려요. 괜찮은 건가요?</div>
+      <div class="bub app"><span class="who">SD 자동 안내</span>
+        먼저 — <b>숨쉬기 힘들어 보이면 지금 오세요.</b><br>
+        그렇지 않다면: 호흡 마취 시 <b>기관 삽관 자극으로 3~5일 정도 기침</b>이 날 수 있습니다.
+        대개 저절로 없어집니다. <b>5일이 지나도 계속되면</b> 내원해 주세요.<br>
+        저희가 한 마취 뒤의 일이라 <b>담당의에게 함께 전달해 두겠습니다.</b></div>
+      <div class="bub sys">✅ 이 문장은 <b>병원이 실제로 하신 답변</b>입니다 — 초안 등급 <b>A</b></div>
+    </div>
+    <div class="pipe">
+      <div class="step skip"><span class="sn">문 0</span><span>응급 아님</span></div>
+      <div class="step hit"><span class="sn">문 1</span>
+        <span>기록을 읽음
+          <span class="reads"><span>3일 전 마취 수술</span><span>퇴원 완료</span><span>처방 중</span></span></span></div>
+      <div class="step hit"><span class="sn">문 2</span>
+        <span><b>갈래 2 — 우리 처치의 경과</b> (문의의 29%)</span></div>
+      <div class="step out"><span class="sn">문 5</span>
+        <span>승인된 설명 발송 <b>+ 응급을 뺀 전부가 담당의 인계</b></span></div>
+      <div class="note" style="margin-top:12px">
+        <b>회송하지 않습니다.</b> 우리가 수술한 부위·마취의 결과는 의뢰 환자여도
+        <b>1차 병원으로 내리지 않습니다</b> — 흐름의 구조상 그 칸에 닿지 못합니다.</div>
+    </div>
+  </div>
+  <p class="kicker">실밥 시기 · 발적 · 소독도 같은 식으로 <b>답이 정형적</b>입니다 —
+    자동답변이 가장 잘 듣는 구간입니다.</p>
+</section>
+
+<!-- 시나리오 ③ -->
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="시나리오③ 경미 → 1차 병원으로">
+  <p class="eyebrow">Ⅲ. AI 채팅 — 시나리오 ③ <b style="color:var(--violet)">경미 · 의뢰 환자</b></p>
+  <h2>가벼운 것은 <em>1차 병원으로 돌려보냅니다</em></h2>
+  <div class="scn">
+    <div class="chat">
+      <div class="bub owner"><span class="who">보호자</span>
+        귀를 자꾸 긁고 냄새가 나요. 병원 가야 할까요?</div>
+      <div class="bub app"><span class="who">SD 자동 안내</span>
+        먼저 — <b>고개를 계속 기울이거나 비틀거리면 오늘 오세요.</b><br>
+        그렇지 않다면 귀 안쪽은 검이경으로 봐야 알 수 있습니다.
+        <b>○○동물병원에서 보시는 게 빠릅니다</b> — 가깝고, 오늘 바로 보실 수 있어요.<br>
+        <span style="display:inline-block;margin-top:6px;padding:6px 11px;border:1px solid var(--line);
+          border-radius:8px;font-size:12.5px;font-weight:700">그래도 저희 병원으로 갈게요</span></div>
+      <div class="bub sys">📨 동시에 <b>○○동물병원 화면에 알림</b> — “의뢰하셨던 슈슈가 이 증상으로 갈 예정입니다”</div>
+    </div>
+    <div class="pipe">
+      <div class="step hit"><span class="sn">문 1</span>
+        <span>기록을 읽음
+          <span class="reads"><span>의뢰 병원 있음</span><span class="none">우리 처치 무관</span><span class="none">복용 중인 약 없음</span></span></span></div>
+      <div class="step hit"><span class="sn">문 2·3</span><span>갈래 3 — 새로 생긴 증상 · 되돌림 없음</span></div>
+      <div class="step hit"><span class="sn">문 4</span><span><b>경미</b> → 여기서만 회송을 묻습니다</span></div>
+      <div class="step out"><span class="sn">문 5</span><span><b>1차 병원으로</b> + 그쪽에 먼저 알림 + 선택지 유지</span></div>
+      <div class="note" style="margin-top:12px">
+        ⚠️ <b>“경미” 목록은 원장님이 정하십니다.</b> 위 예시는 후보일 뿐입니다.
+        <b>좁게 시작해</b> 회송 결과를 보고 넓히는 편이 안전합니다.</div>
+    </div>
+  </div>
+  <p class="kicker">1차 원장님 입장에서 이건 <b>“보냈더니 돌려주더라”</b>는 증거가 매번 쌓이는 일입니다.</p>
+</section>
+
+<!-- 시나리오 ④ -->
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="시나리오④ 답하지 않고 넘기는 것">
+  <p class="eyebrow">Ⅲ. AI 채팅 — 시나리오 ④ <b style="color:var(--amber)">답하지 않는 쪽</b></p>
+  <h2>문의 1위는 <em>자동으로 답하지 않습니다</em></h2>
+  <div class="scn">
+    <div class="chat">
+      <div class="bub owner"><span class="who">보호자</span>밥을 잘 안 먹어요.</div>
+      <div class="bub app"><span class="who">SD 자동 안내</span>
+        기록을 보니 <b>사흘 전부터 평소보다 적게 먹고</b> 있고,
+        <b>체중이 4.2kg → 3.95kg</b> 로 줄었네요. 담당의에게 바로 전달하겠습니다.<br>
+        몇 가지만 확인할게요 — 물은 마시나요? 토한 적 있나요?
+        <b>3일 전에 사료를 바꾸셨는데</b> 지금도 그대로 주고 계신가요?</div>
+      <div class="bub sys">📋 담당의 화면에 <b>문진이 채워진 채로</b> 도착 — “주치의 확인 후” 왕복이 한 번으로</div>
+    </div>
+    <div class="pipe">
+      <div class="step hit"><span class="sn">문 1</span>
+        <span>기록을 읽음
+          <span class="reads"><span class="life">생활기록 5일치</span><span class="life">체중 −0.25kg</span><span class="life">3일 전 사료 교체</span></span></span></div>
+      <div class="step hit"><span class="sn">문 3</span><span><b>되돌림</b> — 최근 2주 안에 먹이는 것이 바뀜</span></div>
+      <div class="step out"><span class="sn">문 6</span>
+        <span><b>승인된 답이 없으므로 자동 발송하지 않습니다</b> — 문진만 받아 담당의에게</span></div>
+      <div class="note teal" style="margin-top:12px">
+        <b>생활기록이 없었다면</b> 이 대화는 “며칠째인가요?”로 시작해
+        아무것도 모르는 채 주치의에게 넘어갔을 것입니다.</div>
+    </div>
+  </div>
+  <p class="kicker warn"><b>모르는 것을 안다고 하지 않는 것</b>이 이 설계의 핵심입니다 —
+    식욕 부진은 원인이 전부 달라 <b>사람이 봐야 합니다.</b></p>
+</section>
+
 <!-- 12 -->
 <section class="slide" data-sec="Ⅳ 1차·직원" data-t="1차 병원이 보는 것">
   <p class="eyebrow">Ⅳ. 1차 병원이 얻는 것</p>
@@ -642,7 +798,7 @@
 <div id="bar"><i></i></div>
 <div id="hud">
   <button id="pv" aria-label="이전">‹</button>
-  <span class="pg"><b id="cur">1</b> / <span id="tot">16</span></span>
+  <span class="pg"><b id="cur">1</b> / <span id="tot">20</span></span>
   <button id="nx" aria-label="다음">›</button>
   <button id="og" aria-label="전체 보기">⊞</button>
 </div>

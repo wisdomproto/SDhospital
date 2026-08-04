@@ -85,7 +85,9 @@ export default async function LifePage({
   const options = withUrl.filter((i) => isActive(i, today) || picked.has(i.id));
 
   return (
-    <div className="portal-body" style={{ display: "grid", gap: 14 }}>
+    // ⚠️ `portal-body` 로 감싸지 않는다 — 레이아웃이 이미 감싸고 있어서
+    // 좌우 16px 여백을 두 번 먹었다(390px 화면에서 32px 손해).
+    <>
       <div className="portal-card">
         <DayNav base={`/portal/patients/${id}/life`} day={day} today={today} />
         <div className="life-sec-head" style={{ marginTop: 14 }}>
@@ -123,6 +125,6 @@ export default async function LifePage({
         <br />
         <b>상시로 지켜보지는 않습니다</b> — 급한 일은 채팅으로 물어보시거나 병원으로 전화해 주세요.
       </p>
-    </div>
+    </>
   );
 }

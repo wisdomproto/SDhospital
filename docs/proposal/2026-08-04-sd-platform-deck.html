@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SD동물의료센터 플랫폼 — 보고</title>
+<style>
+  :root{
+    --ink:#12212f; --ink2:#3d4f5c; --muted:#6c7a88; --faint:#9aa8b4;
+    --line:#e2e8ee; --soft:#f5f8f9; --bg:#eef2f5;
+    --teal:#0f9b8e; --teal-d:#0b6f66; --teal-l:#e6f5f3;
+    --blue:#2563eb; --blue-l:#eff5ff;
+    --amber:#d97706; --amber-l:#fff7ed;
+    --red:#dc2626; --red-l:#fef2f2;
+    --violet:#7c3aed; --violet-l:#f6f2ff;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%; overflow:hidden; background:var(--bg)}
+  body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",system-ui,sans-serif;
+    color:var(--ink); letter-spacing:-.02em; word-break:keep-all; -webkit-font-smoothing:antialiased}
+
+  #stage{position:absolute; left:50%; top:50%; width:1280px; height:720px; transform-origin:center;
+         background:#fff; overflow:hidden; box-shadow:0 24px 70px rgba(18,33,47,.16); border-radius:6px}
+  .slide{position:absolute; inset:0; padding:58px 74px 70px; display:none; flex-direction:column;
+         animation:in .34s cubic-bezier(.2,.7,.3,1)}
+  .slide.on{display:flex}
+  @keyframes in{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+
+  .eyebrow{display:flex; align-items:center; gap:10px; margin-bottom:18px;
+           font-size:13px; font-weight:800; letter-spacing:.14em; color:var(--teal)}
+  .eyebrow::after{content:""; flex:1; height:1px; background:var(--line)}
+  h1{font-size:46px; line-height:1.2; font-weight:800; letter-spacing:-.035em}
+  h2{font-size:36px; line-height:1.24; font-weight:800; letter-spacing:-.035em; margin-bottom:8px}
+  h2 em{font-style:normal; color:var(--teal-d)}
+  h2 .r{color:var(--red)}
+  .sub{font-size:16.5px; color:var(--muted); line-height:1.6; margin-bottom:22px; max-width:920px}
+  /* 본문 덩어리를 머리글과 꼬리글 사이 가운데로 — auto 여백 둘이 남는 공간을 반씩 나눈다 */
+  .slide:not(.cover) > .eyebrow + *{margin-top:auto}
+  .kicker{margin-top:auto; padding-top:18px; border-top:1px solid var(--line);
+          font-size:18px; font-weight:700; color:var(--ink2); line-height:1.55}
+  .kicker b{color:var(--teal-d)} .kicker.warn b{color:var(--red)}
+
+  .cover{background:var(--ink); color:#fff; justify-content:center}
+  .cover .eyebrow{color:#5fd3c5} .cover .eyebrow::after{background:rgba(255,255,255,.2)}
+  .cover h1{color:#fff}
+  .cover .quote{font-size:24px; color:#a9c0cc; line-height:1.55; font-weight:500; max-width:880px}
+  .cover .quote b{color:#fff; font-weight:800}
+  .cover .meta{margin-top:auto; font-size:14.5px; color:#7d94a3; display:flex; gap:26px}
+
+  .bignum{display:flex; align-items:baseline; gap:20px; margin:2px 0}
+  .bignum .n{font-size:124px; font-weight:800; letter-spacing:-.06em; line-height:.9; color:var(--red)}
+  .bignum .n.teal{color:var(--teal)} .bignum .n.amber{color:var(--amber)}
+  .bignum .lab{font-size:19px; color:var(--ink2); line-height:1.5; font-weight:600; padding-bottom:12px}
+  .bignum .lab b{display:block; font-size:14.5px; color:var(--faint); font-weight:600; margin-top:6px}
+
+  .grid{display:grid; gap:13px}
+  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .card{border:1px solid var(--line); border-radius:14px; padding:17px 19px; background:#fff; min-width:0}
+  .card .t{font-size:16.5px; font-weight:800; margin-bottom:7px}
+  .card .d{font-size:14px; color:var(--muted); line-height:1.62}
+  .card .d b{color:var(--ink)}
+  .card.tint{background:var(--soft)}
+  .card.now{border-color:var(--red); background:var(--red-l)} .card.now .t{color:var(--red)}
+  .card.book{border-color:var(--amber); background:var(--amber-l)} .card.book .t{color:var(--amber)}
+  .card.ref{border-color:var(--violet); background:var(--violet-l)} .card.ref .t{color:var(--violet)}
+  .card.vet{border-color:var(--blue); background:var(--blue-l)} .card.vet .t{color:var(--blue)}
+  .card.good{border-color:var(--teal); background:var(--teal-l)} .card.good .t{color:var(--teal-d)}
+
+  .done{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700;
+        padding:10px 12px; border-radius:10px; background:var(--teal-l); color:var(--teal-d)}
+  .done.todo{background:var(--soft); color:var(--muted)}
+  .done .ck{flex:none; width:18px; height:18px; border-radius:50%; background:var(--teal); color:#fff;
+            display:grid; place-items:center; font-size:10px}
+  .done.todo .ck{background:var(--faint)}
+
+  ul.pts{list-style:none; display:grid; gap:12px}
+  ul.pts li{display:grid; grid-template-columns:24px 1fr; gap:11px; font-size:16px; line-height:1.55; color:var(--ink2)}
+  ul.pts li i{font-style:normal; font-weight:800; color:var(--teal); font-size:14px; padding-top:2px}
+  ul.pts li b{color:var(--ink)}
+
+  table{width:100%; border-collapse:collapse; font-size:14.5px}
+  th,td{padding:10px 12px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--muted); background:var(--soft); white-space:nowrap}
+  td b{color:var(--ink)}
+  .yes{color:var(--teal); font-weight:800; text-align:center}
+  .no{color:var(--faint); font-weight:700; text-align:center}
+  tr.hi td{background:var(--teal-l)} tr.hi td:first-child{font-weight:800}
+
+  .bars{display:grid; gap:14px}
+  .bar{display:grid; grid-template-columns:132px 1fr auto; gap:14px; align-items:center}
+  .bar .bl{font-size:14.5px; font-weight:700; color:var(--ink2); text-align:right; line-height:1.35}
+  .bar .track{height:34px; background:var(--soft); border-radius:8px; overflow:hidden}
+  .bar .fill{height:100%; border-radius:8px; background:var(--teal)}
+  .bar .fill.red{background:var(--red)} .bar .fill.amber{background:var(--amber)}
+  .bar .bv{font-size:21px; font-weight:800; letter-spacing:-.03em; white-space:nowrap}
+
+  .gates{display:grid; grid-template-columns:repeat(7,1fr); gap:7px; margin-bottom:14px}
+  .gate{border:2px solid var(--line); border-radius:11px; padding:11px 8px; background:#fff; text-align:center}
+  .gate .gn{font-size:10.5px; font-weight:800; letter-spacing:.07em; color:#fff; background:var(--ink);
+            border-radius:999px; padding:3px 8px; display:inline-block; margin-bottom:7px}
+  .gate .gt{font-size:13.5px; font-weight:800; line-height:1.3}
+  .gate .gd{font-size:11px; color:var(--muted); margin-top:4px; line-height:1.4}
+  .gate.g0{border-color:var(--red)} .gate.g0 .gn{background:var(--red)}
+  .gate.g1{border-color:var(--teal)} .gate.g1 .gn{background:var(--teal)}
+  .gate.g6{border-color:var(--ink)}
+
+  .phone{width:236px; border:8px solid var(--ink); border-radius:24px; background:#fff;
+         padding:11px 10px; display:grid; gap:8px; align-content:start}
+  .phone .ph{font-size:12.5px; font-weight:800; display:flex; justify-content:space-between; align-items:baseline}
+  .phone .ph span{font-size:9.5px; color:var(--faint); font-weight:600}
+  .prow{display:grid; gap:4px}
+  .prow .pl{font-size:10px; font-weight:800; color:var(--muted)}
+  .chips{display:flex; flex-wrap:wrap; gap:4px}
+  .chip{font-size:9.5px; padding:4px 7px; border-radius:999px; border:1px solid var(--line); color:var(--ink2)}
+  .chip.on{background:var(--teal); border-color:var(--teal); color:#fff; font-weight:700}
+  .chip.on.a{background:var(--amber); border-color:var(--amber)}
+
+  .note{border-left:4px solid var(--amber); background:var(--amber-l); border-radius:0 12px 12px 0;
+        padding:15px 19px; font-size:15.5px; line-height:1.6; color:var(--ink2)}
+  .note b{color:#92400e}
+  .note.red{border-color:var(--red); background:var(--red-l)} .note.red b{color:var(--red)}
+  .note.teal{border-color:var(--teal); background:var(--teal-l)} .note.teal b{color:var(--teal-d)}
+
+  .quote{border-left:5px solid var(--red); background:var(--red-l); border-radius:0 12px 12px 0;
+         padding:17px 21px; font-size:16.5px; line-height:1.65; color:var(--ink2)}
+  .quote .lb{font-size:11.5px; font-weight:800; letter-spacing:.06em; color:var(--red); margin-bottom:7px}
+
+  /* 담당의 초안 목업 */
+  .draft{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#fff}
+  .draft .dh{background:var(--soft); padding:10px 15px; font-size:13px; font-weight:800; color:var(--ink2);
+             border-bottom:1px solid var(--line); display:flex; justify-content:space-between}
+  .draft .db{padding:15px; font-size:14px; line-height:1.65; color:var(--ink2)}
+  .draft .db b{color:var(--ink)}
+  .refs{border-top:1px dashed var(--line); margin-top:12px; padding-top:11px; display:grid; gap:7px}
+  .refln{display:grid; grid-template-columns:auto 1fr; gap:9px; font-size:12px; color:var(--muted); align-items:start}
+  .refln .tag{font-size:9.5px; font-weight:800; padding:3px 7px; border-radius:5px; white-space:nowrap}
+  .tag.tb{background:var(--blue-l); color:var(--blue)}
+  .tag.tp{background:var(--violet-l); color:var(--violet)}
+  .tag.th{background:var(--teal-l); color:var(--teal-d)}
+
+  #bar{position:fixed; left:0; right:0; bottom:0; height:4px; background:rgba(18,33,47,.1); z-index:9}
+  #bar i{display:block; height:100%; background:var(--teal); transition:width .3s}
+  #hud{position:fixed; right:18px; bottom:18px; z-index:10; display:flex; gap:8px; align-items:center;
+       font-size:13px; color:var(--muted); user-select:none}
+  #hud button{border:1px solid var(--line); background:#fff; color:var(--ink2); width:32px; height:32px;
+              border-radius:9px; font-size:15px; cursor:pointer; line-height:1}
+  #hud button:hover{background:var(--soft)}
+  #hud .pg{font-variant-numeric:tabular-nums; font-weight:700; min-width:52px; text-align:center}
+  #hint{position:fixed; left:18px; bottom:16px; z-index:10; font-size:12.5px; color:var(--faint)}
+  .zone{position:fixed; top:0; bottom:0; width:15%; z-index:8; cursor:pointer}
+  .zone.l{left:0} .zone.r{right:0}
+  #ov{position:fixed; inset:0; background:rgba(238,242,245,.97); z-index:20; display:none; padding:24px; overflow:auto}
+  #ov.on{display:block}
+  #ov .og{display:grid; grid-template-columns:repeat(auto-fill,minmax(196px,1fr)); gap:11px; max-width:1400px; margin:0 auto}
+  #ov .oi{border:2px solid var(--line); border-radius:10px; background:#fff; padding:12px 13px; cursor:pointer;
+          font-size:12.5px; line-height:1.4; min-height:70px; display:grid; align-content:start; gap:5px}
+  #ov .oi:hover{border-color:var(--teal)}
+  #ov .oi.cur{border-color:var(--teal); background:var(--teal-l)}
+  #ov .oi .on2{font-size:10px; font-weight:800; color:var(--teal); letter-spacing:.07em}
+  #ov .oi .ot{font-weight:700}
+
+  @media print{
+    html,body{overflow:visible; background:#fff; height:auto}
+    #stage{position:static; width:auto; height:auto; transform:none!important; box-shadow:none}
+    .slide{display:flex!important; position:relative; inset:auto; width:1280px; height:720px;
+           page-break-after:always; animation:none; border:1px solid var(--line)}
+    #hud,#bar,#hint,.zone,#ov{display:none!important}
+    @page{size:landscape; margin:8mm}
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 표지 -->
+<section class="slide cover" data-sec="표지" data-t="SD동물의료센터 플랫폼">
+  <p class="eyebrow">SD동물의료센터 · 플랫폼 기획 보고</p>
+  <h1>2차 병원 · 1차 병원 · 보호자<br><span style="color:#5fd3c5">셋 다 이득인 구조</span>를 만듭니다</h1>
+  <p class="quote">그래야 <b>레퍼가 계속 들어옵니다.</b><br>
+    <span style="font-size:19px">목표는 <b>왕십리 반경에서 서울 전역 · 경기 · 인천으로</b>.</span></p>
+  <div class="meta"><span>2026-08-04</span><span>대표원장님 보고용</span><span>실제 상담 105건 분석 기반</span></div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-sec="Ⅰ 현황" data-t="우리는 2차 병원이다">
+  <p class="eyebrow">Ⅰ. 현황 01</p>
+  <h2>우리 매출은 <em>수술과 정밀검사</em>에서 나옵니다</h2>
+  <div class="grid g3" style="margin-bottom:20px">
+    <div class="card tint"><div class="t">빈도가 낮고 단가가 높다</div>
+      <div class="d">보호자가 1년에 몇 번 오지 않지만 <b>한 건이 큽니다.</b></div></div>
+    <div class="card tint"><div class="t">거리 저항이 낮다</div>
+      <div class="d">큰 수술은 동네에서 못 하므로 <b>믿을 만하면 지방에서도 옵니다.</b></div></div>
+    <div class="card now"><div class="t">유입이 1차 병원에 종속된다</div>
+      <div class="d">보호자는 <b>“우리 동네 원장님이 보내준 병원”</b>으로 옵니다.</div></div>
+  </div>
+  <svg viewBox="0 0 1080 150" style="width:100%;height:150px">
+    <g fill="#f5f8f9" stroke="#e2e8ee" stroke-width="2">
+      <rect x="20" y="8" width="140" height="38" rx="10"/><rect x="20" y="56" width="140" height="38" rx="10"/>
+      <rect x="20" y="104" width="140" height="38" rx="10"/></g>
+    <g font-size="13.5" font-weight="700" fill="#3d4f5c" text-anchor="middle">
+      <text x="90" y="32">1차 병원</text><text x="90" y="80">1차 병원</text><text x="90" y="128">1차 병원</text></g>
+    <g stroke="#0f9b8e" stroke-width="2.5" fill="none" marker-end="url(#ar)">
+      <path d="M168 27 C 260 27, 280 72, 360 72"/><path d="M168 75 L360 75"/><path d="M168 123 C 260 123, 280 78, 360 78"/></g>
+    <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 0 L9 4.5 L0 9 z" fill="#0f9b8e"/></marker></defs>
+    <text x="264" y="60" font-size="13" font-weight="800" fill="#0f9b8e" text-anchor="middle">의뢰</text>
+    <rect x="368" y="50" width="170" height="52" rx="13" fill="#12212f"/>
+    <text x="453" y="82" font-size="16" font-weight="800" fill="#fff" text-anchor="middle">SD (2차)</text>
+    <text x="700" y="66" font-size="21" font-weight="800" fill="#12212f" text-anchor="middle">2차 병원의 영업사원은</text>
+    <text x="700" y="100" font-size="21" font-weight="800" fill="#0f9b8e" text-anchor="middle">전국의 1차 병원 원장님입니다</text>
+  </svg>
+  <p class="kicker">그런데 이 관계를 지금은 <b>개인 친분 · 전화 · 카톡</b>으로 관리하고 있습니다.</p>
+</section>
+
+<!-- 3 지리 -->
+<section class="slide" data-sec="Ⅰ 현황" data-t="의뢰는 왕십리 반경에 몰려 있다">
+  <p class="eyebrow">Ⅰ. 현황 02</p>
+  <h2>지금 의뢰는 <em>병원 근처에 몰려</em> 있습니다</h2>
+  <div class="grid" style="grid-template-columns:1.05fr 1fr; gap:30px; align-items:center">
+    <svg viewBox="0 0 460 322" style="width:100%;height:300px">
+      <circle cx="230" cy="138" r="136" fill="#f5f8f9" stroke="#e2e8ee" stroke-width="2" stroke-dasharray="7 6"/>
+      <circle cx="230" cy="138" r="90" fill="#eef4f7" stroke="#cbd6df" stroke-width="2" stroke-dasharray="7 6"/>
+      <circle cx="230" cy="138" r="46" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2.5"/>
+      <g fill="#0f9b8e">
+        <circle cx="212" cy="132" r="4.5"/><circle cx="248" cy="140" r="4.5"/><circle cx="222" cy="164" r="4.5"/>
+        <circle cx="252" cy="168" r="4.5"/><circle cx="204" cy="156" r="4.5"/><circle cx="238" cy="120" r="4.5"/>
+      </g>
+      <g fill="#cbd6df">
+        <circle cx="150" cy="96" r="4"/><circle cx="316" cy="104" r="4"/><circle cx="130" cy="196" r="4"/>
+        <circle cx="322" cy="200" r="4"/><circle cx="230" cy="66" r="4"/><circle cx="230" cy="238" r="4"/>
+        <circle cx="106" cy="146" r="4"/><circle cx="352" cy="152" r="4"/>
+        <circle cx="112" cy="62" r="4"/><circle cx="350" cy="66" r="4"/><circle cx="96" cy="242" r="4"/>
+        <circle cx="360" cy="240" r="4"/><circle cx="230" cy="28" r="4"/><circle cx="230" cy="274" r="4"/>
+        <circle cx="60" cy="120" r="4"/><circle cx="398" cy="128" r="4"/><circle cx="66" cy="192" r="4"/>
+        <circle cx="392" cy="196" r="4"/>
+      </g>
+      <rect x="196" y="128" width="68" height="22" rx="7" fill="#12212f"/>
+      <text x="230" y="143" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">SD</text>
+      <text x="230" y="200" font-size="11.5" font-weight="800" fill="#0b6f66" text-anchor="middle">왕십리 주변 — 지금</text>
+      <text x="230" y="248" font-size="11.5" font-weight="700" fill="#8a99a6" text-anchor="middle">서울 전역</text>
+      <text x="230" y="296" font-size="11.5" font-weight="700" fill="#8a99a6" text-anchor="middle">경기 · 인천</text>
+    </svg>
+    <div>
+      <div class="card good" style="margin-bottom:13px">
+        <div class="t">지금</div>
+        <div class="d" style="font-size:15px">의뢰해 주시는 1차 병원이 <b>왕십리 반경 안</b>에 몰려 있습니다.
+          원장님이 직접 아는 병원들입니다.</div></div>
+      <div class="card" style="border-style:dashed">
+        <div class="t" style="color:var(--muted)">목표</div>
+        <div class="d" style="font-size:15px"><b style="font-size:19px;color:var(--ink)">서울 전역 · 경기 · 인천</b><br><br>
+          거리 저항이 낮은 진료(수술·정밀검사)라 <b>물리적으로는 이미 가능한 범위</b>입니다.
+          닿지 못한 이유는 거리가 아니라 <b>접점이 없어서</b>입니다.</div></div>
+    </div>
+  </div>
+  <p class="kicker warn">여기서부터가 이 기획의 질문입니다 —
+    <b>친분이 없는 병원을 어떻게 우리 쪽으로 데려올 것인가.</b></p>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-sec="Ⅰ 현황" data-t="지금 새는 곳">
+  <p class="eyebrow">Ⅰ. 현황 03</p>
+  <h2>그 관계가 <em>다섯 군데에서 새고</em> 있습니다</h2>
+  <table>
+    <tr><th style="width:130px">새는 지점</th><th style="width:320px">지금</th><th>결과</th></tr>
+    <tr><td><b>의뢰 접수</b></td><td>전화 + 소견서 종이·카톡 사진</td><td>누가 얼마나 보내는지 <b>데이터가 없다</b></td></tr>
+    <tr><td><b>영상 전달</b></td><td>CD · 이메일 · 카톡 압축파일</td><td>화질 손실 · 분실 · 재촬영</td></tr>
+    <tr><td><b>진행 상황</b></td><td>1차 원장이 직접 전화해서 물어봄</td><td>응대 인력 소모 · 1차 병원 불안</td></tr>
+    <tr><td><b>환송</b></td><td>퇴원 후 구두 설명</td><td>후속 관리 불가 → <b>다음 의뢰가 끊김</b></td></tr>
+    <tr class="hi"><td>보호자</td><td>입원 중 하루 종일 궁금함</td><td>매일 전화 · 불만 · <b>재방문 안 함</b></td></tr>
+  </table>
+  <p class="kicker warn">다섯 항목이 전부 <b>“다음 레퍼가 올 확률”</b>을 깎아먹습니다.</p>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-sec="Ⅱ 축" data-t="1차 병원을 어떻게 늘리나">
+  <p class="eyebrow">Ⅱ. 이 기획의 축 01</p>
+  <h2>그럼 <em>왕십리 밖으로</em> 어떻게 나가나</h2>
+  <div class="grid g2" style="align-items:start">
+    <div class="card tint">
+      <div class="t" style="color:var(--faint)">보통 하는 방법</div>
+      <div class="d" style="font-size:15px;line-height:1.75">
+        · 원장님이 직접 찾아간다<br>· 학회·모임에서 인사한다<br>· 명절 선물, 식사 자리<br><br>
+        <b style="color:var(--red)">왕십리 안에서는 됩니다.</b> 그런데 <b>인천·경기까지 그렇게 넓힐 수는 없습니다</b> —
+        원장님 시간은 늘지 않고, 거기는 <b>이미 친한 2차 병원이 있습니다.</b></div>
+    </div>
+    <div class="card good">
+      <div class="t">1차 원장님을 실제로 움직이는 것</div>
+      <div class="d" style="font-size:17px;line-height:1.75;color:var(--ink)">
+        <b style="font-size:21px">“거기 보냈더니<br>우리 보호자가 너무 좋아하더라”</b><br><br>
+        <span style="color:var(--muted)">이만큼 강한 영업이 없습니다.
+        그리고 이건 <b style="color:var(--teal-d)">원장님 시간을 쓰지 않고 늘어납니다.</b></span></div>
+    </div>
+  </div>
+  <p class="kicker">1차 병원 원장님은 환자를 <b>보내주는 사람</b>이지만,
+    <b>다시 오고 지인에게 말하는 사람은 보호자</b>입니다.
+    그리고 이 경로는 <b>거리를 타지 않습니다.</b></p>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-sec="Ⅱ 축" data-t="그래서 축은 보호자 만족">
+  <p class="eyebrow">Ⅱ. 이 기획의 축 02</p>
+  <h2>그래서 이 기획의 축은 <em>보호자 만족</em>입니다</h2>
+  <svg viewBox="0 0 1080 250" style="width:100%;height:250px">
+    <g stroke="#0f9b8e" stroke-width="3" fill="none" marker-end="url(#arT)">
+      <path d="M228 70 L400 70"/><path d="M628 70 L800 70"/>
+      <path d="M902 108 C 902 192, 760 214, 610 214"/><path d="M478 214 C 330 214, 150 192, 150 110"/>
+    </g>
+    <defs><marker id="arT" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 0 L9 4.5 L0 9 z" fill="#0f9b8e"/></marker></defs>
+    <rect x="40" y="36" width="188" height="70" rx="15" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2.5"/>
+    <text x="134" y="66" font-size="16" font-weight="800" fill="#0b6f66" text-anchor="middle">보호자가 만족</text>
+    <text x="134" y="88" font-size="12" fill="#6c7a88" text-anchor="middle">매 진료마다 리포트 · 밤에 답</text>
+    <rect x="404" y="36" width="224" height="70" rx="15" fill="#f6f2ff" stroke="#7c3aed" stroke-width="2.5"/>
+    <text x="516" y="66" font-size="16" font-weight="800" fill="#7c3aed" text-anchor="middle">1차 원장님이 신뢰</text>
+    <text x="516" y="88" font-size="12" fill="#6c7a88" text-anchor="middle">“거기 보냈더니 좋아하더라”</text>
+    <rect x="804" y="36" width="196" height="70" rx="15" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
+    <text x="902" y="66" font-size="16" font-weight="800" fill="#dc2626" text-anchor="middle">레퍼가 늘어난다</text>
+    <text x="902" y="88" font-size="12" fill="#6c7a88" text-anchor="middle">SD 매출</text>
+    <rect x="482" y="188" width="120" height="52" rx="13" fill="#12212f"/>
+    <text x="542" y="210" font-size="13.5" font-weight="800" fill="#fff" text-anchor="middle">환자가 는다</text>
+    <text x="542" y="229" font-size="11" fill="#9fb0bb" text-anchor="middle">→ 보호자가 는다</text>
+  </svg>
+  <p class="kicker">한 바퀴가 돌 때마다 <b>다음 바퀴가 커집니다.</b>
+    그래서 <b>보호자 앱에 힘을 몰아줍니다</b> — 직원 EMR 은 최소한으로.</p>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-sec="Ⅲ 문제" data-t="보호자는 지금 만족하지 않는다">
+  <p class="eyebrow">Ⅲ. 그런데 01</p>
+  <h2>그런데 보호자는 지금 <span class="r">답을 못 받고</span> 있습니다</h2>
+  <div class="quote" style="margin-bottom:18px">
+    <div class="lb">지금 나가고 있는 자동응답 전문</div>
+    ✅ 본 채널에서는 진료 예약과 입원 환자 사진·안내를 받아보실 수 있습니다.<br>
+    📌 다만, <b>진료·증상 상담은 채널에서 진행하지 않으며</b>, 내원 시 의료진과 직접 상담 부탁드립니다.
+  </div>
+  <div class="grid g2" style="align-items:center">
+    <div class="bignum"><span class="n">1,952</span>
+      <span class="lab">번 발송<b>표본 105개 대화에서만 · 전체의 약 1%</b></span></div>
+    <div class="bignum"><span class="n amber">194</span>
+      <span class="lab">건 — 그래도 증상을 적어 보냄<b>물어볼 데가 여기뿐이라서</b></span></div>
+  </div>
+  <p class="kicker warn">병원 메시지의 <b>44%가 자동응답</b>이고 그 절반이 이 문장입니다.
+    <b>보호자 만족이 축인데, 가장 불안한 순간에 답이 없습니다.</b></p>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-sec="Ⅲ 문제" data-t="사람을 더 붙여도 안 풀린다">
+  <p class="eyebrow">Ⅲ. 그런데 02</p>
+  <h2>밤이 문제가 아닙니다. <em>낮에도 답이 안 나갑니다</em></h2>
+  <div class="grid g2" style="align-items:center">
+    <div class="bars">
+      <div class="bar"><span class="bl">첫 답장</span>
+        <span class="track"><i class="fill" style="width:4%"></i></span><span class="bv" style="color:var(--teal)">9분</span></div>
+      <div class="bar"><span class="bl">실질 답변</span>
+        <span class="track"><i class="fill amber" style="width:26%"></i></span><span class="bv" style="color:var(--amber)">58분</span></div>
+      <div class="bar"><span class="bl">네 명 중 한 명</span>
+        <span class="track"><i class="fill red" style="width:100%"></i></span><span class="bv" style="color:var(--red)">하루 넘김</span></div>
+    </div>
+    <div>
+      <div class="bignum" style="margin-bottom:6px"><span class="n" style="font-size:96px">44<span style="font-size:56px">%</span></span></div>
+      <p style="font-size:17px;color:var(--ink2);line-height:1.6;font-weight:600">
+        의 답장이 <b>“주치의 확인 후 연락드리겠습니다”</b></p>
+    </div>
+  </div>
+  <div class="note red" style="margin-top:16px">
+    <b>느려서가 아니라 받은 사람이 답할 수 없어서입니다.</b>
+    접수 인원을 늘리면 “확인 후 답변드릴게요”가 더 빨리 나갈 뿐입니다.
+  </div>
+  <p class="kicker">바꿔야 하는 건 <b>주치의를 거치지 않고도 답이 되는 질문을 걸러내는 것</b>입니다.</p>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-sec="Ⅳ 플랫폼" data-t="셋이 각자 얻는 것">
+  <p class="eyebrow">Ⅳ. 무엇을 만드나 01</p>
+  <h2>셋이 <em>각자 얻는 것</em>이 있어야 돕니다</h2>
+  <div class="grid g3">
+    <div class="card good"><div class="t">보호자</div>
+      <div class="d" style="font-size:14.5px;line-height:1.8">
+        · 매 진료마다 <b>리포트</b><br>· 입원 중 <b>매일 경과</b><br>· 밤에 물어보면 <b>어디로 갈지</b><br>
+        · 검진 결과를 <b>한글 문장으로</b><br>· 종이 없는 <b>전자 동의서</b></div></div>
+    <div class="card ref"><div class="t">1차 병원</div>
+      <div class="d" style="font-size:14.5px;line-height:1.8">
+        · 내가 보낸 환자의 <b>2차 진료 기록</b><br>· 입원·퇴원·환송 <b>알림</b><br>
+        · 경미한 환자를 <b>돌려받음</b><br>· <b>“SD 자매병원”</b> 표시<br>
+        <span style="color:var(--violet);font-weight:700">→ 옆 병원이 못 주는 것</span></div></div>
+    <div class="card now"><div class="t">SD (2차)</div>
+      <div class="d" style="font-size:14.5px;line-height:1.8">
+        · <b>레퍼 유입 증가</b><br>· 재방문 · 바이럴<br>· 전화 응대 감소<br>
+        · 어느 병원이 <b>얼마나 보내는지</b> 데이터<br>· 축적되는 <b>진료·생활 데이터</b></div></div>
+  </div>
+  <div class="note teal" style="margin-top:18px">
+    <b>어느 하나라도 손해면 그 고리에서 끊깁니다.</b>
+    1차 병원이 “환자 뺏긴다”고 느끼면 의뢰가 끊기고, 보호자가 안 쓰면 1차 병원이 얻을 게 없어집니다.
+  </div>
+  <p class="kicker">그래서 <b>경미한 환자는 1차 병원으로 돌려보냅니다</b> — 뒤에서 다시 말씀드립니다.</p>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-sec="Ⅳ 플랫폼" data-t="이미 만들어 둔 것">
+  <p class="eyebrow">Ⅳ. 무엇을 만드나 02</p>
+  <h2>이 사업은 <em>0에서 시작하지 않습니다</em></h2>
+  <p class="sub">아래는 이미 만들어져 동작 중입니다. 데모로 지금 보실 수 있습니다.</p>
+  <div class="grid g4" style="gap:10px">
+    <div class="done"><span class="ck">✓</span>본원 EMR</div>
+    <div class="done"><span class="ck">✓</span>진료 리포트</div>
+    <div class="done"><span class="ck">✓</span>입원 일일 리포트</div>
+    <div class="done"><span class="ck">✓</span>병동 입력 화면</div>
+    <div class="done"><span class="ck">✓</span>전자 동의서</div>
+    <div class="done"><span class="ck">✓</span>건강검진 리포트</div>
+    <div class="done"><span class="ck">✓</span>치료 사례 442건</div>
+    <div class="done"><span class="ck">✓</span>병원 소식 · 쿠폰</div>
+    <div class="done"><span class="ck">✓</span>1차병원 포털</div>
+    <div class="done"><span class="ck">✓</span>레퍼 대시보드</div>
+    <div class="done"><span class="ck">✓</span>웹 푸시 알림</div>
+    <div class="done"><span class="ck">✓</span>생활기록</div>
+    <div class="done todo"><span class="ck">·</span>AI 채팅</div>
+    <div class="done todo"><span class="ck">·</span>담당의 초안 + 근거</div>
+    <div class="done todo"><span class="ck">·</span>맞춤 사료·영양제</div>
+    <div class="done todo"><span class="ck">·</span>1차병원 EMR·PACS</div>
+  </div>
+  <p class="kicker">남은 것의 중심은 <b>AI 채팅</b>입니다. 여기부터가 그 이야기입니다.</p>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-sec="Ⅳ 플랫폼" data-t="진단하지 않고 분류한다">
+  <p class="eyebrow">Ⅳ. 무엇을 만드나 03</p>
+  <h2>AI 채팅 — <em>진단하지 않고 어디로 갈지만</em> 정합니다</h2>
+  <p class="sub">실제 상담에서 원격으로 끝난 건 <b>3%</b>뿐이었습니다. 최종 답은 대부분 “오세요”입니다.</p>
+  <div class="grid g4">
+    <div class="card now"><div class="t">지금 오세요</div>
+      <div class="d">발작 · 호흡곤란 · 소변 못 봄 · 다량 출혈 · 수술 부위 벌어짐<br><br>+ 전화 연결</div></div>
+    <div class="card book"><div class="t">우리 병원 예약</div>
+      <div class="d">중등도<br>“내일 오전으로 도와드릴게요”<br><br>+ 그때까지 지켜볼 것</div></div>
+    <div class="card ref"><div class="t">1차 병원으로</div>
+      <div class="d">경미 + 의뢰받은 환자<br>“○○동물병원이 빠릅니다”<br><br>+ 그쪽에 먼저 알림</div></div>
+    <div class="card vet"><div class="t">담당의 확인 후</div>
+      <div class="d">판단이 갈리는 것<br>문진을 채워 넘김<br><br>+ 왕복을 한 번으로</div></div>
+  </div>
+  <p class="kicker">지금은 이 판정을 <b>아무도 하지 않습니다</b> — 보호자가 검색하고 스스로 정합니다.</p>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-sec="Ⅳ 플랫폼" data-t="문 일곱 개">
+  <p class="eyebrow">Ⅳ. 무엇을 만드나 04</p>
+  <h2>흐름은 <em>문 일곱 개</em>입니다</h2>
+  <div class="gates">
+    <div class="gate g0"><span class="gn">문 0</span><div class="gt">응급인가</div><div class="gd">걸리면 여기서 끝</div></div>
+    <div class="gate g1"><span class="gn">문 1</span><div class="gt">기록을 읽는다</div><div class="gd">아래 전부가 갈린다</div></div>
+    <div class="gate"><span class="gn">문 2</span><div class="gt">어느 상황</div><div class="gd">입원·우리 처치·새 증상</div></div>
+    <div class="gate"><span class="gn">문 3</span><div class="gt">우리 것과 얽혔나</div><div class="gd">우리 약·관리 중 질환</div></div>
+    <div class="gate"><span class="gn">문 4</span><div class="gt">증상의 무게</div><div class="gd">응급·중등도·경미</div></div>
+    <div class="gate"><span class="gn">문 5</span><div class="gt">어디로</div><div class="gd">앞 장의 네 칸</div></div>
+    <div class="gate g6"><span class="gn">문 6</span><div class="gt">내보내도 되나</div><div class="gd">승인 문장만 자동</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="note red"><b>응급 선별이 기록 조회보다 앞입니다.</b>
+      조회가 실패하거나 <b>처음 오는 아이</b>여도 그 답은 나가야 합니다.</div>
+    <div class="note"><b>회송을 묻는 곳은 문 4의 「경미」 한 칸뿐</b>이고,
+      거기 닿으려면 문 2·3을 통과해야 합니다.</div>
+  </div>
+  <p class="kicker">지켜야 할 규칙을 <b>목록이 아니라 순서로</b> 바꿨습니다 —
+    사람이 기억해야 하는 규칙은 언젠가 빠집니다.</p>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-sec="Ⅳ 플랫폼" data-t="세 가지를 함께 읽는다">
+  <p class="eyebrow">Ⅳ. 무엇을 만드나 05</p>
+  <h2>일반 챗봇과 다른 점 — <em>세 가지를 함께 읽습니다</em></h2>
+  <svg viewBox="0 0 1080 230" style="width:100%;height:230px">
+    <g opacity=".85">
+      <circle cx="300" cy="108" r="96" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2.5"/>
+      <circle cx="428" cy="108" r="96" fill="#eff5ff" stroke="#2563eb" stroke-width="2.5"/>
+      <circle cx="364" cy="162" r="96" fill="#fff7ed" stroke="#d97706" stroke-width="2.5"/></g>
+    <g text-anchor="middle" font-weight="800">
+      <text x="242" y="72" font-size="14.5" fill="#0b6f66">SD 진료 기록</text>
+      <text x="242" y="90" font-size="11" font-weight="600" fill="#6c7a88">수술·입원·처방·검진</text>
+      <text x="490" y="72" font-size="14.5" fill="#2563eb">생활기록</text>
+      <text x="490" y="90" font-size="11" font-weight="600" fill="#6c7a88">보호자가 남긴 평소</text>
+      <text x="364" y="222" font-size="14.5" fill="#b45309">교과서 · 논문 · 이 병원의 답변</text>
+      <text x="364" y="132" font-size="16" fill="#12212f">맞춤 답변</text></g>
+    <g font-size="14.5" fill="#3d4f5c">
+      <text x="600" y="56">같은 <tspan font-weight="800" fill="#12212f">“밥을 안 먹어요”</tspan> 라도</text>
+      <text x="600" y="94">· 어제 수술한 아이</text>
+      <text x="600" y="126">· 항암 3차 중인 아이</text>
+      <text x="600" y="158">· 3년째 건강하던 아이</text>
+      <text x="600" y="198" font-weight="800" fill="#dc2626">전부 다른 문제입니다.</text></g>
+  </svg>
+  <p class="kicker">그 셋을 구분할 수 있는 건 우리뿐입니다 — <b>기록이 우리한테 있으니까요.</b></p>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-sec="Ⅳ 플랫폼" data-t="생활기록">
+  <p class="eyebrow">Ⅳ. 무엇을 만드나 06</p>
+  <h2>생활기록 — <em>보호자가 남기는 평소</em></h2>
+  <div class="grid" style="grid-template-columns:236px 1fr; gap:32px; align-items:start">
+    <div class="phone">
+      <div class="ph">오늘 슈슈는 어땠나요 <span>8/4</span></div>
+      <div class="prow"><span class="pl">식사</span><div class="chips">
+        <span class="chip">평소만큼</span><span class="chip on a">조금 남김</span><span class="chip">거의 안 먹음</span></div></div>
+      <div class="prow"><span class="pl">배변</span><div class="chips">
+        <span class="chip on">정상</span><span class="chip">묽음</span><span class="chip">못 봄</span></div></div>
+      <div class="prow"><span class="pl">활력</span><div class="chips">
+        <span class="chip on">평소만큼</span><span class="chip">처져 있음</span></div></div>
+      <div class="prow"><span class="pl">체중</span><div class="chips"><span class="chip">4.06 kg</span></div></div>
+      <div class="prow"><span class="pl">먹이는 것</span><div class="chips">
+        <span class="chip">힐스 c/d</span><span class="chip">츄르</span><span class="chip">관절 영양제</span><span class="chip">＋</span></div></div>
+      <div style="font-size:9.5px;color:var(--faint);text-align:center">고른 것만 저장돼요</div>
+    </div>
+    <ul class="pts">
+      <li><i>1</i><span><b>문의 1위가 식욕 부진인데 가장 답하기 어려웠습니다.</b>
+        원인이 제각각이어서만이 아니라 <b>평소를 몰라서</b>입니다.</span></li>
+      <li><i>2</i><span>체중과 식사가 쌓이면 “밥을 안 먹어요”가
+        <b>“3일 전부터 평소의 절반”</b>이라는 데이터가 됩니다.</span></li>
+      <li><i>3</i><span><b>탭 몇 번이면 끝납니다.</b> 저장 버튼도 없습니다 —
+        한 번 더 누르게 하면 그 한 번을 안 누릅니다.</span></li>
+      <li><i>4</i><span>입에 들어가는 건 <b>사료·간식·영양제·다른 병원 약을 한 목록</b>으로 받습니다.
+        <b>고친 날이 곧 “사료 바꾼 날”</b>이라 따로 묻지 않아도 됩니다.</span></li>
+      <li><i>5</i><span>이 목록이 뒤에 나올 <b>맞춤 사료·영양제 추천의 재료</b>가 됩니다.</span></li>
+    </ul>
+  </div>
+  <p class="kicker">보호자는 <b>매일 열 이유</b>가 생기고, 우리는 <b>진료 사이의 공백</b>을 메웁니다.</p>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-sec="Ⅳ 플랫폼" data-t="담당의 초안 + 근거">
+  <p class="eyebrow">Ⅳ. 무엇을 만드나 07</p>
+  <h2>담당의에게는 <em>근거를 붙여</em> 넘깁니다</h2>
+  <p class="sub">AI 가 답을 대신 보내는 게 아니라, <b>담당의가 확인하는 시간을 줄이는 것</b>이 목적입니다.</p>
+  <div class="grid" style="grid-template-columns:1.15fr 1fr; gap:22px; align-items:start">
+    <div class="draft">
+      <div class="dh"><span>담당의 화면 — 답장 초안</span><span style="color:var(--faint)">슈슈 · 8/4 22:14</span></div>
+      <div class="db">
+        보호자: <b>“항생제 먹고 나서 녹변을 봐요”</b><br><br>
+        <b>초안 —</b> 항생제를 먹는 동안 <b>녹변·묽은 변은 흔한 부작용</b>입니다.
+        임의로 끊지 마시고 3~4일 지켜봐 주세요. 유산균은 <b>2시간 간격</b>을 두세요.
+        <div class="refs">
+          <div class="refln"><span class="tag tb">교과서</span>
+            <span>Ettinger, <i>Textbook of Veterinary Internal Medicine</i> — 항생제 관련 장염 p.1512</span></div>
+          <div class="refln"><span class="tag tp">논문</span>
+            <span>Antimicrobial-associated diarrhea in dogs, <i>JVIM</i> 2019</span></div>
+          <div class="refln"><span class="tag th">우리 기록</span>
+            <span>2026-03-11 같은 문의에 병원이 한 답변 · <b>생활기록</b> 3일 전 사료 교체 없음</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <ul class="pts">
+        <li><i>①</i><span><b>왜 그 답인지가 같이 보입니다.</b> 담당의는 초안을 읽고 근거를 눌러 확인만 하면 됩니다.</span></li>
+        <li><i>②</i><span><b>AI 가 지어낸 문장인지 아닌지</b>를 바로 가릴 수 있습니다.</span></li>
+        <li><i>③</i><span>확인이 빨라지면 <b>“주치의 확인 후” 44% 의 왕복이 한 번으로</b> 줄어듭니다.</span></li>
+      </ul>
+      <div class="note" style="margin-top:16px">
+        <b>준비할 것</b> — 교과서 PDF 는 <b>이미 보유</b>하고 있습니다.
+        여기에 <b>질병별 논문을 미리 모아 저장</b>해 두면 근거의 폭이 넓어집니다.
+      </div>
+    </div>
+  </div>
+  <p class="kicker">보호자에게 나가는 문장은 여전히 <b>원장님이 승인한 것만</b>입니다.
+    근거는 <b>담당의 화면에만</b> 붙습니다.</p>
+</section>
+
+<!-- 15 -->
+<section class="slide" data-sec="Ⅳ 플랫폼" data-t="승인된 문장만">
+  <p class="eyebrow">Ⅳ. 무엇을 만드나 08</p>
+  <h2>보호자에게 나가는 문장은 <em>승인된 것만</em>입니다</h2>
+  <p class="sub">AI 가 문장을 만들지 않습니다. 승인된 답변을 상황에 맞게 고르고, 없으면 사람에게 넘깁니다.</p>
+  <div class="grid g3">
+    <div class="card good"><div class="t">A · 8건</div>
+      <div class="d">병원이 실제로 <b>같은 답을 한 문장</b>이 대화 백업에 있습니다.<br>확인만 하시면 바로 씁니다.</div></div>
+    <div class="card book"><div class="t">B · 18건</div>
+      <div class="d">교과서 근거는 있으나 <b>이 병원 답변 기록이 없습니다.</b><br>병원 기준으로 고쳐 주셔야 합니다.</div></div>
+    <div class="card now"><div class="t">C · 6건</div>
+      <div class="d">아이마다 답이 갈립니다.<br><b>자동 발송하지 않고</b> 필요한 정보만 받아 넘깁니다.</div></div>
+  </div>
+  <div class="note" style="margin-top:18px">
+    이 구조 때문에 <b>법적 리스크의 핵심이 방어됩니다</b> — 자동으로 나가는 말은 전부 수의사가 쓴 말입니다.
+    <b>진단·투약 지시는 하지 않습니다.</b>
+  </div>
+  <p class="kicker">답변 초안 <b>32건</b>을 미리 써 두었습니다. 승인/수정/삭제 <b>체크칸</b>이 붙어 있습니다.</p>
+</section>
+
+<!-- 16 -->
+<section class="slide" data-sec="Ⅳ 플랫폼" data-t="경미하면 1차로">
+  <p class="eyebrow">Ⅳ. 무엇을 만드나 09</p>
+  <h2>경미하면 <em>1차 병원으로 돌려보냅니다</em></h2>
+  <svg viewBox="0 0 1080 190" style="width:100%;height:190px">
+    <rect x="0" y="66" width="190" height="58" rx="14" fill="#12212f"/>
+    <text x="95" y="92" font-size="14.5" font-weight="800" fill="#fff" text-anchor="middle">보호자 질문</text>
+    <text x="95" y="110" font-size="11" fill="#9fb0bb" text-anchor="middle">“우리 애가 토해요”</text>
+    <path d="M198 95 L272 95" stroke="#9aa8b4" stroke-width="2.5" marker-end="url(#ar2)"/>
+    <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 0 L9 4.5 L0 9 z" fill="#9aa8b4"/></marker></defs>
+    <rect x="276" y="60" width="146" height="70" rx="14" fill="#fff" stroke="#12212f" stroke-width="2.5"/>
+    <text x="349" y="88" font-size="13.5" font-weight="800" fill="#12212f" text-anchor="middle">기록으로</text>
+    <text x="349" y="107" font-size="13.5" font-weight="800" fill="#12212f" text-anchor="middle">무게 판정</text>
+    <g stroke-width="2.5" fill="none">
+      <path d="M430 78 C 500 78, 520 32, 590 32" stroke="#dc2626" marker-end="url(#arR)"/>
+      <path d="M430 95 L590 95" stroke="#d97706" marker-end="url(#arA)"/>
+      <path d="M430 112 C 500 112, 520 158, 590 158" stroke="#7c3aed" marker-end="url(#arV)"/></g>
+    <defs>
+      <marker id="arR" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#dc2626"/></marker>
+      <marker id="arA" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#d97706"/></marker>
+      <marker id="arV" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#7c3aed"/></marker></defs>
+    <g font-size="12" font-weight="800" text-anchor="middle">
+      <text x="510" y="26" fill="#dc2626">응급</text><text x="510" y="87" fill="#d97706">중등도</text>
+      <text x="510" y="152" fill="#7c3aed">경미 + 의뢰 환자</text></g>
+    <rect x="596" y="10" width="186" height="44" rx="12" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+    <text x="689" y="38" font-size="14" font-weight="800" fill="#dc2626" text-anchor="middle">지금 SD 로</text>
+    <rect x="596" y="73" width="186" height="44" rx="12" fill="#fff7ed" stroke="#d97706" stroke-width="2"/>
+    <text x="689" y="101" font-size="14" font-weight="800" fill="#d97706" text-anchor="middle">SD 예약</text>
+    <rect x="596" y="136" width="186" height="44" rx="12" fill="#f6f2ff" stroke="#7c3aed" stroke-width="2"/>
+    <text x="689" y="164" font-size="14" font-weight="800" fill="#7c3aed" text-anchor="middle">1차 병원으로</text>
+    <g font-size="12.5" fill="#6c7a88">
+      <text x="800" y="152">＋ 그쪽에 <tspan font-weight="800" fill="#7c3aed">먼저 알림</tspan></text>
+      <text x="800" y="174">＋ <tspan font-weight="800" fill="#12212f">“그래도 저희로”</tspan> 항상 열어 둠</text></g>
+  </svg>
+  <div class="note teal" style="margin-top:8px">
+    우리 매출을 넘기는 것처럼 보이지만 반대입니다. 1차 원장님이 의뢰를 끊는 가장 큰 이유는
+    <b>“보냈더니 그쪽이 계속 데리고 있더라”</b>이고, 회송은 <b>매번 그 반대 증거를 만들어 보여줍니다.</b>
+  </div>
+  <p class="kicker">⚠️ 우리가 수술한 부위 · 우리가 처방한 약 · 진행 중인 질환은
+    <b>의뢰 환자여도 경미로 내리지 않습니다.</b></p>
+</section>
+
+<!-- 17 -->
+<section class="slide" data-sec="Ⅴ 연결" data-t="전체 구조">
+  <p class="eyebrow">Ⅴ. 어떻게 연결되나</p>
+  <h2>하나의 클라우드에서 <em>셋이 같은 기록을</em> 봅니다</h2>
+  <svg viewBox="0 0 1080 300" style="width:100%;height:300px">
+    <rect x="340" y="0" width="400" height="58" rx="14" fill="#12212f"/>
+    <text x="540" y="24" font-size="15.5" font-weight="800" fill="#fff" text-anchor="middle">보호자 앱 — 하나뿐인 접점</text>
+    <text x="540" y="44" font-size="11.5" fill="#9fb0bb" text-anchor="middle">리포트 · 입원 경과 · 검진 · 동의서 · 생활기록 · AI 채팅</text>
+    <path d="M540 60 L540 84" stroke="#9aa8b4" stroke-width="2.5" marker-end="url(#ar3)"/>
+    <defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 0 L9 4.5 L0 9 z" fill="#9aa8b4"/></marker></defs>
+    <rect x="286" y="88" width="508" height="56" rx="14" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2.5"/>
+    <text x="540" y="112" font-size="15" font-weight="800" fill="#0b6f66" text-anchor="middle">AI 채팅 — 어디로 갈지 판정</text>
+    <text x="540" y="131" font-size="11.5" fill="#6c7a88" text-anchor="middle">① 진료기록  ② 생활기록  ③ 교과서·논문</text>
+    <path d="M340 148 C 280 148, 258 176, 212 176" stroke="#7c3aed" stroke-width="2.5" fill="none" marker-end="url(#arV2)"/>
+    <path d="M740 148 C 800 148, 822 176, 868 176" stroke="#dc2626" stroke-width="2.5" fill="none" marker-end="url(#arR2)"/>
+    <defs>
+      <marker id="arV2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#7c3aed"/></marker>
+      <marker id="arR2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#dc2626"/></marker></defs>
+    <text x="286" y="142" font-size="11.5" font-weight="800" fill="#7c3aed">경미</text>
+    <text x="762" y="142" font-size="11.5" font-weight="800" fill="#dc2626">응급 · 중등도</text>
+    <rect x="30" y="158" width="184" height="76" rx="14" fill="#f6f2ff" stroke="#7c3aed" stroke-width="2.5"/>
+    <text x="122" y="184" font-size="15" font-weight="800" fill="#7c3aed" text-anchor="middle">1차 병원</text>
+    <text x="122" y="203" font-size="11" fill="#6c7a88" text-anchor="middle">열람 · 회송 수신</text>
+    <text x="122" y="221" font-size="11" font-weight="800" fill="#7c3aed" text-anchor="middle">SD 자매병원</text>
+    <rect x="866" y="158" width="184" height="76" rx="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
+    <text x="958" y="184" font-size="15" font-weight="800" fill="#dc2626" text-anchor="middle">SD (2차)</text>
+    <text x="958" y="203" font-size="11" fill="#6c7a88" text-anchor="middle">수술 · 정밀검사 · 입원</text>
+    <text x="958" y="221" font-size="11" font-weight="800" fill="#dc2626" text-anchor="middle">본원 EMR</text>
+    <path d="M222 182 C 400 182, 400 182, 858 182" stroke="#0f9b8e" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+    <text x="540" y="176" font-size="12" font-weight="800" fill="#0f9b8e" text-anchor="middle">의뢰 →</text>
+    <text x="540" y="200" font-size="12" font-weight="800" fill="#0f9b8e" text-anchor="middle">← 환송 · 회신 · 회송</text>
+    <rect x="286" y="252" width="508" height="42" rx="12" fill="#f5f8f9" stroke="#e2e8ee" stroke-width="2"/>
+    <text x="540" y="272" font-size="13" font-weight="800" fill="#3d4f5c" text-anchor="middle">같은 클라우드 · 같은 기록 · 권한만 다름 (DB 가 강제)</text>
+    <text x="540" y="288" font-size="11" fill="#6c7a88" text-anchor="middle">직원=전체 · 1차병원=자기 의뢰 환자만 · 보호자=자기 반려동물만</text>
+  </svg>
+  <p class="kicker">앱을 병원마다 나누지 않는 이유가 여기 있습니다 —
+    <b>갈라지면 데이터가 갈라지고, 갈라지면 채팅이 읽을 게 없어집니다.</b></p>
+</section>
+
+<!-- 18 -->
+<section class="slide" data-sec="Ⅵ 기대효과" data-t="각자의 기대효과">
+  <p class="eyebrow">Ⅵ. 기대효과 01</p>
+  <h2>무엇이 <em>어떻게 좋아지나</em></h2>
+  <table>
+    <tr><th style="width:120px"></th><th style="width:300px">지금</th><th>플랫폼 이후</th></tr>
+    <tr><td><b>보호자</b></td><td>입원 중 하루 종일 궁금 · 밤에 물어볼 데 없음</td>
+      <td>매 진료 리포트 · 매일 경과 · <b>밤에도 어디로 갈지 답</b></td></tr>
+    <tr><td><b>1차 병원</b></td><td>보낸 환자가 어떻게 됐는지 전화로 물어봄</td>
+      <td>기록 열람 · 알림 · <b>경미 환자 회송</b> · <b>자매병원 표시</b></td></tr>
+    <tr class="hi"><td>SD</td><td>레퍼가 개인 친분에 달림 · 데이터 없음</td>
+      <td><b>보호자 만족 → 1차 신뢰 → 레퍼 증가</b> · 병원별 추이 데이터</td></tr>
+    <tr><td><b>직원</b></td><td>“주치의 확인 후” 왕복 · 입원 문의 전화</td>
+      <td>문진이 채워진 채로 도착 · <b>전화 문의 감소</b></td></tr>
+  </table>
+  <div class="note teal" style="margin-top:16px">
+    <b>가장 중요한 숫자 하나</b> — 회차 리포트 열람률. 보호자가 실제로 보는가.
+    <b>이게 낮으면 나머지가 전부 무의미합니다.</b> 그래서 6개월 운영 후 숫자를 보고 확장을 결정합니다.
+  </div>
+  <p class="kicker">확장은 <b>가설이 맞은 다음</b>입니다 — 검증 안 된 가설 위에 개발을 얹지 않습니다.</p>
+</section>
+
+<!-- 19 -->
+<section class="slide" data-sec="Ⅶ 확장성" data-t="맞춤 사료·영양제">
+  <p class="eyebrow">Ⅶ. 확장성 01</p>
+  <h2>확장 ① — <em>맞춤 사료 · 영양제</em></h2>
+  <p class="sub">이미 병원에서 팔고 있는 것입니다. 달라지는 건 <b>무엇을 근거로 권하느냐</b>입니다.</p>
+  <svg viewBox="0 0 1080 168" style="width:100%;height:168px">
+    <g>
+      <rect x="0" y="18" width="196" height="46" rx="11" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2"/>
+      <text x="98" y="40" font-size="13" font-weight="800" fill="#0b6f66" text-anchor="middle">건강검진 수치</text>
+      <text x="98" y="56" font-size="10.5" fill="#6c7a88" text-anchor="middle">신장·간·췌장·심장</text>
+      <rect x="0" y="74" width="196" height="46" rx="11" fill="#eff5ff" stroke="#2563eb" stroke-width="2"/>
+      <text x="98" y="96" font-size="13" font-weight="800" fill="#2563eb" text-anchor="middle">진단 · 처치 이력</text>
+      <text x="98" y="112" font-size="10.5" fill="#6c7a88" text-anchor="middle">췌장염·결석·알레르기</text>
+      <rect x="0" y="130" width="196" height="34" rx="11" fill="#fff7ed" stroke="#d97706" stroke-width="2"/>
+      <text x="98" y="152" font-size="13" font-weight="800" fill="#b45309" text-anchor="middle">지금 먹이는 것</text>
+    </g>
+    <g stroke="#9aa8b4" stroke-width="2" fill="none" marker-end="url(#ar4)">
+      <path d="M204 41 C 250 41, 250 84, 296 84"/><path d="M204 97 L296 90"/><path d="M204 147 C 250 147, 250 96, 296 96"/></g>
+    <defs><marker id="ar4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0 L8 4 L0 8 z" fill="#9aa8b4"/></marker></defs>
+    <rect x="300" y="58" width="180" height="62" rx="13" fill="#12212f"/>
+    <text x="390" y="84" font-size="14" font-weight="800" fill="#fff" text-anchor="middle">근거를 갖춘</text>
+    <text x="390" y="104" font-size="14" font-weight="800" fill="#5fd3c5" text-anchor="middle">맞춤 추천</text>
+    <path d="M488 89 L556 89" stroke="#0f9b8e" stroke-width="2.5" fill="none" marker-end="url(#ar5)"/>
+    <defs><marker id="ar5" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 0 L9 4.5 L0 9 z" fill="#0f9b8e"/></marker></defs>
+    <rect x="560" y="20" width="240" height="58" rx="12" fill="#fff" stroke="#0f9b8e" stroke-width="2"/>
+    <text x="680" y="44" font-size="13" font-weight="800" fill="#0b6f66" text-anchor="middle">보호자 — 왜 이걸 먹여야 하는지</text>
+    <text x="680" y="63" font-size="11" fill="#6c7a88" text-anchor="middle">“신장 수치가 올라 있어 이 처방식을”</text>
+    <rect x="560" y="100" width="240" height="58" rx="12" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+    <text x="680" y="124" font-size="13" font-weight="800" fill="#7c3aed" text-anchor="middle">1차 병원 — 그쪽에서도 판매</text>
+    <text x="680" y="143" font-size="11" fill="#6c7a88" text-anchor="middle">회송한 환자의 후속 관리까지</text>
+    <text x="940" y="70" font-size="15" font-weight="800" fill="#12212f" text-anchor="middle">병원 매출</text>
+    <text x="940" y="95" font-size="15" font-weight="800" fill="#12212f" text-anchor="middle">＋ 리텐션</text>
+  </svg>
+  <p class="kicker">인터넷 추천과 다른 점은 <b>그 아이의 검진 수치와 병력을 보고 권한다</b>는 것입니다.
+    <b>생활기록이 그 재료</b>입니다.</p>
+</section>
+
+<!-- 20 -->
+<section class="slide" data-sec="Ⅶ 확장성" data-t="확장 로드맵">
+  <p class="eyebrow">Ⅶ. 확장성 02</p>
+  <h2>그다음 — <em>1차 병원 안으로</em></h2>
+  <div class="grid g4">
+    <div class="card"><div class="t" style="color:var(--muted)">① 뷰어 계정</div>
+      <div class="d">아무것도 설치 안 함. 링크 받아 로그인.<br><br>
+        <b>마찰 거의 0</b><br><span style="color:var(--teal-d);font-weight:700">▶ 지금</span></div></div>
+    <div class="card ref"><div class="t">② 회송 + 자매병원</div>
+      <div class="d">채팅이 그 병원으로 환자를 보내고, 표시를 달아 드립니다.<br><br>
+        <b>관계가 구조로 묶임</b></div></div>
+    <div class="card book"><div class="t">③ PACS</div>
+      <div class="d">영상 클라우드 백업 + AI 판독.<br>영상 장비 전송 설정만 하면 됩니다.<br><br>
+        <b>“공짜로 써보시죠”가 문을 엽니다</b></div></div>
+    <div class="card vet"><div class="t">④ EMR</div>
+      <div class="d">접수·수납·차트 + <b>원클릭 의뢰</b>.<br>전환 의사가 있는 곳만.<br><br>
+        <b>매일 우리 화면을 봅니다</b></div></div>
+  </div>
+  <div class="note" style="margin-top:18px">
+    <b>이미 친한 2차 병원이 있는 곳은 관계로 못 이깁니다.</b> 대신 <b>마찰</b>로 이깁니다 —
+    기존 2차에 보내려면 전화하고 CD 굽고 소견서를 써야 하는데, 우리 화면에서는 <b>클릭 한 번</b>입니다.
+  </div>
+  <p class="kicker">목표는 <b>왕십리 반경 → 서울 전역 → 경기 · 인천</b>입니다.
+    ③④ 는 <b>보호자 만족이 숫자로 확인된 뒤</b>에 결정합니다.</p>
+</section>
+
+<!-- 21 -->
+<section class="slide" data-sec="Ⅶ 확장성" data-t="왜 지금 우리가 먼저인가">
+  <p class="eyebrow">Ⅶ. 확장성 03</p>
+  <h2>왜 <em>지금 우리가 먼저</em>인가</h2>
+  <p class="sub">채팅이 답이 되려면 세 가지를 동시에 읽어야 합니다. 셋을 다 가진 곳이 없습니다.</p>
+  <table>
+    <tr><th></th><th style="text-align:center">① 2차 진료 기록</th><th style="text-align:center">② 생활기록</th><th style="text-align:center">③ 답변 자산</th></tr>
+    <tr><td>AI · 헬스케어 스타트업</td><td class="no">✕</td><td class="no">△</td><td class="no">✕</td></tr>
+    <tr><td>기존 동물병원 EMR <span style="color:var(--faint)">인투벳 2,000곳 · 이프렌즈 1,800곳</span></td>
+      <td class="no">✕ <span style="font-size:11.5px">1차만</span></td><td class="no">✕</td><td class="no">✕</td></tr>
+    <tr><td>펫보험 · 펫커머스 앱</td><td class="no">✕</td><td class="no">△</td><td class="no">✕</td></tr>
+    <tr><td>다른 2차 병원</td><td class="yes">○</td><td class="no">✕</td><td class="yes">○ <span style="font-size:11.5px;color:var(--faint)">안 씀</span></td></tr>
+    <tr class="hi"><td>SD 플랫폼</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td></tr>
+  </table>
+  <div class="note red" style="margin-top:14px">
+    <b>다만 영구적인 해자는 아닙니다.</b> 다른 2차 병원은 ①③을 이미 갖고 있고, 빠진 ②는 앱 화면 하나면 채워집니다.
+    막고 있는 건 데이터가 아니라 <b>“2차 병원은 소프트웨어를 만들지 않는다”는 관성</b>뿐입니다.
+  </div>
+  <p class="kicker warn">지키는 것은 특허가 아니라 <b>선점</b>입니다 — <b>속도가 곧 방어력</b>입니다.</p>
+</section>
+
+<!-- 22 -->
+<section class="slide" data-sec="Ⅷ 마무리" data-t="지금 상태">
+  <p class="eyebrow">Ⅷ. 마무리 01</p>
+  <h2>지금 상태</h2>
+  <div class="grid g2" style="align-items:start">
+    <div class="card good"><div class="t">완료 — 이미 동작 중</div>
+      <div class="d" style="font-size:14.5px;line-height:1.9">
+        EMR · 진료/입원 리포트 · 병동 입력 화면 · 종합 리포트<br>
+        전자 동의서 · 건강검진 · 치료 사례 442건 · 병원 소식<br>
+        1차병원 포털 · 레퍼 대시보드 · 웹 푸시 알림 · <b>생활기록</b></div></div>
+    <div class="card book"><div class="t">남은 것 — AI 채팅</div>
+      <div class="d" style="font-size:14.5px;line-height:1.9">
+        기획은 끝나 있습니다. 상담 105건 분석 · 답변 초안 32건 · 흐름 설계까지
+        별도 문서에 정리돼 있습니다.<br><br>
+        <b>착수에 필요한 건 원장님의 목록 하나입니다.</b></div></div>
+  </div>
+  <div class="note" style="margin-top:18px">
+    <b>기간은 아직 적지 않았습니다.</b> 채팅의 일정은 개발량이 아니라
+    <b>응급 목록 확정과 답변 검토 일정</b>이 정합니다. 그 둘이 정해지면 단계별로 산정해 드리겠습니다 —
+    지금 숫자를 적으면 지킬 수 없는 약속이 됩니다.
+  </div>
+  <p class="kicker">문 0~4 의 판정은 <b>모델 없이 규칙으로</b> 돕니다.
+    <b>1단계만 나가도</b> 지금의 “증상 상담은 하지 않습니다”를 대체합니다.</p>
+</section>
+
+<!-- 23 -->
+<section class="slide cover" data-sec="Ⅷ 마무리" data-t="원장님이 정하실 것">
+  <p class="eyebrow">Ⅷ. 마무리 02 · 부탁드립니다</p>
+  <h1 style="font-size:42px; margin-bottom:30px">원장님이 정해 주셔야<br>시작되는 것 <span style="color:#5fd3c5">셋</span></h1>
+  <div class="grid g3" style="gap:15px">
+    <div style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:19px">
+      <div style="font-size:28px;font-weight:800;color:#5fd3c5;line-height:1">①</div>
+      <div style="font-size:17px;font-weight:800;margin:7px 0">“지금 오세요” 목록</div>
+      <div style="font-size:13px;color:#a9c0cc;line-height:1.65">응급 판정 기준.
+        <b style="color:#fff">이것만 정해지면 채팅 1단계가 바로 시작됩니다</b> — 답변 검토를 기다리지 않습니다.</div></div>
+    <div style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:19px">
+      <div style="font-size:28px;font-weight:800;color:#5fd3c5;line-height:1">②</div>
+      <div style="font-size:17px;font-weight:800;margin:7px 0">답변 초안 32건 검토</div>
+      <div style="font-size:13px;color:#a9c0cc;line-height:1.65">승인 / 수정 / 삭제로 표시만 해 주시면 됩니다.
+        <b style="color:#fff">채팅 2단계부터가 여기 걸립니다.</b></div></div>
+    <div style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:19px">
+      <div style="font-size:28px;font-weight:800;color:#5fd3c5;line-height:1">③</div>
+      <div style="font-size:17px;font-weight:800;margin:7px 0">자매병원 기준</div>
+      <div style="font-size:13px;color:#a9c0cc;line-height:1.65">어느 병원에 달아 드릴지, 어떤 조건에서 내릴지.
+        <b style="color:#fff">아무나 달면 표시의 값이 0</b>이 됩니다.</div></div>
+  </div>
+  <p style="margin-top:auto; padding-top:18px; border-top:1px solid rgba(255,255,255,.16); font-size:15px; color:#9fb0bb; line-height:1.7">
+    저희가 준비할 것 — <b style="color:#fff">질병별 논문 수집</b>(교과서 PDF 는 보유) ·
+    <b style="color:#fff">1차 병원용 자료</b> · 단계별 견적.<br>
+    상세 근거는 <b style="color:#fff">사업 기획서</b>와 <b style="color:#fff">AI 채팅 기획서</b>에 있습니다.
+  </p>
+</section>
+
+</div>
+
+<div class="zone l" id="zl"></div><div class="zone r" id="zr"></div>
+<div id="bar"><i></i></div>
+<div id="hud">
+  <button id="pv" aria-label="이전">‹</button>
+  <span class="pg"><b id="cur">1</b> / <span id="tot">24</span></span>
+  <button id="nx" aria-label="다음">›</button>
+  <button id="og" aria-label="전체 보기">⊞</button>
+</div>
+<div id="hint">← → 넘기기 · <b>O</b> 전체 보기 · <b>P</b> 인쇄</div>
+<div id="ov"><div class="og" id="ovg"></div></div>
+
+<script>
+(function(){
+  var slides = [].slice.call(document.querySelectorAll('.slide'));
+  var stage = document.getElementById('stage');
+  var barI = document.querySelector('#bar i');
+  var ov = document.getElementById('ov');
+  var i = 0;
+  document.getElementById('tot').textContent = slides.length;
+
+  function fit(){
+    var s = Math.min(window.innerWidth / 1280, (window.innerHeight - 8) / 720);
+    stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function go(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(s, k){ s.classList.toggle('on', k === i); });
+    document.getElementById('cur').textContent = i + 1;
+    barI.style.width = ((i + 1) / slides.length * 100) + '%';
+    history.replaceState(null, '', '#' + (i + 1));
+    [].forEach.call(ov.querySelectorAll('.oi'), function(el, k){ el.classList.toggle('cur', k === i); });
+  }
+
+  slides.forEach(function(s, k){
+    var d = document.createElement('div');
+    d.className = 'oi';
+    d.innerHTML = '<span class="on2">' + (k + 1) + ' · ' + (s.dataset.sec || '') + '</span>' +
+                  '<span class="ot">' + (s.dataset.t || '') + '</span>';
+    d.onclick = function(){ ov.classList.remove('on'); go(k); };
+    ov.firstElementChild.appendChild(d);
+  });
+
+  document.onkeydown = function(e){
+    if (ov.classList.contains('on') && e.key !== 'o' && e.key !== 'O') {
+      if (e.key === 'Escape') ov.classList.remove('on');
+      return;
+    }
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown': go(i + 1); e.preventDefault(); break;
+      case 'ArrowLeft': case 'ArrowUp': case 'PageUp': go(i - 1); e.preventDefault(); break;
+      case 'Home': go(0); break;
+      case 'End': go(slides.length - 1); break;
+      case 'o': case 'O': ov.classList.toggle('on'); break;
+      case 'p': case 'P': window.print(); break;
+    }
+  };
+  document.getElementById('nx').onclick = function(){ go(i + 1); };
+  document.getElementById('pv').onclick = function(){ go(i - 1); };
+  document.getElementById('og').onclick = function(){ ov.classList.toggle('on'); };
+  document.getElementById('zr').onclick = function(){ go(i + 1); };
+  document.getElementById('zl').onclick = function(){ go(i - 1); };
+
+  var x0 = null;
+  document.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 55) go(i + (dx < 0 ? 1 : -1));
+    x0 = null;
+  }, {passive:true});
+
+  go(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+})();
+</script>
+</body>
+</html>

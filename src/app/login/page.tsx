@@ -65,7 +65,25 @@ export default async function LoginPage({
 
         {/* right form panel */}
         <div className="login-form">
-          <p className="eyebrow">직원 로그인</p>
+          <div className="login-top">
+            <p className="eyebrow" style={{ margin: 0 }}>직원 로그인</p>
+            {/* ⚠️ 여기는 **로그인 전 화면**이다. 주소를 아는 사람은 누구나 자료를 연다.
+                보호자 로그인(/login/portal)에는 달지 않는다 — 사업 문서다. */}
+            <details className="docs-menu">
+              <summary>자료실</summary>
+              <div className="docs-menu-list">
+                <a href="/deck/sd-platform-a7f3c9.html" target="_blank" rel="noopener">
+                  기획 보고 <span>슬라이드 21장</span>
+                </a>
+                <a href="/deck/sd-proposal.html" target="_blank" rel="noopener">
+                  사업 기획서 <span>플랫폼 전체</span>
+                </a>
+                <a href="/deck/sd-ai-chat-plan.html" target="_blank" rel="noopener">
+                  AI 채팅 기획서 <span>답변 초안 32건 포함</span>
+                </a>
+              </div>
+            </details>
+          </div>
           <h1 style={{ margin: "8px 0 6px", fontSize: "1.7rem", fontWeight: 700, letterSpacing: "-.01em" }}>
             다시 오신 걸 환영합니다
           </h1>

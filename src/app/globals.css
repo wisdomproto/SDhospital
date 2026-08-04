@@ -2060,3 +2060,28 @@ button.media-thumb.media-open {
   width: 22px; height: 22px; border-radius: 5px; object-fit: cover;
   border: 1px solid rgba(0, 0, 0, .08); flex: none;
 }
+
+/* 로그인 화면 「자료실」 — details/summary 로 만든다. 드롭다운 하나에 JS 를 붙일 이유가 없다 */
+.login-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.docs-menu { position: relative; }
+.docs-menu > summary {
+  list-style: none; cursor: pointer; user-select: none;
+  font-size: .8rem; font-weight: 600; color: var(--muted);
+  padding: 6px 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface);
+}
+.docs-menu > summary::-webkit-details-marker { display: none; }
+.docs-menu > summary::after { content: " ▾"; color: var(--muted-2); }
+.docs-menu > summary:hover { color: var(--text); }
+.docs-menu[open] > summary { color: var(--text); border-color: var(--muted-2); }
+.docs-menu-list {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; min-width: 230px;
+  display: grid; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; box-shadow: 0 12px 28px rgba(18, 33, 47, .14); overflow: hidden;
+}
+.docs-menu-list a {
+  padding: 11px 14px; font-size: .85rem; font-weight: 600;
+  color: var(--text); text-decoration: none; border-bottom: 1px solid var(--line);
+}
+.docs-menu-list a:last-child { border-bottom: 0; }
+.docs-menu-list a:hover { background: var(--surface-soft); }
+.docs-menu-list a span { display: block; font-weight: 500; font-size: .74rem; color: var(--muted-2); margin-top: 2px; }

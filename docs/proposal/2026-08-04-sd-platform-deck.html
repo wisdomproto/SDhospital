@@ -145,6 +145,23 @@
   .tag.tp{background:var(--violet-l); color:var(--violet)}
   .tag.th{background:var(--teal-l); color:var(--teal-d)}
 
+
+  /* ── 실제 앱 화면 캡쳐 ── */
+  .shots{display:flex; justify-content:center; gap:20px}
+  .shots figure{margin:0; text-align:center}
+  .shots img{height:318px; width:auto; display:block; border-radius:12px;
+    border:1px solid var(--line); box-shadow:0 8px 22px rgba(18,33,47,.13)}
+  .shots figcaption{margin-top:9px; font-size:12.5px; font-weight:800; color:var(--ink2)}
+  .shots figcaption span{display:block; font-weight:600; font-size:11px; color:var(--faint); margin-top:2px}
+
+  .shotrow{display:grid; grid-template-columns:196px minmax(0,1fr); gap:32px; align-items:start}
+  .shotrow img{width:100%; display:block; border-radius:14px;
+    border:1px solid var(--line); box-shadow:0 10px 28px rgba(18,33,47,.14)}
+
+  .shotwide{height:286px; border:1px solid var(--line); border-radius:12px; overflow:hidden;
+    box-shadow:0 8px 22px rgba(18,33,47,.12)}
+  .shotwide img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block}
+
   #bar{position:fixed; left:0; right:0; bottom:0; height:4px; background:rgba(18,33,47,.1); z-index:9}
   #bar i{display:block; height:100%; background:var(--teal); transition:width .3s}
   #hud{position:fixed; right:18px; bottom:18px; z-index:10; display:flex; gap:8px; align-items:center;
@@ -179,147 +196,62 @@
 <body>
 <div id="stage">
 
-<!-- 1 표지 -->
-<section class="slide cover" data-sec="표지" data-t="SD동물의료센터 플랫폼">
+<!-- 1 -->
+<section class="slide cover" data-sec="표지" data-t="무엇을 만드나">
   <p class="eyebrow">SD동물의료센터 · 플랫폼 기획 보고</p>
-  <h1>2차 병원 · 1차 병원 · 보호자<br><span style="color:#5fd3c5">셋 다 이득인 구조</span>를 만듭니다</h1>
-  <p class="lead">그래야 <b>레퍼가 계속 들어옵니다.</b></p>
-  <p class="goal">지금은 <b>왕십리 반경</b> · 목표는 <b>서울 전역 · 경기 · 인천</b></p>
-  <div class="meta"><span>2026-08-04</span><span>대표원장님 보고용</span><span>실제 상담 105건 분석 기반</span></div>
+  <h1>보호자 · 1차 병원 · SD를<br><span style="color:#5fd3c5">하나로 잇는 시스템</span>을 만듭니다</h1>
+  <p class="lead"><b>EMR · PACS · 보호자 앱</b> 세 가지. 앞의 둘은 이미 있는 것과 같고,
+    <b>승부는 보호자 앱에서 납니다.</b></p>
+  <p class="goal">지금 의뢰는 <b>왕십리 반경</b> · 목표는 <b>서울 전역 · 경기 · 인천</b></p>
+  <div class="meta"><span>2026-08-04</span><span>대표원장님 보고용</span></div>
 </section>
 
 <!-- 2 -->
-<section class="slide" data-sec="Ⅰ 현황" data-t="우리는 2차 병원이다">
-  <p class="eyebrow">Ⅰ. 현황 01</p>
-  <h2>우리 매출은 <em>수술과 정밀검사</em>에서 나옵니다</h2>
-  <div class="grid g3" style="margin-bottom:20px">
-    <div class="card tint"><div class="t">빈도가 낮고 단가가 높다</div>
-      <div class="d">보호자가 1년에 몇 번 오지 않지만 <b>한 건이 큽니다.</b></div></div>
-    <div class="card tint"><div class="t">거리 저항이 낮다</div>
-      <div class="d">큰 수술은 동네에서 못 하므로 <b>믿을 만하면 지방에서도 옵니다.</b></div></div>
-    <div class="card now"><div class="t">유입이 1차 병원에 종속된다</div>
-      <div class="d">보호자는 <b>“우리 동네 원장님이 보내준 병원”</b>으로 옵니다.</div></div>
-  </div>
-  <svg viewBox="0 0 1080 150" style="width:100%;height:150px">
-    <g fill="#f5f8f9" stroke="#e2e8ee" stroke-width="2">
-      <rect x="20" y="8" width="140" height="38" rx="10"/><rect x="20" y="56" width="140" height="38" rx="10"/>
-      <rect x="20" y="104" width="140" height="38" rx="10"/></g>
-    <g font-size="13.5" font-weight="700" fill="#3d4f5c" text-anchor="middle">
-      <text x="90" y="32">1차 병원</text><text x="90" y="80">1차 병원</text><text x="90" y="128">1차 병원</text></g>
-    <g stroke="#0f9b8e" stroke-width="2.5" fill="none" marker-end="url(#ar)">
-      <path d="M168 27 C 260 27, 280 72, 360 72"/><path d="M168 75 L360 75"/><path d="M168 123 C 260 123, 280 78, 360 78"/></g>
-    <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
-      <path d="M0 0 L9 4.5 L0 9 z" fill="#0f9b8e"/></marker></defs>
-    <text x="264" y="60" font-size="13" font-weight="800" fill="#0f9b8e" text-anchor="middle">의뢰</text>
-    <rect x="368" y="50" width="170" height="52" rx="13" fill="#12212f"/>
-    <text x="453" y="82" font-size="16" font-weight="800" fill="#fff" text-anchor="middle">SD (2차)</text>
-    <text x="700" y="66" font-size="21" font-weight="800" fill="#12212f" text-anchor="middle">2차 병원의 영업사원은</text>
-    <text x="700" y="100" font-size="21" font-weight="800" fill="#0f9b8e" text-anchor="middle">전국의 1차 병원 원장님입니다</text>
-  </svg>
-  <p class="kicker">그런데 이 관계를 지금은 <b>개인 친분 · 전화 · 카톡</b>으로 관리하고 있습니다.</p>
-</section>
-
-<!-- 3 지리 -->
-<section class="slide" data-sec="Ⅰ 현황" data-t="의뢰는 왕십리 반경에 몰려 있다">
-  <p class="eyebrow">Ⅰ. 현황 02</p>
-  <h2>지금 의뢰는 <em>병원 근처에 몰려</em> 있습니다</h2>
-  <div class="grid" style="grid-template-columns:1.05fr 1fr; gap:30px; align-items:center">
-    <svg viewBox="0 0 460 322" style="width:100%;height:300px">
-      <circle cx="230" cy="138" r="136" fill="#f5f8f9" stroke="#e2e8ee" stroke-width="2" stroke-dasharray="7 6"/>
-      <circle cx="230" cy="138" r="90" fill="#eef4f7" stroke="#cbd6df" stroke-width="2" stroke-dasharray="7 6"/>
-      <circle cx="230" cy="138" r="46" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2.5"/>
+<section class="slide" data-sec="Ⅰ 현황" data-t="매출은 1차 레퍼에 달려 있다">
+  <p class="eyebrow">Ⅰ. 현황</p>
+  <h2>우리 매출은 <em>1차 병원의 의뢰</em>에 달려 있습니다</h2>
+  <div class="grid" style="grid-template-columns:1.25fr 1fr; gap:30px; align-items:center">
+    <svg viewBox="0 0 620 300" style="width:100%;height:300px">
+      <circle cx="310" cy="140" r="134" fill="#f5f8f9" stroke="#e2e8ee" stroke-width="2" stroke-dasharray="7 6"/>
+      <circle cx="310" cy="140" r="88" fill="#eef4f7" stroke="#cbd6df" stroke-width="2" stroke-dasharray="7 6"/>
+      <circle cx="310" cy="140" r="46" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2.5"/>
       <g fill="#0f9b8e">
-        <circle cx="212" cy="132" r="4.5"/><circle cx="248" cy="140" r="4.5"/><circle cx="222" cy="164" r="4.5"/>
-        <circle cx="252" cy="168" r="4.5"/><circle cx="204" cy="156" r="4.5"/><circle cx="238" cy="120" r="4.5"/>
+        <circle cx="292" cy="124" r="4.5"/><circle cx="328" cy="132" r="4.5"/><circle cx="300" cy="158" r="4.5"/>
+        <circle cx="332" cy="160" r="4.5"/><circle cx="284" cy="146" r="4.5"/>
       </g>
       <g fill="#cbd6df">
-        <circle cx="150" cy="96" r="4"/><circle cx="316" cy="104" r="4"/><circle cx="130" cy="196" r="4"/>
-        <circle cx="322" cy="200" r="4"/><circle cx="230" cy="66" r="4"/><circle cx="230" cy="238" r="4"/>
-        <circle cx="106" cy="146" r="4"/><circle cx="352" cy="152" r="4"/>
-        <circle cx="112" cy="62" r="4"/><circle cx="350" cy="66" r="4"/><circle cx="96" cy="242" r="4"/>
-        <circle cx="360" cy="240" r="4"/><circle cx="230" cy="28" r="4"/><circle cx="230" cy="274" r="4"/>
-        <circle cx="60" cy="120" r="4"/><circle cx="398" cy="128" r="4"/><circle cx="66" cy="192" r="4"/>
-        <circle cx="392" cy="196" r="4"/>
+        <circle cx="232" cy="90" r="4"/><circle cx="392" cy="96" r="4"/><circle cx="216" cy="190" r="4"/>
+        <circle cx="400" cy="192" r="4"/><circle cx="310" cy="64" r="4"/><circle cx="310" cy="222" r="4"/>
+        <circle cx="192" cy="140" r="4"/><circle cx="428" cy="142" r="4"/>
+        <circle cx="196" cy="60" r="4"/><circle cx="430" cy="64" r="4"/><circle cx="184" cy="230" r="4"/>
+        <circle cx="440" cy="228" r="4"/><circle cx="310" cy="22" r="4"/><circle cx="310" cy="258" r="4"/>
       </g>
-      <rect x="196" y="128" width="68" height="22" rx="7" fill="#12212f"/>
-      <text x="230" y="143" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">SD</text>
-      <text x="230" y="200" font-size="11.5" font-weight="800" fill="#0b6f66" text-anchor="middle">왕십리 주변 — 지금</text>
-      <text x="230" y="248" font-size="11.5" font-weight="700" fill="#8a99a6" text-anchor="middle">서울 전역</text>
-      <text x="230" y="296" font-size="11.5" font-weight="700" fill="#8a99a6" text-anchor="middle">경기 · 인천</text>
+      <rect x="276" y="130" width="68" height="22" rx="7" fill="#12212f"/>
+      <text x="310" y="145" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">SD</text>
+      <text x="310" y="200" font-size="12" font-weight="800" fill="#0b6f66" text-anchor="middle">왕십리 주변 — 지금</text>
+      <text x="310" y="248" font-size="12" font-weight="700" fill="#8a99a6" text-anchor="middle">서울 전역</text>
+      <text x="310" y="294" font-size="12" font-weight="700" fill="#8a99a6" text-anchor="middle">경기 · 인천</text>
     </svg>
     <div>
-      <div class="card good" style="margin-bottom:13px">
-        <div class="t">지금</div>
-        <div class="d" style="font-size:15px">의뢰해 주시는 1차 병원이 <b>왕십리 반경 안</b>에 몰려 있습니다.
-          원장님이 직접 아는 병원들입니다.</div></div>
-      <div class="card" style="border-style:dashed">
-        <div class="t" style="color:var(--muted)">목표</div>
-        <div class="d" style="font-size:15px"><b style="font-size:19px;color:var(--ink)">서울 전역 · 경기 · 인천</b><br><br>
-          거리 저항이 낮은 진료(수술·정밀검사)라 <b>물리적으로는 이미 가능한 범위</b>입니다.
-          닿지 못한 이유는 거리가 아니라 <b>접점이 없어서</b>입니다.</div></div>
-    </div>
-  </div>
-  <p class="kicker warn">여기서부터가 이 기획의 질문입니다 —
-    <b>친분이 없는 병원을 어떻게 우리 쪽으로 데려올 것인가.</b></p>
-</section>
-
-<!-- 4 -->
-<section class="slide" data-sec="Ⅰ 현황" data-t="전부 사람 손에 있다">
-  <p class="eyebrow">Ⅰ. 현황 03</p>
-  <h2>지금 그 관계는 <em>전부 사람 손</em>에 있습니다</h2>
-  <div class="grid g2" style="gap:26px; align-items:center">
-    <table style="margin:0">
-      <tr><th style="width:110px">단계</th><th>지금 하는 방식</th></tr>
-      <tr><td><b>의뢰 접수</b></td><td>전화 + 소견서 종이 · 카톡 사진</td></tr>
-      <tr><td><b>영상 전달</b></td><td>CD · 이메일 · 카톡</td></tr>
-      <tr><td><b>진행 공유</b></td><td>1차 원장님이 전화로 물어봄</td></tr>
-      <tr><td><b>환송</b></td><td>퇴원 후 구두 설명</td></tr>
-    </table>
-    <div>
-      <div class="note red" style="margin-bottom:14px">
-        <b>여기서 저희가 확실히 아는 건 하나입니다</b><br>
-        <span style="font-size:18px;font-weight:800;color:var(--ink)">
-          어느 병원이 얼마나 보내는지 <span style="color:var(--red)">숫자가 없습니다.</span></span><br>
-        그래서 “늘었는지”도, “누구를 만나러 가야 하는지”도 지금은 말할 수 없습니다.
+      <ul class="pts" style="margin-bottom:16px">
+        <li><i>·</i><span>수술·정밀검사는 <b>빈도가 낮고 단가가 높습니다.</b></span></li>
+        <li><i>·</i><span>거리 저항이 낮아 <b>지방에서도 옵니다.</b></span></li>
+        <li><i>·</i><span>다만 <b>유입은 전부 1차 병원 의뢰</b>에서 옵니다.</span></li>
+      </ul>
+      <div class="note red">
+        <b>지금 의뢰해 주시는 병원은 왕십리 반경 안</b>에 몰려 있습니다 —
+        원장님이 직접 아시는 곳들입니다.<br>
+        <b>거리가 막은 게 아니라 접점이 없었습니다.</b>
       </div>
-      <p style="font-size:14.5px;color:var(--muted);line-height:1.75">
-        ↳ 그래서 <b style="color:var(--teal-d)">레퍼 대시보드</b>를 먼저 만들어 두었습니다 —
-        병원별 최근 90일 대 직전 90일 · 의뢰 끊김 · 미환송.</p>
     </div>
   </div>
-  <p class="kicker">나머지(화질 손실 · 응대 부담)가 실제로 얼마나 되는지는 <b>저희가 확인한 것이 아닙니다.</b>
-    원장님께 여쭙고 채우겠습니다.</p>
+  <p class="kicker">그래서 질문은 하나입니다 — <b>친분 없는 병원을 어떻게 데려올 것인가.</b></p>
 </section>
 
-<!-- 4 -->
-<section class="slide" data-sec="Ⅱ 축" data-t="왕십리 밖으로 어떻게 나가나">
-  <p class="eyebrow">Ⅱ. 이 기획의 축 01</p>
-  <h2>그럼 <em>왕십리 밖으로</em> 어떻게 나가나</h2>
-  <div class="grid g2" style="align-items:start">
-    <div class="card tint">
-      <div class="t" style="color:var(--faint)">보통 하는 방법</div>
-      <div class="d" style="font-size:15px;line-height:1.75">
-        · 원장님이 직접 찾아간다<br>· 학회·모임에서 인사한다<br>· 명절 선물, 식사 자리<br><br>
-        <b style="color:var(--red)">왕십리 안에서는 됩니다.</b> 그런데 <b>인천·경기까지 그렇게 넓힐 수는 없습니다</b> —
-        원장님 시간은 늘지 않고, 거기는 <b>이미 친한 2차 병원이 있습니다.</b></div>
-    </div>
-    <div class="card good">
-      <div class="t">1차 원장님을 실제로 움직이는 것</div>
-      <div class="d" style="font-size:17px;line-height:1.75;color:var(--ink)">
-        <b style="font-size:21px">“거기 보냈더니<br>우리 보호자가 너무 좋아하더라”</b><br><br>
-        <span style="color:var(--muted)">이만큼 강한 영업이 없습니다.
-        그리고 이건 <b style="color:var(--teal-d)">원장님 시간을 쓰지 않고 늘어납니다.</b></span></div>
-    </div>
-  </div>
-  <p class="kicker">1차 병원 원장님은 환자를 <b>보내주는 사람</b>이지만,
-    <b>다시 오고 지인에게 말하는 사람은 보호자</b>입니다.
-    그리고 이 경로는 <b>거리를 타지 않습니다.</b></p>
-</section>
-
-<!-- 5 -->
-<section class="slide" data-sec="Ⅱ 축" data-t="그래서 축은 보호자 만족">
-  <p class="eyebrow">Ⅱ. 이 기획의 축 02</p>
-  <h2>그래서 이 기획의 축은 <em>보호자 만족</em>입니다</h2>
+<!-- 3 -->
+<section class="slide" data-sec="Ⅰ 현황" data-t="답은 보호자 만족">
+  <p class="eyebrow">Ⅰ. 현황 — 이 기획의 축</p>
+  <h2>1차 원장님을 움직이는 건 <em>보호자입니다</em></h2>
   <svg viewBox="0 0 1080 266" style="width:100%;height:262px">
     <g stroke="#0f9b8e" stroke-width="3" fill="none" marker-end="url(#arT)">
       <path d="M228 68 L398 68"/><path d="M626 68 L796 68"/>
@@ -327,63 +259,329 @@
     </g>
     <defs><marker id="arT" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
       <path d="M0 0 L9 4.5 L0 9 z" fill="#0f9b8e"/></marker></defs>
-
     <rect x="40" y="32" width="188" height="72" rx="15" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2.5"/>
     <text x="134" y="62" font-size="16" font-weight="800" fill="#0b6f66" text-anchor="middle">보호자가 만족</text>
     <text x="134" y="85" font-size="12" fill="#6c7a88" text-anchor="middle">매 진료마다 리포트 · 물으면 답</text>
-
     <rect x="402" y="32" width="224" height="72" rx="15" fill="#f6f2ff" stroke="#7c3aed" stroke-width="2.5"/>
     <text x="514" y="62" font-size="16" font-weight="800" fill="#7c3aed" text-anchor="middle">1차 병원 원장님이 신뢰</text>
     <text x="514" y="85" font-size="12" fill="#6c7a88" text-anchor="middle">“거기 보냈더니 좋아하더라”</text>
-
     <rect x="800" y="32" width="200" height="72" rx="15" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
     <text x="900" y="62" font-size="16" font-weight="800" fill="#dc2626" text-anchor="middle">의뢰(레퍼)가 는다</text>
     <text x="900" y="85" font-size="12" fill="#6c7a88" text-anchor="middle">왕십리 밖에서도</text>
-
     <rect x="462" y="184" width="156" height="74" rx="15" fill="#12212f"/>
     <text x="540" y="211" font-size="15" font-weight="800" fill="#fff" text-anchor="middle">SD동물의료센터</text>
     <text x="540" y="230" font-size="11.5" font-weight="700" fill="#5fd3c5" text-anchor="middle">2차 병원</text>
     <text x="540" y="249" font-size="11" fill="#9fb0bb" text-anchor="middle">환자가 는다 → 보호자가 는다</text>
-
     <text x="313" y="56" font-size="12" font-weight="800" fill="#0f9b8e" text-anchor="middle">보호자가 말한다</text>
     <text x="711" y="56" font-size="12" font-weight="800" fill="#0f9b8e" text-anchor="middle">환자를 보낸다</text>
   </svg>
-  <p class="kicker">한 바퀴가 돌 때마다 <b>다음 바퀴가 커집니다.</b>
-    그래서 <b>보호자 앱에 힘을 몰아줍니다</b> — 직원 EMR 은 최소한으로.</p>
+  <p class="kicker">원장님이 직접 찾아가는 방법은 <b>왕십리 안에서만</b> 됩니다.
+    이 고리는 <b>거리를 타지 않습니다.</b></p>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-sec="Ⅱ 무엇을" data-t="★ 무엇을 만드나 — 셋">
+  <p class="eyebrow">Ⅱ. 무엇을 만드나</p>
+  <h2>세 가지를 만들어 <em>하나의 클라우드</em>로 잇습니다</h2>
+  <svg viewBox="0 0 1080 250" style="width:100%;height:246px">
+    <rect x="330" y="0" width="420" height="56" rx="14" fill="#0f9b8e"/>
+    <text x="540" y="26" font-size="16" font-weight="800" fill="#fff" text-anchor="middle">③ 보호자 앱 — 보호자와의 유일한 접점</text>
+    <text x="540" y="45" font-size="11.5" fill="#d6f0ec" text-anchor="middle">리포트 · 생활기록 · AI 채팅 · 검진 · 동의서 · 치료 사례</text>
+    <rect x="30" y="96" width="300" height="66" rx="14" fill="#eff5ff" stroke="#2563eb" stroke-width="2.5"/>
+    <text x="180" y="122" font-size="15" font-weight="800" fill="#2563eb" text-anchor="middle">① EMR — 진료 기록</text>
+    <text x="180" y="143" font-size="11.5" fill="#6c7a88" text-anchor="middle">접수 · 차트 · 처방 · 입원 · 검진</text>
+    <rect x="750" y="96" width="300" height="66" rx="14" fill="#f6f2ff" stroke="#7c3aed" stroke-width="2.5"/>
+    <text x="900" y="122" font-size="15" font-weight="800" fill="#7c3aed" text-anchor="middle">② PACS — 의료영상</text>
+    <text x="900" y="143" font-size="11.5" fill="#6c7a88" text-anchor="middle">X-ray · CT · MRI 저장과 열람</text>
+    <path d="M180 90 C 180 66, 300 60, 326 40" stroke="#9aa8b4" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+    <path d="M900 90 C 900 66, 780 60, 754 40" stroke="#9aa8b4" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+    <rect x="330" y="96" width="420" height="66" rx="14" fill="#f5f8f9" stroke="#cbd6df" stroke-width="2" stroke-dasharray="6 5"/>
+    <text x="540" y="124" font-size="13.5" font-weight="800" fill="#3d4f5c" text-anchor="middle">하나의 클라우드 · 같은 기록</text>
+    <text x="540" y="145" font-size="11.5" fill="#6c7a88" text-anchor="middle">권한만 다르다 — DB 가 강제한다</text>
+    <g>
+      <rect x="30" y="188" width="300" height="52" rx="13" fill="#fff" stroke="#e2e8ee" stroke-width="2"/>
+      <text x="180" y="209" font-size="13" font-weight="800" fill="#12212f" text-anchor="middle">SD 직원</text>
+      <text x="180" y="228" font-size="11" fill="#6c7a88" text-anchor="middle">전부 읽고 쓴다</text>
+      <rect x="390" y="188" width="300" height="52" rx="13" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+      <text x="540" y="209" font-size="13" font-weight="800" fill="#7c3aed" text-anchor="middle">1차 병원 원장님</text>
+      <text x="540" y="228" font-size="11" fill="#6c7a88" text-anchor="middle">자기가 의뢰한 환자만 읽는다</text>
+      <rect x="750" y="188" width="300" height="52" rx="13" fill="#fff" stroke="#0f9b8e" stroke-width="2"/>
+      <text x="900" y="209" font-size="13" font-weight="800" fill="#0b6f66" text-anchor="middle">보호자</text>
+      <text x="900" y="228" font-size="11" fill="#6c7a88" text-anchor="middle">자기 반려동물만 읽는다</text>
+    </g>
+  </svg>
+  <p class="kicker"><b>①②는 이미 있는 것과 같습니다</b>(다음 장에서 짧게).
+    <b>③ 보호자 앱이 우리가 만드는 것</b>이고, 이 보고의 나머지는 전부 그 이야기입니다.</p>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-sec="Ⅱ 무엇을" data-t="EMR · PACS 는 짧게">
+  <p class="eyebrow">Ⅱ. 무엇을 만드나 — ①②</p>
+  <h2>EMR 과 PACS 는 <em>이미 있는 것과 같습니다</em></h2>
+  <div class="grid g2">
+    <div class="card vet"><div class="t">① EMR</div>
+      <div class="d" style="font-size:14.5px">
+        접수 · 차트 · 처방 · 입원 · 검진. <b>기술적으로 어려운 영역이 아닙니다</b> —
+        사람 병원과 달리 보험 청구가 없어 접수·수납·차트가 전부입니다.<br><br>
+        <b>SD 본원용은 이미 만들어 동작 중</b>이고, SD 는 기존에 쓰시던 시스템을 계속 쓰셔도 됩니다.
+        우리 것은 <b>보호자·1차 병원에게 보여줄 것을 담는 그릇</b>입니다.</div></div>
+    <div class="card ref"><div class="t">② PACS</div>
+      <div class="d" style="font-size:14.5px">
+        X-ray · CT · MRI 를 저장하고 웹에서 봅니다. <b>표준(DICOM)이라 장비 제조사를 안 가립니다.</b><br><br>
+        지금은 SD 영상을 <b>이미지 업로드로 공유</b>하고 있고,
+        본격 PACS 는 <b>1차 병원 보급 단계</b>에서 만듭니다 — 그때 이게 <b>영업의 창끝</b>이 됩니다.</div></div>
+  </div>
+  <div class="note" style="margin-top:18px">
+    <b>여기에 힘을 더 쓰지 않는 이유</b> — 기능을 더 넣어도 <b>보호자는 모릅니다.</b>
+    그리고 1차 원장님을 움직이는 건 EMR 성능이 아니라 <b>자기 보호자의 반응</b>입니다(앞 장).
+  </div>
+  <p class="kicker">그래서 <b>개발 리소스는 보호자 앱에 몰아줍니다.</b></p>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="앱 전체 — 실제 화면">
+  <p class="eyebrow">Ⅲ. 보호자 앱</p>
+  <h2>③ 보호자 앱 — <em>실제로 만든 화면입니다</em></h2>
+  <p class="sub">탭 다섯 개가 전부입니다. 아래는 데모 데이터가 들어간 실제 앱 화면입니다.</p>
+  <div class="shots">
+    <figure><img src="shots/home.png" alt="병원 소식"><figcaption>병원 소식 <span>첫 화면</span></figcaption></figure>
+    <figure><img src="shots/visits.png" alt="진료 기록"><figcaption>진료 기록 <span>회차·입원·검진·동의서</span></figcaption></figure>
+    <figure><img src="shots/cases.png" alt="치료 사례"><figcaption>치료 사례 <span>442건 검색</span></figcaption></figure>
+    <figure><img src="shots/life.png" alt="생활기록"><figcaption>생활기록 <span>평소를 남긴다</span></figcaption></figure>
+    <figure><img src="shots/profile.png" alt="내 정보"><figcaption>내 정보 <span>알림 · 프로필</span></figcaption></figure>
+  </div>
+  <p class="kicker">다음 장부터 <b>보호자가 실제로 원하는 것</b> 순서로 하나씩 보시겠습니다.</p>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="니즈① 오늘 무슨 진료를 받았나">
+  <p class="eyebrow">Ⅲ. 보호자 앱 — 니즈 ①</p>
+  <h2>“오늘 우리 아이가 <em>무슨 진료를 받았나</em>”</h2>
+  <div class="shotrow">
+    <img src="shots/report.png" alt="진료 리포트">
+    <div>
+      <ul class="pts">
+        <li><i>1</i><span><b>모든 진료마다 나갑니다.</b> 진료 회차는 어떤 환자에게든 반드시 생기므로,
+          앱이 말을 걸 기회가 <b>방문할 때마다</b> 생깁니다.</span></li>
+        <li><i>2</i><span><b>“지난 방문 대비 변화”는 시스템이 계산합니다</b> —
+          직전 회차의 주 증상과 체중 증감. 수의사가 넣는 건 <b>주 증상 한 줄과 코멘트뿐</b>(30초).</span></li>
+        <li><i>3</i><span><b>입원했으면 그 아래에 붙습니다.</b> “그게 어느 진료였더라”를 되짚지 않아도 됩니다.</span></li>
+      </ul>
+      <div class="note red" style="margin-top:14px">
+        ⚠️ <b>진료 원문과 처방 상세는 넣지 않습니다.</b> 의료진 축약어와 감별진단이 섞여 있어
+        보호자가 검색해 보고 불안해하거나 확정 진단으로 오해합니다. <b>분쟁의 소지</b>이기도 합니다.
+      </div>
+    </div>
+  </div>
+  <p class="kicker">보내기 전 <b>보호자가 볼 화면 그대로 미리보기</b>가 뜹니다 — 미리보기가 곧 실제 발송물입니다.</p>
 </section>
 
 <!-- 8 -->
-<section class="slide" data-sec="Ⅲ 플랫폼" data-t="셋이 각자 얻는 것">
-  <p class="eyebrow">Ⅲ. 무엇을 만드나 01</p>
-  <h2>셋이 <em>각자 얻는 것</em>이 있어야 돕니다</h2>
-  <div class="grid g3">
-    <div class="card good"><div class="t">보호자</div>
-      <div class="d" style="font-size:14.5px;line-height:1.8">
-        · 매 진료마다 <b>리포트</b><br>· 입원 중 <b>매일 경과</b><br>· 물어보면 <b>어디로 갈지</b><br>
-        · 검진 결과를 <b>한글 문장으로</b><br>· 종이 없는 <b>전자 동의서</b></div></div>
-    <div class="card ref"><div class="t">1차 병원</div>
-      <div class="d" style="font-size:14.5px;line-height:1.8">
-        · 내가 보낸 환자의 <b>2차 진료 기록</b><br>· 입원·퇴원·환송 <b>알림</b><br>
-        · 경미한 환자를 <b>돌려받음</b><br>· <b>“SD 자매병원”</b> 표시<br>
-        <span style="color:var(--violet);font-weight:700">→ 옆 병원이 못 주는 것</span></div></div>
-    <div class="card now"><div class="t">SD (2차)</div>
-      <div class="d" style="font-size:14.5px;line-height:1.8">
-        · <b>레퍼 유입 증가</b><br>· 재방문 · 바이럴<br>· 전화 응대 감소<br>
-        · 어느 병원이 <b>얼마나 보내는지</b> 데이터<br>· 축적되는 <b>진료·생활 데이터</b></div></div>
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="니즈② 입원 중 하루 종일 궁금하다">
+  <p class="eyebrow">Ⅲ. 보호자 앱 — 니즈 ②</p>
+  <h2>“입원시켜 놓고 <em>하루 종일 궁금합니다</em>”</h2>
+  <div class="grid g2" style="align-items:start">
+    <div>
+      <div class="card good" style="margin-bottom:14px">
+        <div class="t">입원 일일 리포트 — 매일 한 번</div>
+        <div class="d" style="font-size:14.5px;line-height:1.85">
+          오늘 사진 · <b>밥을 잘 먹었나</b> · <b>잘 쌌나</b> · 담당의 한 줄<br>
+          그리고 퇴원할 때 <b>종합 리포트를 PDF 로</b> — 캡처해서 자랑하게 되는 물건입니다.</div>
+      </div>
+      <div class="note">
+        <b>수치는 내보내지 않습니다.</b> “38.4”는 안심을 주지 못하고 검색해 보면 더 불안해집니다.
+        체온·심박은 계속 쌓되 <b>의료진 화면에서만</b> 봅니다.
+      </div>
+    </div>
+    <div>
+      <div class="card book" style="margin-bottom:14px">
+        <div class="t">병동에서는 30초 안에 끝나야 합니다</div>
+        <div class="d" style="font-size:14.5px;line-height:1.85">
+          자유 서술이 아니라 <b>정해진 선택지</b>입니다 — 매일 문장을 쓰게 하면 며칠 만에 끊깁니다.<br>
+          카메라 즉시 실행 · 어제 값 프리필 · <b>한 화면에서 발송</b>.</div>
+      </div>
+      <div class="note teal">
+        <b>작성과 발송을 나눴습니다.</b> 병동에서 채우는 사람(간호사)과
+        보호자에게 내보낼지 정하는 사람(수의사)이 다르기 때문입니다.
+      </div>
+    </div>
   </div>
-  <div class="note teal" style="margin-top:18px">
-    <b>어느 하나라도 손해면 그 고리에서 끊깁니다.</b>
-    1차 병원이 “환자 뺏긴다”고 느끼면 의뢰가 끊기고, 보호자가 안 쓰면 1차 병원이 얻을 게 없어집니다.
-  </div>
-  <p class="kicker">그래서 <b>경미한 환자는 1차 병원으로 돌려보냅니다</b> — 뒤에서 다시 말씀드립니다.</p>
+  <p class="kicker">불안이 가장 큰 구간이라 <b>밀도를 높였습니다</b> — 입원 환자는 회차 리포트와 일일 리포트를 <b>둘 다</b> 받습니다.</p>
 </section>
 
 <!-- 9 -->
-<section class="slide" data-sec="Ⅲ 플랫폼" data-t="이미 만들어 둔 것">
-  <p class="eyebrow">Ⅲ. 무엇을 만드나 02</p>
-  <h2>이 사업은 <em>0에서 시작하지 않습니다</em></h2>
-  <p class="sub">아래는 이미 만들어져 동작 중입니다. 데모로 지금 보실 수 있습니다.</p>
-  <div class="grid g4" style="gap:10px">
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="니즈③ 평소를 기억 못 한다">
+  <p class="eyebrow">Ⅲ. 보호자 앱 — 니즈 ③</p>
+  <h2>“<em>평소를 기억하지 못합니다</em>” — 생활기록</h2>
+  <div class="shotrow">
+    <img src="shots/life.png" alt="생활기록">
+    <div>
+      <ul class="pts">
+        <li><i>1</i><span>문의 1위가 <b>식욕 부진</b>인데 가장 답하기 어려웠습니다.
+          원인이 제각각이어서만이 아니라 <b>평소를 몰라서</b>입니다.</span></li>
+        <li><i>2</i><span>체중과 식사가 쌓이면 “밥을 안 먹어요”가
+          <b>“3일 전부터 평소의 절반”</b>이라는 데이터가 됩니다.</span></li>
+        <li><i>3</i><span><b>저장 버튼이 없습니다.</b> 칩을 누르면 그 자리에서 저장됩니다 —
+          한 번 더 누르게 하면 그 한 번을 안 누릅니다.</span></li>
+        <li><i>4</i><span>먹이는 것은 <b>사료·간식·영양제·다른 병원 약을 한 목록</b>으로.
+          <b>고친 날이 곧 “사료 바꾼 날”</b>이라 따로 묻지 않아도 됩니다.</span></li>
+      </ul>
+      <div class="note teal" style="margin-top:14px">
+        이 목록이 뒤에 나올 <b>맞춤 사료·영양제 추천의 재료</b>가 됩니다.
+      </div>
+    </div>
+  </div>
+  <p class="kicker">보호자가 <b>매일 열 이유</b>가 생기고, 우리는 <b>진료 사이의 공백</b>을 메웁니다.</p>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="니즈④ 물어볼 데가 없다 — AI 채팅">
+  <p class="eyebrow">Ⅲ. 보호자 앱 — 니즈 ④ · <b style="color:var(--amber)">여기가 차별화입니다</b></p>
+  <h2>“증상이 생겼는데 <em>물어볼 데가 없습니다</em>”</h2>
+  <p class="sub">지금 카카오톡 채널에는 <b>“증상 상담은 진행하지 않습니다”</b>가 나갑니다 —
+    표본 105개 대화에서만 <b>1,952번</b>. 그런데도 보호자는 <b>194건</b>의 증상을 적어 보냈습니다.
+    실제 상담에서 <b>원격으로 끝난 건 3%</b>뿐이라, 우리가 할 일은 진단이 아니라 <b>분류</b>입니다.</p>
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="card now"><div class="t">지금 오세요</div><div class="d">발작 · 호흡곤란 · 소변 못 봄 · 다량 출혈<br>+ 전화 연결</div></div>
+    <div class="card book"><div class="t">우리 병원 예약</div><div class="d">중등도<br>+ 그때까지 지켜볼 것</div></div>
+    <div class="card ref"><div class="t">1차 병원으로</div><div class="d">경미 + 의뢰받은 환자<br>+ 그쪽에 먼저 알림</div></div>
+    <div class="card vet"><div class="t">담당의 확인 후</div><div class="d">판단이 갈리는 것<br>문진을 채워 넘김</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="note teal"><b>세 가지를 함께 읽습니다</b> — ① SD 진료 기록(수술·입원·처방)
+      ② 생활기록 ③ 교과서·논문. 같은 “밥을 안 먹어요”도 <b>어제 수술한 아이와 3년째 건강한 아이가 다릅니다.</b></div>
+    <div class="note red"><b>나가는 문장은 원장님이 승인한 것만</b>입니다. AI 는 고르기만 하고 만들지 않습니다.
+      초안 <b>32건</b>을 미리 써 두었습니다.</div>
+  </div>
+  <p class="kicker">이 답을 내려면 <b>그 아이의 진료 기록</b>이 있어야 합니다 —
+    <b>EMR 을 가진 병원만 만들 수 있는 기능</b>입니다.</p>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-sec="Ⅲ 보호자 앱" data-t="채팅 — 문 일곱 개와 담당의 초안">
+  <p class="eyebrow">Ⅲ. 보호자 앱 — 니즈 ④ 이어서</p>
+  <h2>흐름은 <em>문 일곱 개</em>, 담당의에게는 <em>근거를 붙여</em> 넘깁니다</h2>
+  <div class="gates">
+    <div class="gate g0"><span class="gn">문 0</span><div class="gt">응급인가</div><div class="gd">걸리면 여기서 끝</div></div>
+    <div class="gate g1"><span class="gn">문 1</span><div class="gt">기록을 읽는다</div><div class="gd">아래 전부가 갈린다</div></div>
+    <div class="gate"><span class="gn">문 2</span><div class="gt">어느 상황</div><div class="gd">입원·우리 처치·새 증상</div></div>
+    <div class="gate"><span class="gn">문 3</span><div class="gt">우리 것과 얽혔나</div><div class="gd">우리 약·관리 중 질환</div></div>
+    <div class="gate"><span class="gn">문 4</span><div class="gt">증상의 무게</div><div class="gd">응급·중등도·경미</div></div>
+    <div class="gate"><span class="gn">문 5</span><div class="gt">어디로</div><div class="gd">앞 장의 네 칸</div></div>
+    <div class="gate g6"><span class="gn">문 6</span><div class="gt">내보내도 되나</div><div class="gd">승인 문장만 자동</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.1fr 1fr; gap:20px; align-items:start">
+    <div class="draft">
+      <div class="dh"><span>담당의 화면 — 답장 초안</span><span style="color:var(--faint)">슈슈 · 22:14</span></div>
+      <div class="db">
+        보호자: <b>“항생제 먹고 나서 녹변을 봐요”</b><br>
+        <b>초안 —</b> 항생제를 먹는 동안 <b>녹변은 흔한 부작용</b>입니다. 임의로 끊지 마시고 3~4일 지켜봐 주세요.
+        <div class="refs">
+          <div class="refln"><span class="tag tb">교과서</span><span>Ettinger, 항생제 관련 장염 p.1512</span></div>
+          <div class="refln"><span class="tag tp">논문</span><span>Antimicrobial-associated diarrhea in dogs, <i>JVIM</i> 2019</span></div>
+          <div class="refln"><span class="tag th">우리 기록</span><span>같은 문의에 병원이 한 답변 · 생활기록 사료 교체 없음</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="note red" style="margin-bottom:12px">
+        <b>응급 선별이 기록 조회보다 앞입니다.</b> 조회가 실패하거나 <b>처음 오는 아이</b>여도 그 답은 나가야 합니다.
+      </div>
+      <div class="note">
+        <b>근거를 붙이는 이유</b> — 담당의가 읽고 <b>확인만</b> 하면 됩니다.
+        “주치의 확인 후” 왕복이 한 번으로 줄고, <b>AI 가 지어낸 문장인지</b>도 바로 가릴 수 있습니다.<br>
+        교과서 PDF 는 <b>이미 보유</b>. 질병별 논문은 미리 모아 둡니다.
+      </div>
+    </div>
+  </div>
+  <p class="kicker">지켜야 할 규칙을 <b>목록이 아니라 순서로</b> 바꿨습니다 —
+    사람이 기억해야 하는 규칙은 언젠가 빠집니다.</p>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-sec="Ⅳ 1차·직원" data-t="1차 병원이 보는 것">
+  <p class="eyebrow">Ⅳ. 1차 병원이 얻는 것</p>
+  <h2>1차 병원에는 <em>세 단계로</em> 드립니다</h2>
+  <div class="grid g3" style="margin-bottom:16px">
+    <div class="card"><div class="t" style="color:var(--muted)">① 열람</div>
+      <div class="d">자기가 의뢰한 환자의 <b>2차 진료 기록 · 환송 소견서 · 상태 알림</b>.
+        아무것도 설치하지 않고 링크만 받으면 됩니다.</div></div>
+    <div class="card ref"><div class="t">② 회송 수신</div>
+      <div class="d">경미한 증상의 보호자를 <b>채팅이 그 병원으로 안내</b>하고, <b>그쪽에 먼저 알립니다.</b></div></div>
+    <div class="card good"><div class="t">③ 자매병원</div>
+      <div class="d">앱·리포트·홈페이지에 <b>“SD동물의료센터 자매병원”</b> 명시.
+        옆 병원이 못 하는 말을 그쪽은 할 수 있게 됩니다.</div></div>
+  </div>
+  <div class="note teal">
+    <b>회송은 우리 매출을 넘기는 게 아닙니다.</b> 1차 원장님이 의뢰를 끊는 가장 큰 이유는
+    <b>“보냈더니 그쪽이 계속 데리고 있더라”</b>이고, 회송은 <b>매번 그 반대 증거</b>를 만들어 보여줍니다.
+    ⚠️ 단 우리가 수술한 부위 · 처방한 약 · 진행 중 질환은 <b>경미로 내리지 않습니다.</b>
+  </div>
+  <p class="kicker">묶는 장치가 <b>계약이 아니라 구조</b>입니다 — ③을 유지하려면 관계가 살아 있어야 합니다.</p>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-sec="Ⅳ 1차·직원" data-t="직원이 보는 것">
+  <p class="eyebrow">Ⅳ. 직원이 보는 것</p>
+  <h2>보호자가 남긴 것은 <em>진료 화면에서 바로</em> 보입니다</h2>
+  <div class="shotwide">
+    <img src="shots/staff-life.png" alt="직원 EMR 생활기록 화면">
+  </div>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card tint"><div class="t" style="font-size:15px">일 · 주 · 월</div>
+      <div class="d">묻는 질문이 다릅니다 — <b>지난주에 무슨 일이 있었나 / 나아지고 있나 / 몇 달째 이런가.</b></div></div>
+    <div class="card tint"><div class="t" style="font-size:15px">좋음·주의·경고 분포</div>
+      <div class="d">한 달 치에서 알고 싶은 건 “14일에 뭘 골랐나”가 아니라 <b>“안 좋은 날이 늘고 있나”</b>입니다.</div></div>
+    <div class="card tint"><div class="t" style="font-size:15px">근거가 부족하면 말하지 않는다</div>
+      <div class="d">기록된 날이 <b>7일 미만이면 비율을 내지 않습니다</b> — 근거 없이 “평소보다 적다”고 하지 않습니다.</div></div>
+  </div>
+  <p class="kicker">⚠️ 체중은 <b>집 저울과 병원 저울을 구분</b>해 저장합니다 — 섞이면 리포트의 “지난 방문 대비”가 오염됩니다.</p>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-sec="Ⅴ 확장" data-t="확장 — 사료·영양제, 1차 보급">
+  <p class="eyebrow">Ⅴ. 기대효과와 확장</p>
+  <h2>그다음에 <em>열리는 것</em></h2>
+  <div class="grid g2" style="align-items:start">
+    <div>
+      <div class="card good" style="margin-bottom:12px">
+        <div class="t">맞춤 사료 · 영양제</div>
+        <div class="d" style="font-size:14.5px;line-height:1.8">
+          이미 병원에서 파는 것입니다. 달라지는 건 <b>무엇을 근거로 권하느냐</b>입니다 —
+          <b>검진 수치 + 병력 + 지금 먹이는 것</b>(생활기록).<br>
+          보호자는 <b>왜 이걸 먹여야 하는지</b>를 듣고, 회송한 1차 병원도 같이 팝니다.</div>
+      </div>
+      <div class="card ref">
+        <div class="t">1차 병원에 PACS · EMR 보급</div>
+        <div class="d" style="font-size:14.5px;line-height:1.8">
+          이미 친한 2차가 있는 곳은 <b>관계로 못 이깁니다.</b> 대신 <b>마찰</b>로 이깁니다 —
+          기존 2차에 보내려면 전화하고 CD 굽고 소견서를 써야 하는데, 우리 화면에서는 <b>클릭 한 번</b>입니다.</div>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:15px;font-weight:800;color:var(--muted);margin-bottom:10px">왜 지금 우리가 먼저인가</p>
+      <table>
+        <tr><th></th><th style="text-align:center">2차 기록</th><th style="text-align:center">생활기록</th><th style="text-align:center">답변 자산</th></tr>
+        <tr><td>AI 스타트업</td><td class="no">✕</td><td class="no">△</td><td class="no">✕</td></tr>
+        <tr><td>기존 동물병원 EMR</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td></tr>
+        <tr><td>펫보험 · 펫커머스</td><td class="no">✕</td><td class="no">△</td><td class="no">✕</td></tr>
+        <tr><td>다른 2차 병원</td><td class="yes">○</td><td class="no">✕</td><td class="yes">○</td></tr>
+        <tr class="hi"><td>SD</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td></tr>
+      </table>
+      <div class="note red" style="margin-top:12px">
+        ⚠️ <b>영구적인 해자는 아닙니다.</b> 다른 2차 병원은 ①③을 이미 갖고 있습니다.
+        막고 있는 건 <b>“2차 병원은 소프트웨어를 안 만든다”는 관성</b>뿐 — <b>속도가 방어력</b>입니다.
+      </div>
+    </div>
+  </div>
+  <p class="kicker">확장은 <b>보호자가 실제로 쓰는지 숫자로 확인한 뒤</b>에 결정합니다.</p>
+</section>
+
+<!-- 15 -->
+<section class="slide" data-sec="Ⅵ 마무리" data-t="지금 상태">
+  <p class="eyebrow">Ⅵ. 마무리</p>
+  <h2>지금 상태</h2>
+  <div class="grid g4" style="gap:10px; margin-bottom:16px">
     <div class="done"><span class="ck">✓</span>본원 EMR</div>
     <div class="done"><span class="ck">✓</span>진료 리포트</div>
     <div class="done"><span class="ck">✓</span>입원 일일 리포트</div>
@@ -394,427 +592,57 @@
     <div class="done"><span class="ck">✓</span>병원 소식 · 쿠폰</div>
     <div class="done"><span class="ck">✓</span>1차병원 포털</div>
     <div class="done"><span class="ck">✓</span>레퍼 대시보드</div>
-    <div class="done"><span class="ck">✓</span>웹 푸시 알림</div>
+    <div class="done"><span class="ck">✓</span>알림 (웹 푸시)</div>
     <div class="done"><span class="ck">✓</span>생활기록</div>
     <div class="done todo"><span class="ck">·</span>AI 채팅</div>
-    <div class="done todo"><span class="ck">·</span>담당의 초안 + 근거</div>
     <div class="done todo"><span class="ck">·</span>맞춤 사료·영양제</div>
-    <div class="done todo"><span class="ck">·</span>1차병원 EMR·PACS</div>
+    <div class="done todo"><span class="ck">·</span>1차병원 PACS·EMR</div>
+    <div class="done todo"><span class="ck">·</span>AI 영상 판독</div>
   </div>
-  <p class="kicker">남은 것의 중심은 <b>AI 채팅</b>입니다. 여기부터가 그 이야기입니다.</p>
-</section>
-
-<!-- 10 -->
-<section class="slide" data-sec="Ⅲ 플랫폼" data-t="진단하지 않고 분류한다">
-  <p class="eyebrow">Ⅲ. 무엇을 만드나 03</p>
-  <h2>AI 채팅 — <em>진단하지 않고 어디로 갈지만</em> 정합니다</h2>
-  <p class="sub">지금 이 자리에는 <b>“증상 상담은 채널에서 진행하지 않습니다”</b>가 나갑니다
-    — 표본 105개 대화에서만 <b>1,952번</b>. 그런데도 보호자는 <b>194건</b>의 증상을 적어 보냈습니다.<br>
-    실제 상담에서 <b>원격으로 끝난 건 3%</b>뿐이라, 우리가 할 일은 진단이 아니라 <b>분류</b>입니다.</p>
-  <div class="grid g4">
-    <div class="card now"><div class="t">지금 오세요</div>
-      <div class="d">발작 · 호흡곤란 · 소변 못 봄 · 다량 출혈 · 수술 부위 벌어짐<br><br>+ 전화 연결</div></div>
-    <div class="card book"><div class="t">우리 병원 예약</div>
-      <div class="d">중등도<br>“내일 오전으로 도와드릴게요”<br><br>+ 그때까지 지켜볼 것</div></div>
-    <div class="card ref"><div class="t">1차 병원으로</div>
-      <div class="d">경미 + 의뢰받은 환자<br>“○○동물병원이 빠릅니다”<br><br>+ 그쪽에 먼저 알림</div></div>
-    <div class="card vet"><div class="t">담당의 확인 후</div>
-      <div class="d">판단이 갈리는 것<br>문진을 채워 넘김<br><br>+ 왕복을 한 번으로</div></div>
-  </div>
-  <p class="kicker">지금은 이 판정을 <b>아무도 하지 않습니다</b> — 보호자가 검색하고 스스로 정합니다.</p>
-</section>
-
-<!-- 11 -->
-<section class="slide" data-sec="Ⅲ 플랫폼" data-t="문 일곱 개">
-  <p class="eyebrow">Ⅲ. 무엇을 만드나 04</p>
-  <h2>흐름은 <em>문 일곱 개</em>입니다</h2>
-  <div class="gates">
-    <div class="gate g0"><span class="gn">문 0</span><div class="gt">응급인가</div><div class="gd">걸리면 여기서 끝</div></div>
-    <div class="gate g1"><span class="gn">문 1</span><div class="gt">기록을 읽는다</div><div class="gd">아래 전부가 갈린다</div></div>
-    <div class="gate"><span class="gn">문 2</span><div class="gt">어느 상황</div><div class="gd">입원·우리 처치·새 증상</div></div>
-    <div class="gate"><span class="gn">문 3</span><div class="gt">우리 것과 얽혔나</div><div class="gd">우리 약·관리 중 질환</div></div>
-    <div class="gate"><span class="gn">문 4</span><div class="gt">증상의 무게</div><div class="gd">응급·중등도·경미</div></div>
-    <div class="gate"><span class="gn">문 5</span><div class="gt">어디로</div><div class="gd">앞 장의 네 칸</div></div>
-    <div class="gate g6"><span class="gn">문 6</span><div class="gt">내보내도 되나</div><div class="gd">승인 문장만 자동</div></div>
-  </div>
-  <div class="grid g2">
-    <div class="note red"><b>응급 선별이 기록 조회보다 앞입니다.</b>
-      조회가 실패하거나 <b>처음 오는 아이</b>여도 그 답은 나가야 합니다.</div>
-    <div class="note"><b>회송을 묻는 곳은 문 4의 「경미」 한 칸뿐</b>이고,
-      거기 닿으려면 문 2·3을 통과해야 합니다.</div>
-  </div>
-  <p class="kicker">지켜야 할 규칙을 <b>목록이 아니라 순서로</b> 바꿨습니다 —
-    사람이 기억해야 하는 규칙은 언젠가 빠집니다.</p>
-</section>
-
-<!-- 12 -->
-<section class="slide" data-sec="Ⅲ 플랫폼" data-t="세 가지를 함께 읽는다">
-  <p class="eyebrow">Ⅲ. 무엇을 만드나 05</p>
-  <h2>일반 챗봇과 다른 점 — <em>세 가지를 함께 읽습니다</em></h2>
-  <svg viewBox="0 0 1080 230" style="width:100%;height:230px">
-    <g opacity=".85">
-      <circle cx="300" cy="108" r="96" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2.5"/>
-      <circle cx="428" cy="108" r="96" fill="#eff5ff" stroke="#2563eb" stroke-width="2.5"/>
-      <circle cx="364" cy="162" r="96" fill="#fff7ed" stroke="#d97706" stroke-width="2.5"/></g>
-    <g text-anchor="middle" font-weight="800">
-      <text x="242" y="72" font-size="14.5" fill="#0b6f66">SD 진료 기록</text>
-      <text x="242" y="90" font-size="11" font-weight="600" fill="#6c7a88">수술·입원·처방·검진</text>
-      <text x="490" y="72" font-size="14.5" fill="#2563eb">생활기록</text>
-      <text x="490" y="90" font-size="11" font-weight="600" fill="#6c7a88">보호자가 남긴 평소</text>
-      <text x="364" y="222" font-size="14.5" fill="#b45309">교과서 · 논문 · 이 병원의 답변</text>
-      <text x="364" y="132" font-size="16" fill="#12212f">맞춤 답변</text></g>
-    <g font-size="14.5" fill="#3d4f5c">
-      <text x="600" y="56">같은 <tspan font-weight="800" fill="#12212f">“밥을 안 먹어요”</tspan> 라도</text>
-      <text x="600" y="94">· 어제 수술한 아이</text>
-      <text x="600" y="126">· 항암 3차 중인 아이</text>
-      <text x="600" y="158">· 3년째 건강하던 아이</text>
-      <text x="600" y="198" font-weight="800" fill="#dc2626">전부 다른 문제입니다.</text></g>
-  </svg>
-  <p class="kicker">그 셋을 구분할 수 있는 건 우리뿐입니다 — <b>기록이 우리한테 있으니까요.</b></p>
-</section>
-
-<!-- 13 -->
-<section class="slide" data-sec="Ⅲ 플랫폼" data-t="생활기록">
-  <p class="eyebrow">Ⅲ. 무엇을 만드나 06</p>
-  <h2>생활기록 — <em>보호자가 남기는 평소</em></h2>
-  <div class="grid" style="grid-template-columns:236px 1fr; gap:32px; align-items:start">
-    <div class="phone">
-      <div class="ph">오늘 슈슈는 어땠나요 <span>8/4</span></div>
-      <div class="prow"><span class="pl">식사</span><div class="chips">
-        <span class="chip">평소만큼</span><span class="chip on a">조금 남김</span><span class="chip">거의 안 먹음</span></div></div>
-      <div class="prow"><span class="pl">배변</span><div class="chips">
-        <span class="chip on">정상</span><span class="chip">묽음</span><span class="chip">못 봄</span></div></div>
-      <div class="prow"><span class="pl">활력</span><div class="chips">
-        <span class="chip on">평소만큼</span><span class="chip">처져 있음</span></div></div>
-      <div class="prow"><span class="pl">체중</span><div class="chips"><span class="chip">4.06 kg</span></div></div>
-      <div class="prow"><span class="pl">먹이는 것</span><div class="chips">
-        <span class="chip">힐스 c/d</span><span class="chip">츄르</span><span class="chip">관절 영양제</span><span class="chip">＋</span></div></div>
-      <div style="font-size:9.5px;color:var(--faint);text-align:center">고른 것만 저장돼요</div>
-    </div>
-    <ul class="pts">
-      <li><i>1</i><span><b>문의 1위가 식욕 부진인데 가장 답하기 어려웠습니다.</b>
-        원인이 제각각이어서만이 아니라 <b>평소를 몰라서</b>입니다.</span></li>
-      <li><i>2</i><span>체중과 식사가 쌓이면 “밥을 안 먹어요”가
-        <b>“3일 전부터 평소의 절반”</b>이라는 데이터가 됩니다.</span></li>
-      <li><i>3</i><span><b>탭 몇 번이면 끝납니다.</b> 저장 버튼도 없습니다 —
-        한 번 더 누르게 하면 그 한 번을 안 누릅니다.</span></li>
-      <li><i>4</i><span>입에 들어가는 건 <b>사료·간식·영양제·다른 병원 약을 한 목록</b>으로 받습니다.
-        <b>고친 날이 곧 “사료 바꾼 날”</b>이라 따로 묻지 않아도 됩니다.</span></li>
-      <li><i>5</i><span>이 목록이 뒤에 나올 <b>맞춤 사료·영양제 추천의 재료</b>가 됩니다.</span></li>
-    </ul>
-  </div>
-  <p class="kicker">보호자는 <b>매일 열 이유</b>가 생기고, 우리는 <b>진료 사이의 공백</b>을 메웁니다.</p>
-</section>
-
-<!-- 14 -->
-<section class="slide" data-sec="Ⅲ 플랫폼" data-t="담당의 초안 + 근거">
-  <p class="eyebrow">Ⅲ. 무엇을 만드나 07</p>
-  <h2>담당의에게는 <em>근거를 붙여</em> 넘깁니다</h2>
-  <p class="sub">AI 가 답을 대신 보내는 게 아니라, <b>담당의가 확인하는 시간을 줄이는 것</b>이 목적입니다.</p>
-  <div class="grid" style="grid-template-columns:1.15fr 1fr; gap:22px; align-items:start">
-    <div class="draft">
-      <div class="dh"><span>담당의 화면 — 답장 초안</span><span style="color:var(--faint)">슈슈 · 8/4 22:14</span></div>
-      <div class="db">
-        보호자: <b>“항생제 먹고 나서 녹변을 봐요”</b><br><br>
-        <b>초안 —</b> 항생제를 먹는 동안 <b>녹변·묽은 변은 흔한 부작용</b>입니다.
-        임의로 끊지 마시고 3~4일 지켜봐 주세요. 유산균은 <b>2시간 간격</b>을 두세요.
-        <div class="refs">
-          <div class="refln"><span class="tag tb">교과서</span>
-            <span>Ettinger, <i>Textbook of Veterinary Internal Medicine</i> — 항생제 관련 장염 p.1512</span></div>
-          <div class="refln"><span class="tag tp">논문</span>
-            <span>Antimicrobial-associated diarrhea in dogs, <i>JVIM</i> 2019</span></div>
-          <div class="refln"><span class="tag th">우리 기록</span>
-            <span>2026-03-11 같은 문의에 병원이 한 답변 · <b>생활기록</b> 3일 전 사료 교체 없음</span></div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <ul class="pts">
-        <li><i>①</i><span><b>왜 그 답인지가 같이 보입니다.</b> 담당의는 초안을 읽고 근거를 눌러 확인만 하면 됩니다.</span></li>
-        <li><i>②</i><span><b>AI 가 지어낸 문장인지 아닌지</b>를 바로 가릴 수 있습니다.</span></li>
-        <li><i>③</i><span>확인이 빨라지면 <b>“주치의 확인 후” 44% 의 왕복이 한 번으로</b> 줄어듭니다.</span></li>
-      </ul>
-      <div class="note" style="margin-top:16px">
-        <b>준비할 것</b> — 교과서 PDF 는 <b>이미 보유</b>하고 있습니다.
-        여기에 <b>질병별 논문을 미리 모아 저장</b>해 두면 근거의 폭이 넓어집니다.
-      </div>
-    </div>
-  </div>
-  <p class="kicker">보호자에게 나가는 문장은 여전히 <b>원장님이 승인한 것만</b>입니다.
-    근거는 <b>담당의 화면에만</b> 붙습니다.</p>
-</section>
-
-<!-- 15 -->
-<section class="slide" data-sec="Ⅲ 플랫폼" data-t="승인된 문장만">
-  <p class="eyebrow">Ⅲ. 무엇을 만드나 08</p>
-  <h2>보호자에게 나가는 문장은 <em>승인된 것만</em>입니다</h2>
-  <p class="sub">AI 가 문장을 만들지 않습니다. 승인된 답변을 상황에 맞게 고르고, 없으면 사람에게 넘깁니다.</p>
-  <div class="grid g3">
-    <div class="card good"><div class="t">A · 8건</div>
-      <div class="d">병원이 실제로 <b>같은 답을 한 문장</b>이 대화 백업에 있습니다.<br>확인만 하시면 바로 씁니다.</div></div>
-    <div class="card book"><div class="t">B · 18건</div>
-      <div class="d">교과서 근거는 있으나 <b>이 병원 답변 기록이 없습니다.</b><br>병원 기준으로 고쳐 주셔야 합니다.</div></div>
-    <div class="card now"><div class="t">C · 6건</div>
-      <div class="d">아이마다 답이 갈립니다.<br><b>자동 발송하지 않고</b> 필요한 정보만 받아 넘깁니다.</div></div>
-  </div>
-  <div class="note" style="margin-top:18px">
-    이 구조 때문에 <b>법적 리스크의 핵심이 방어됩니다</b> — 자동으로 나가는 말은 전부 수의사가 쓴 말입니다.
-    <b>진단·투약 지시는 하지 않습니다.</b>
-  </div>
-  <p class="kicker">답변 초안 <b>32건</b>을 미리 써 두었습니다. 승인/수정/삭제 <b>체크칸</b>이 붙어 있습니다.</p>
-</section>
-
-<!-- 16 -->
-<section class="slide" data-sec="Ⅲ 플랫폼" data-t="경미하면 1차로">
-  <p class="eyebrow">Ⅲ. 무엇을 만드나 09</p>
-  <h2>경미하면 <em>1차 병원으로 돌려보냅니다</em></h2>
-  <svg viewBox="0 0 1080 190" style="width:100%;height:190px">
-    <rect x="0" y="66" width="190" height="58" rx="14" fill="#12212f"/>
-    <text x="95" y="92" font-size="14.5" font-weight="800" fill="#fff" text-anchor="middle">보호자 질문</text>
-    <text x="95" y="110" font-size="11" fill="#9fb0bb" text-anchor="middle">“우리 애가 토해요”</text>
-    <path d="M198 95 L272 95" stroke="#9aa8b4" stroke-width="2.5" marker-end="url(#ar2)"/>
-    <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
-      <path d="M0 0 L9 4.5 L0 9 z" fill="#9aa8b4"/></marker></defs>
-    <rect x="276" y="60" width="146" height="70" rx="14" fill="#fff" stroke="#12212f" stroke-width="2.5"/>
-    <text x="349" y="88" font-size="13.5" font-weight="800" fill="#12212f" text-anchor="middle">기록으로</text>
-    <text x="349" y="107" font-size="13.5" font-weight="800" fill="#12212f" text-anchor="middle">무게 판정</text>
-    <g stroke-width="2.5" fill="none">
-      <path d="M430 78 C 500 78, 520 32, 590 32" stroke="#dc2626" marker-end="url(#arR)"/>
-      <path d="M430 95 L590 95" stroke="#d97706" marker-end="url(#arA)"/>
-      <path d="M430 112 C 500 112, 520 158, 590 158" stroke="#7c3aed" marker-end="url(#arV)"/></g>
-    <defs>
-      <marker id="arR" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#dc2626"/></marker>
-      <marker id="arA" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#d97706"/></marker>
-      <marker id="arV" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#7c3aed"/></marker></defs>
-    <g font-size="12" font-weight="800" text-anchor="middle">
-      <text x="510" y="26" fill="#dc2626">응급</text><text x="510" y="87" fill="#d97706">중등도</text>
-      <text x="510" y="152" fill="#7c3aed">경미 + 의뢰 환자</text></g>
-    <rect x="596" y="10" width="186" height="44" rx="12" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
-    <text x="689" y="38" font-size="14" font-weight="800" fill="#dc2626" text-anchor="middle">지금 SD 로</text>
-    <rect x="596" y="73" width="186" height="44" rx="12" fill="#fff7ed" stroke="#d97706" stroke-width="2"/>
-    <text x="689" y="101" font-size="14" font-weight="800" fill="#d97706" text-anchor="middle">SD 예약</text>
-    <rect x="596" y="136" width="186" height="44" rx="12" fill="#f6f2ff" stroke="#7c3aed" stroke-width="2"/>
-    <text x="689" y="164" font-size="14" font-weight="800" fill="#7c3aed" text-anchor="middle">1차 병원으로</text>
-    <g font-size="12.5" fill="#6c7a88">
-      <text x="800" y="152">＋ 그쪽에 <tspan font-weight="800" fill="#7c3aed">먼저 알림</tspan></text>
-      <text x="800" y="174">＋ <tspan font-weight="800" fill="#12212f">“그래도 저희로”</tspan> 항상 열어 둠</text></g>
-  </svg>
-  <div class="note teal" style="margin-top:8px">
-    우리 매출을 넘기는 것처럼 보이지만 반대입니다. 1차 원장님이 의뢰를 끊는 가장 큰 이유는
-    <b>“보냈더니 그쪽이 계속 데리고 있더라”</b>이고, 회송은 <b>매번 그 반대 증거를 만들어 보여줍니다.</b>
-  </div>
-  <p class="kicker">⚠️ 우리가 수술한 부위 · 우리가 처방한 약 · 진행 중인 질환은
-    <b>의뢰 환자여도 경미로 내리지 않습니다.</b></p>
-</section>
-
-<!-- 17 -->
-<section class="slide" data-sec="Ⅳ 연결" data-t="전체 구조">
-  <p class="eyebrow">Ⅳ. 어떻게 연결되나</p>
-  <h2>하나의 클라우드에서 <em>셋이 같은 기록을</em> 봅니다</h2>
-  <svg viewBox="0 0 1080 300" style="width:100%;height:300px">
-    <rect x="340" y="0" width="400" height="58" rx="14" fill="#12212f"/>
-    <text x="540" y="24" font-size="15.5" font-weight="800" fill="#fff" text-anchor="middle">보호자 앱 — 하나뿐인 접점</text>
-    <text x="540" y="44" font-size="11.5" fill="#9fb0bb" text-anchor="middle">리포트 · 입원 경과 · 검진 · 동의서 · 생활기록 · AI 채팅</text>
-    <path d="M540 60 L540 84" stroke="#9aa8b4" stroke-width="2.5" marker-end="url(#ar3)"/>
-    <defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
-      <path d="M0 0 L9 4.5 L0 9 z" fill="#9aa8b4"/></marker></defs>
-    <rect x="286" y="88" width="508" height="56" rx="14" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2.5"/>
-    <text x="540" y="112" font-size="15" font-weight="800" fill="#0b6f66" text-anchor="middle">AI 채팅 — 어디로 갈지 판정</text>
-    <text x="540" y="131" font-size="11.5" fill="#6c7a88" text-anchor="middle">① 진료기록  ② 생활기록  ③ 교과서·논문</text>
-    <path d="M340 148 C 280 148, 258 176, 212 176" stroke="#7c3aed" stroke-width="2.5" fill="none" marker-end="url(#arV2)"/>
-    <path d="M740 148 C 800 148, 822 176, 868 176" stroke="#dc2626" stroke-width="2.5" fill="none" marker-end="url(#arR2)"/>
-    <defs>
-      <marker id="arV2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#7c3aed"/></marker>
-      <marker id="arR2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#dc2626"/></marker></defs>
-    <text x="286" y="142" font-size="11.5" font-weight="800" fill="#7c3aed">경미</text>
-    <text x="762" y="142" font-size="11.5" font-weight="800" fill="#dc2626">응급 · 중등도</text>
-    <rect x="30" y="158" width="184" height="76" rx="14" fill="#f6f2ff" stroke="#7c3aed" stroke-width="2.5"/>
-    <text x="122" y="184" font-size="15" font-weight="800" fill="#7c3aed" text-anchor="middle">1차 병원</text>
-    <text x="122" y="203" font-size="11" fill="#6c7a88" text-anchor="middle">열람 · 회송 수신</text>
-    <text x="122" y="221" font-size="11" font-weight="800" fill="#7c3aed" text-anchor="middle">SD 자매병원</text>
-    <rect x="866" y="158" width="184" height="76" rx="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
-    <text x="958" y="184" font-size="15" font-weight="800" fill="#dc2626" text-anchor="middle">SD (2차)</text>
-    <text x="958" y="203" font-size="11" fill="#6c7a88" text-anchor="middle">수술 · 정밀검사 · 입원</text>
-    <text x="958" y="221" font-size="11" font-weight="800" fill="#dc2626" text-anchor="middle">본원 EMR</text>
-    <path d="M222 182 C 400 182, 400 182, 858 182" stroke="#0f9b8e" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
-    <text x="540" y="176" font-size="12" font-weight="800" fill="#0f9b8e" text-anchor="middle">의뢰 →</text>
-    <text x="540" y="200" font-size="12" font-weight="800" fill="#0f9b8e" text-anchor="middle">← 환송 · 회신 · 회송</text>
-    <rect x="286" y="252" width="508" height="42" rx="12" fill="#f5f8f9" stroke="#e2e8ee" stroke-width="2"/>
-    <text x="540" y="272" font-size="13" font-weight="800" fill="#3d4f5c" text-anchor="middle">같은 클라우드 · 같은 기록 · 권한만 다름 (DB 가 강제)</text>
-    <text x="540" y="288" font-size="11" fill="#6c7a88" text-anchor="middle">직원=전체 · 1차병원=자기 의뢰 환자만 · 보호자=자기 반려동물만</text>
-  </svg>
-  <p class="kicker">앱을 병원마다 나누지 않는 이유가 여기 있습니다 —
-    <b>갈라지면 데이터가 갈라지고, 갈라지면 채팅이 읽을 게 없어집니다.</b></p>
-</section>
-
-<!-- 18 -->
-<section class="slide" data-sec="Ⅴ 기대효과" data-t="각자의 기대효과">
-  <p class="eyebrow">Ⅴ. 기대효과</p>
-  <h2>무엇이 <em>어떻게 좋아지나</em></h2>
-  <table>
-    <tr><th style="width:120px"></th><th style="width:300px">지금</th><th>플랫폼 이후</th></tr>
-    <tr><td><b>보호자</b></td><td>입원 중 하루 종일 궁금 · 물어볼 데가 없음</td>
-      <td>매 진료 리포트 · 매일 경과 · <b>물으면 어디로 갈지 답</b></td></tr>
-    <tr><td><b>1차 병원</b></td><td>보낸 환자가 어떻게 됐는지 전화로 물어봄</td>
-      <td>기록 열람 · 알림 · <b>경미 환자 회송</b> · <b>자매병원 표시</b></td></tr>
-    <tr class="hi"><td>SD</td><td>레퍼가 개인 친분에 달림 · 데이터 없음</td>
-      <td><b>보호자 만족 → 1차 신뢰 → 레퍼 증가</b> · 병원별 추이 데이터</td></tr>
-    <tr><td><b>직원</b></td><td>“주치의 확인 후” 왕복 · 입원 문의 전화</td>
-      <td>문진이 채워진 채로 도착 · <b>전화 문의 감소</b></td></tr>
-  </table>
-  <div class="note teal" style="margin-top:16px">
-    <b>가장 중요한 숫자 하나</b> — 회차 리포트 열람률. 보호자가 실제로 보는가.
-    <b>이게 낮으면 나머지가 전부 무의미합니다.</b> 그래서 6개월 운영 후 숫자를 보고 확장을 결정합니다.
-  </div>
-  <p class="kicker">확장은 <b>가설이 맞은 다음</b>입니다 — 검증 안 된 가설 위에 개발을 얹지 않습니다.</p>
-</section>
-
-<!-- 19 -->
-<section class="slide" data-sec="Ⅵ 확장성" data-t="맞춤 사료·영양제">
-  <p class="eyebrow">Ⅵ. 확장성 01</p>
-  <h2>확장 ① — <em>맞춤 사료 · 영양제</em></h2>
-  <p class="sub">이미 병원에서 팔고 있는 것입니다. 달라지는 건 <b>무엇을 근거로 권하느냐</b>입니다.</p>
-  <svg viewBox="0 0 1080 168" style="width:100%;height:168px">
-    <g>
-      <rect x="0" y="18" width="196" height="46" rx="11" fill="#e6f5f3" stroke="#0f9b8e" stroke-width="2"/>
-      <text x="98" y="40" font-size="13" font-weight="800" fill="#0b6f66" text-anchor="middle">건강검진 수치</text>
-      <text x="98" y="56" font-size="10.5" fill="#6c7a88" text-anchor="middle">신장·간·췌장·심장</text>
-      <rect x="0" y="74" width="196" height="46" rx="11" fill="#eff5ff" stroke="#2563eb" stroke-width="2"/>
-      <text x="98" y="96" font-size="13" font-weight="800" fill="#2563eb" text-anchor="middle">진단 · 처치 이력</text>
-      <text x="98" y="112" font-size="10.5" fill="#6c7a88" text-anchor="middle">췌장염·결석·알레르기</text>
-      <rect x="0" y="130" width="196" height="34" rx="11" fill="#fff7ed" stroke="#d97706" stroke-width="2"/>
-      <text x="98" y="152" font-size="13" font-weight="800" fill="#b45309" text-anchor="middle">지금 먹이는 것</text>
-    </g>
-    <g stroke="#9aa8b4" stroke-width="2" fill="none" marker-end="url(#ar4)">
-      <path d="M204 41 C 250 41, 250 84, 296 84"/><path d="M204 97 L296 90"/><path d="M204 147 C 250 147, 250 96, 296 96"/></g>
-    <defs><marker id="ar4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-      <path d="M0 0 L8 4 L0 8 z" fill="#9aa8b4"/></marker></defs>
-    <rect x="300" y="58" width="180" height="62" rx="13" fill="#12212f"/>
-    <text x="390" y="84" font-size="14" font-weight="800" fill="#fff" text-anchor="middle">근거를 갖춘</text>
-    <text x="390" y="104" font-size="14" font-weight="800" fill="#5fd3c5" text-anchor="middle">맞춤 추천</text>
-    <path d="M488 89 L556 89" stroke="#0f9b8e" stroke-width="2.5" fill="none" marker-end="url(#ar5)"/>
-    <defs><marker id="ar5" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
-      <path d="M0 0 L9 4.5 L0 9 z" fill="#0f9b8e"/></marker></defs>
-    <rect x="560" y="20" width="240" height="58" rx="12" fill="#fff" stroke="#0f9b8e" stroke-width="2"/>
-    <text x="680" y="44" font-size="13" font-weight="800" fill="#0b6f66" text-anchor="middle">보호자 — 왜 이걸 먹여야 하는지</text>
-    <text x="680" y="63" font-size="11" fill="#6c7a88" text-anchor="middle">“신장 수치가 올라 있어 이 처방식을”</text>
-    <rect x="560" y="100" width="240" height="58" rx="12" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
-    <text x="680" y="124" font-size="13" font-weight="800" fill="#7c3aed" text-anchor="middle">1차 병원 — 그쪽에서도 판매</text>
-    <text x="680" y="143" font-size="11" fill="#6c7a88" text-anchor="middle">회송한 환자의 후속 관리까지</text>
-    <text x="940" y="70" font-size="15" font-weight="800" fill="#12212f" text-anchor="middle">병원 매출</text>
-    <text x="940" y="95" font-size="15" font-weight="800" fill="#12212f" text-anchor="middle">＋ 리텐션</text>
-  </svg>
-  <p class="kicker">인터넷 추천과 다른 점은 <b>그 아이의 검진 수치와 병력을 보고 권한다</b>는 것입니다.
-    <b>생활기록이 그 재료</b>입니다.</p>
-</section>
-
-<!-- 20 -->
-<section class="slide" data-sec="Ⅵ 확장성" data-t="확장 로드맵">
-  <p class="eyebrow">Ⅵ. 확장성 02</p>
-  <h2>그다음 — <em>1차 병원 안으로</em></h2>
-  <div class="grid g4">
-    <div class="card"><div class="t" style="color:var(--muted)">① 뷰어 계정</div>
-      <div class="d">아무것도 설치 안 함. 링크 받아 로그인.<br><br>
-        <b>마찰 거의 0</b><br><span style="color:var(--teal-d);font-weight:700">▶ 지금</span></div></div>
-    <div class="card ref"><div class="t">② 회송 + 자매병원</div>
-      <div class="d">채팅이 그 병원으로 환자를 보내고, 표시를 달아 드립니다.<br><br>
-        <b>관계가 구조로 묶임</b></div></div>
-    <div class="card book"><div class="t">③ PACS</div>
-      <div class="d">영상 클라우드 백업 + AI 판독.<br>영상 장비 전송 설정만 하면 됩니다.<br><br>
-        <b>“공짜로 써보시죠”가 문을 엽니다</b></div></div>
-    <div class="card vet"><div class="t">④ EMR</div>
-      <div class="d">접수·수납·차트 + <b>원클릭 의뢰</b>.<br>전환 의사가 있는 곳만.<br><br>
-        <b>매일 우리 화면을 봅니다</b></div></div>
-  </div>
-  <div class="note" style="margin-top:18px">
-    <b>이미 친한 2차 병원이 있는 곳은 관계로 못 이깁니다.</b> 대신 <b>마찰</b>로 이깁니다 —
-    기존 2차에 보내려면 전화하고 CD 굽고 소견서를 써야 하는데, 우리 화면에서는 <b>클릭 한 번</b>입니다.
-  </div>
-  <p class="kicker">목표는 <b>왕십리 반경 → 서울 전역 → 경기 · 인천</b>입니다.
-    ③④ 는 <b>보호자 만족이 숫자로 확인된 뒤</b>에 결정합니다.</p>
-</section>
-
-<!-- 21 -->
-<section class="slide" data-sec="Ⅵ 확장성" data-t="왜 지금 우리가 먼저인가">
-  <p class="eyebrow">Ⅵ. 확장성 03</p>
-  <h2>왜 <em>지금 우리가 먼저</em>인가</h2>
-  <p class="sub">채팅이 답이 되려면 세 가지를 동시에 읽어야 합니다. 셋을 다 가진 곳이 없습니다.</p>
-  <table>
-    <tr><th></th><th style="text-align:center">① 2차 진료 기록</th><th style="text-align:center">② 생활기록</th><th style="text-align:center">③ 답변 자산</th></tr>
-    <tr><td>AI · 헬스케어 스타트업</td><td class="no">✕</td><td class="no">△</td><td class="no">✕</td></tr>
-    <tr><td>기존 동물병원 EMR <span style="color:var(--faint)">인투벳 2,000곳 · 이프렌즈 1,800곳</span></td>
-      <td class="no">✕ <span style="font-size:11.5px">1차만</span></td><td class="no">✕</td><td class="no">✕</td></tr>
-    <tr><td>펫보험 · 펫커머스 앱</td><td class="no">✕</td><td class="no">△</td><td class="no">✕</td></tr>
-    <tr><td>다른 2차 병원</td><td class="yes">○</td><td class="no">✕</td><td class="yes">○ <span style="font-size:11.5px;color:var(--faint)">안 씀</span></td></tr>
-    <tr class="hi"><td>SD 플랫폼</td><td class="yes">○</td><td class="yes">○</td><td class="yes">○</td></tr>
-  </table>
-  <div class="note red" style="margin-top:14px">
-    <b>다만 영구적인 해자는 아닙니다.</b> 다른 2차 병원은 ①③을 이미 갖고 있고, 빠진 ②는 앱 화면 하나면 채워집니다.
-    막고 있는 건 데이터가 아니라 <b>“2차 병원은 소프트웨어를 만들지 않는다”는 관성</b>뿐입니다.
-  </div>
-  <p class="kicker warn">지키는 것은 특허가 아니라 <b>선점</b>입니다 — <b>속도가 곧 방어력</b>입니다.</p>
-</section>
-
-<!-- 22 -->
-<section class="slide" data-sec="Ⅶ 마무리" data-t="지금 상태">
-  <p class="eyebrow">Ⅶ. 마무리 01</p>
-  <h2>지금 상태</h2>
-  <div class="grid g2" style="align-items:start">
-    <div class="card good"><div class="t">완료 — 이미 동작 중</div>
-      <div class="d" style="font-size:14.5px;line-height:1.9">
-        EMR · 진료/입원 리포트 · 병동 입력 화면 · 종합 리포트<br>
-        전자 동의서 · 건강검진 · 치료 사례 442건 · 병원 소식<br>
-        1차병원 포털 · 레퍼 대시보드 · 웹 푸시 알림 · <b>생활기록</b></div></div>
-    <div class="card book"><div class="t">남은 것 — AI 채팅</div>
-      <div class="d" style="font-size:14.5px;line-height:1.9">
-        기획은 끝나 있습니다. 상담 105건 분석 · 답변 초안 32건 · 흐름 설계까지
-        별도 문서에 정리돼 있습니다.<br><br>
-        <b>착수에 필요한 건 원장님의 목록 하나입니다.</b></div></div>
-  </div>
-  <div class="note" style="margin-top:18px">
+  <div class="note">
     <b>기간은 아직 적지 않았습니다.</b> 채팅의 일정은 개발량이 아니라
     <b>응급 목록 확정과 답변 검토 일정</b>이 정합니다. 그 둘이 정해지면 단계별로 산정해 드리겠습니다 —
     지금 숫자를 적으면 지킬 수 없는 약속이 됩니다.
   </div>
-  <p class="kicker">문 0~4 의 판정은 <b>모델 없이 규칙으로</b> 돕니다.
-    <b>1단계만 나가도</b> 지금의 “증상 상담은 하지 않습니다”를 대체합니다.</p>
+  <p class="kicker">채팅의 판정은 <b>모델 없이 규칙으로</b> 돕니다.
+    <b>1단계(응급 분류)만 나가도</b> 지금의 “증상 상담은 하지 않습니다”를 대체합니다.</p>
 </section>
 
-<!-- 23 -->
-<section class="slide cover" data-sec="Ⅶ 마무리" data-t="원장님이 정하실 것">
-  <p class="eyebrow">Ⅶ. 마무리 02 · 부탁드립니다</p>
-  <h1 style="font-size:42px; margin-bottom:30px">원장님이 정해 주셔야<br>시작되는 것 <span style="color:#5fd3c5">셋</span></h1>
+<!-- 16 -->
+<section class="slide cover" data-sec="Ⅵ 마무리" data-t="원장님이 정하실 것">
+  <p class="eyebrow">Ⅵ. 마무리 · 부탁드립니다</p>
+  <h1 style="font-size:42px; margin-bottom:28px">원장님이 정해 주셔야<br>시작되는 것 <span style="color:#5fd3c5">셋</span></h1>
   <div class="grid g3" style="gap:15px">
     <div style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:19px">
       <div style="font-size:28px;font-weight:800;color:#5fd3c5;line-height:1">①</div>
       <div style="font-size:17px;font-weight:800;margin:7px 0">“지금 오세요” 목록</div>
-      <div style="font-size:13px;color:#a9c0cc;line-height:1.65">응급 판정 기준.
-        <b style="color:#fff">이것만 정해지면 채팅 1단계가 바로 시작됩니다</b> — 답변 검토를 기다리지 않습니다.</div></div>
+      <div style="font-size:13px;color:#a9c0cc;line-height:1.7">응급 판정 기준.
+        <b style="color:#fff">이것만 정해지면 채팅 1단계가 바로 시작됩니다.</b></div></div>
     <div style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:19px">
       <div style="font-size:28px;font-weight:800;color:#5fd3c5;line-height:1">②</div>
       <div style="font-size:17px;font-weight:800;margin:7px 0">답변 초안 32건 검토</div>
-      <div style="font-size:13px;color:#a9c0cc;line-height:1.65">승인 / 수정 / 삭제로 표시만 해 주시면 됩니다.
+      <div style="font-size:13px;color:#a9c0cc;line-height:1.7">승인 / 수정 / 삭제로 표시만.
         <b style="color:#fff">채팅 2단계부터가 여기 걸립니다.</b></div></div>
     <div style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:16px; padding:19px">
       <div style="font-size:28px;font-weight:800;color:#5fd3c5;line-height:1">③</div>
       <div style="font-size:17px;font-weight:800;margin:7px 0">자매병원 기준</div>
-      <div style="font-size:13px;color:#a9c0cc;line-height:1.65">어느 병원에 달아 드릴지, 어떤 조건에서 내릴지.
-        <b style="color:#fff">아무나 달면 표시의 값이 0</b>이 됩니다.</div></div>
+      <div style="font-size:13px;color:#a9c0cc;line-height:1.7">어느 병원에 달지, 어떤 조건에서 내릴지.
+        <b style="color:#fff">아무나 달면 값이 0</b>이 됩니다.</div></div>
   </div>
-  <p style="margin-top:auto; padding-top:18px; border-top:1px solid rgba(255,255,255,.16); font-size:15px; color:#9fb0bb; line-height:1.7">
+  <p style="margin-top:auto; padding-top:18px; border-top:1px solid rgba(255,255,255,.16); font-size:15px; color:#9fb0bb; line-height:1.75">
     저희가 준비할 것 — <b style="color:#fff">질병별 논문 수집</b>(교과서 PDF 는 보유) ·
     <b style="color:#fff">1차 병원용 자료</b> · 단계별 견적.<br>
     상세 근거는 <b style="color:#fff">사업 기획서</b>와 <b style="color:#fff">AI 채팅 기획서</b>에 있습니다.
   </p>
 </section>
 
-</div>
+
 
 <div class="zone l" id="zl"></div><div class="zone r" id="zr"></div>
 <div id="bar"><i></i></div>
 <div id="hud">
   <button id="pv" aria-label="이전">‹</button>
-  <span class="pg"><b id="cur">1</b> / <span id="tot">22</span></span>
+  <span class="pg"><b id="cur">1</b> / <span id="tot">16</span></span>
   <button id="nx" aria-label="다음">›</button>
   <button id="og" aria-label="전체 보기">⊞</button>
 </div>

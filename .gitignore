@@ -31,3 +31,4 @@ next-env.d.ts
 # local data dumps & design request archives (never commit — data/ is multi-GB)
 data/
 *.zip
+docs/proposal/shots/.chrome/

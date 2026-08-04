@@ -2053,3 +2053,10 @@ button.media-thumb.media-open {
 .life-weight input { flex: 1 1 auto; width: auto; min-width: 0; }
 .life-weight > span { flex: 0 0 auto; }
 .life-chip { padding: 10px 13px; }
+
+/* 사진만 등록된 「먹이는 것」은 썸네일을 같이 보여준다 — 이름을 모르니 찍은 것이라 */
+.life-chip { display: inline-flex; align-items: center; gap: 7px; }
+.life-chip-thumb {
+  width: 22px; height: 22px; border-radius: 5px; object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, .08); flex: none;
+}

@@ -103,7 +103,7 @@ export default async function LifePage({
           species={patient.species}
           hasPrescription={(rx ?? []).length > 0}
           photos={photos}
-          intakeOptions={options.map((i) => ({ id: i.id, label: i.label }))}
+          intakeOptions={options.map((i) => ({ id: i.id, label: i.label, url: i.url }))}
           initial={{
             /* ⚠️ 기본은 전부 비어 있다. 어제 값을 끌어오거나 목록을 미리 체크해 두지 않는다 —
                안 적은 날과 "평소만큼이었던 날"은 다른 것이고, 그걸 우리가 지어내면 안 된다 */

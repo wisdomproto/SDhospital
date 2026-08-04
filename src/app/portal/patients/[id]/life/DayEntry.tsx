@@ -9,7 +9,8 @@ type Values = Record<FieldKey, string | null> & {
   intakes: string[];
 };
 
-export type IntakeOption = { id: string; label: string | null };
+/** 이름 없이 사진만 등록된 항목이 있어서 사진 주소도 같이 받는다 — 아래 주석 참고 */
+export type IntakeOption = { id: string; label: string | null; url: string | null };
 
 /**
  * 오늘 한 줄. **저장 버튼이 없다** —
@@ -107,7 +108,10 @@ export function DayEntry({
                 className={`life-chip tone-good${v.intakes.includes(o.id) ? " on" : ""}`}
                 aria-pressed={v.intakes.includes(o.id)}
               >
-                {o.label ?? "사진으로 기록"}
+                {/* ⚠️ 사진으로 등록한 이유가 **보호자가 약 이름을 모르기 때문**이다.
+                    글자만 띄우면 뭘 고르는지 알 수 없으니 썸네일을 함께 보여준다. */}
+                {o.url && <img src={o.url} alt="" className="life-chip-thumb" />}
+                {o.label ?? "사진"}
               </button>
             ))}
           </div>

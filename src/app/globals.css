@@ -1524,6 +1524,17 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
 .chat-ask:hover:not(:disabled) { border-color: var(--primary); color: var(--text); }
 .chat-ask:disabled { opacity: .55; cursor: default; }
 
+/* 채팅방 안 탭 — 입원 중일 때만 뜬다. 아래 탭바는 다섯 개에서 늘리지 않는다 */
+.chat-modes {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px;
+  padding: 4px; border-radius: 14px; background: var(--surface-soft);
+}
+.chat-modes button {
+  padding: 9px 8px; border: 0; border-radius: 11px; background: transparent;
+  font: inherit; font-size: .88rem; font-weight: 700; color: var(--muted); cursor: pointer;
+}
+.chat-modes button.active { background: white; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
 .chat-log { display: grid; gap: 8px; }
 .chat-bubble {
   max-width: 85%; padding: 11px 13px; border-radius: 16px;

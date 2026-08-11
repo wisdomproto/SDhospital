@@ -192,6 +192,8 @@ export async function buildPatientContext(supabase: Client, patientId: string) {
     recentRx: [...new Set(recentRx)] as string[],
     lastVisit: last ? { date: last.visit_date, complaint: last.chief_complaint } : null,
     checkupCount: (checkups ?? []).length,
+    /** 입원 중이면 채팅방 위에 탭이 생긴다 — 아니면 탭 자체가 없다 */
+    admittedAt: now?.admitted_at ?? null,
   };
 }
 
@@ -214,7 +216,21 @@ export function suggestQuestions(ctx: PatientContext): string[] {
   if (bad.length >= 3) qs.push("요즘 밥을 잘 안 먹는데 병원에 가야 할까요?");
 
   if (ctx.checkupCount) qs.push("지난 검진 결과에서 신경 써야 할 게 있나요?");
-  qs.push("지금 바로 병원에 가야 하는 신호는 뭔가요?");
+  qs.push("우리 애 전반적으로 건강 상태 좀 알려줘");
   qs.push("숨쉬는 게 좀 가빠 보이는데 어떻게 하죠?");
   return qs.slice(0, 6);
+}
+
+/**
+ * 입원 중일 때만 쓰는 질문들. **평소 질문과 섞지 않는다** —
+ * 아이가 병원에 있는 동안 보호자가 궁금한 건 좁고 매일 같다.
+ */
+export function admissionQuestions(): string[] {
+  return [
+    "지금 어떻게 지내고 있나요?",
+    "밥은 먹었나요?",
+    "오늘 사진 볼 수 있을까요?",
+    "언제쯤 퇴원할 수 있을까요?",
+    "면회를 가도 될까요?",
+  ];
 }

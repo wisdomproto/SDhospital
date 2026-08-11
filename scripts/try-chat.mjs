@@ -17,7 +17,9 @@ for (const l of fs.readFileSync(".env.local", "utf8").split("\n")) {
 }
 // actions.ts 의 SYSTEM 을 그대로 읽어 쓴다 — 베끼면 검증이 아니다
 const src = fs.readFileSync("src/app/portal/patients/[id]/chat/actions.ts", "utf8");
-const SYSTEM = src.slice(src.indexOf("const SYSTEM = `") + 16, src.indexOf("`;\n\nexport async function ask"));
+const SYSTEM = src
+  .slice(src.indexOf("const SYSTEM = `") + 16, src.indexOf("`;\n\nexport async function ask"))
+  .replaceAll("${HOSPITAL_PHONE}", "02-2039-0303"); // 템플릿 변수는 여기서 채운다
 
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 await sb.auth.signInWithPassword({ email: "1@example.com", password: "1234" });

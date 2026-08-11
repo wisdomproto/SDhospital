@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ask, type Turn } from "./actions";
+import { ask, type Triage, type Turn } from "./actions";
+import { HOSPITAL_PHONE } from "@/lib/hospital";
 
 /**
  * 샘플 채팅 — 물어보면 그 자리에서 답한다(주치의 확인 단계 없음).
@@ -19,10 +20,14 @@ export function ChatBox({
   suggestions: string[];
 }) {
   const [turns, setTurns] = useState<Turn[]>([]);
+  // 마지막 답의 분류. 「지금 전화」·「내일 예약」이면 번호를 찾게 하지 않고 버튼을 띄운다
+  const [triage, setTriage] = useState<Triage | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
+  // 한 번 앉아서 주고받은 덩어리를 묶는 값. 나중에 「슈슈 카드」를 갱신하는 단위가 된다
+  const threadId = useRef(crypto.randomUUID());
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -35,11 +40,14 @@ export function ChatBox({
     setTurns(next);
     setDraft("");
     setError(null);
+    setTriage(null);
     setPending(true);
-    const res = await ask(patientId, next);
+    const res = await ask(patientId, threadId.current, next);
     setPending(false);
-    if (res.ok) setTurns([...next, { role: "assistant", text: res.text }]);
-    else setError(res.error);
+    if (res.ok) {
+      setTurns([...next, { role: "assistant", text: res.text }]);
+      setTriage(res.triage);
+    } else setError(res.error);
   }
 
   return (
@@ -65,6 +73,11 @@ export function ChatBox({
             <div className="chat-bubble assistant chat-typing">
               {patientName}의 기록을 읽고 있어요…
             </div>
+          )}
+          {(triage === "now" || triage === "tomorrow") && !pending && (
+            <a className={`chat-call${triage === "now" ? " urgent" : ""}`} href={`tel:${HOSPITAL_PHONE}`}>
+              📞 병원에 전화하기 {HOSPITAL_PHONE}
+            </a>
           )}
           <div ref={endRef} />
         </div>

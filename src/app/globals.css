@@ -1539,6 +1539,14 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
 }
 .chat-typing { color: var(--muted-2); }
 
+/* 답이 「전화 주세요」면 번호를 찾게 하지 않는다 — 급한 사람에게 한 단계 더 시키면 그게 지연이다 */
+.chat-call {
+  display: block; margin-top: 2px; padding: 14px; border-radius: 16px;
+  text-align: center; font-weight: 800; text-decoration: none;
+  background: var(--surface-soft); color: var(--text); border: 1px solid var(--line);
+}
+.chat-call.urgent { background: #c0392b; color: white; border-color: #c0392b; }
+
 .chat-form { display: flex; gap: 8px; }
 .chat-form input {
   flex: 1 1 auto; min-width: 0; padding: 12px 14px;

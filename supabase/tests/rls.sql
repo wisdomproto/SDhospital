@@ -349,4 +349,36 @@ do $$ begin
   end if;
 end $$;
 
+-- ── 채팅 로그 (0028) ───────────────────────────────────────────────────────
+-- 보호자에게 INSERT 정책을 주지 않았다. **여기엔 우리가 한 말이 같이 들어가서**,
+-- 직접 쓸 수 있으면 증빙이 증빙이 아니게 된다. 쓰기는 log_chat DEFINER 하나뿐.
+select log_chat(
+  'cccccccc-0000-0000-0000-000000000001', gen_random_uuid(),
+  '숨이 가빠요', '지금 바로 전화 주세요', 'now', 'test', 'hash'
+);
+do $$ begin
+  if (select count(*) from chat_message) <> 2 then   -- 질문 1 + 답 1
+    raise exception 'chat_message: 자기 아이 대화가 저장되지 않는다';
+  end if;
+  begin
+    perform log_chat(
+      'cccccccc-0000-0000-0000-000000000002', gen_random_uuid(),
+      'q', 'a', 'now', 'test', 'hash'
+    );
+    raise exception 'chat_message: 남의 아이 대화를 남길 수 있다';
+  exception when sqlstate 'P0001' then null;
+  end;
+  begin
+    insert into chat_message (patient_id, thread_id, role, content)
+      values ('cccccccc-0000-0000-0000-000000000001', gen_random_uuid(), 'assistant', '위조');
+    raise exception 'chat_message: 보호자가 답변 행을 직접 써넣을 수 있다';
+  exception when insufficient_privilege then null;
+  end;
+  -- ⚠️ 지울 수 있으면 ①증빙이 무너진다. 화면에서 감출 뿐 삭제는 없다.
+  delete from chat_message;
+  if (select count(*) from chat_message) = 0 then
+    raise exception 'chat_message: 보호자가 대화를 지울 수 있다';
+  end if;
+end $$;
+
 rollback;

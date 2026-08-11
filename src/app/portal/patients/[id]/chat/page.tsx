@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import { buildPatientContext, suggestQuestions } from "@/lib/chat/context";
+import { admissionQuestions, buildPatientContext, suggestQuestions } from "@/lib/chat/context";
 import { ChatBox } from "./ChatBox";
 
 /**
@@ -19,7 +19,15 @@ export default async function PortalChat({ params }: { params: Promise<{ id: str
   return (
     <>
       <div style={{ fontWeight: 800, fontSize: "1.05rem", padding: "2px 2px 4px" }}>AI 채팅</div>
-      <ChatBox patientId={id} patientName={ctx.patient.name} suggestions={suggestQuestions(ctx)} />
+      <ChatBox
+        patientId={id}
+        patientName={ctx.patient.name}
+        suggestions={suggestQuestions(ctx)}
+        // 입원 중일 때만 위에 탭이 생긴다. 아니면 탭 자체가 없다 —
+        // 1년에 며칠뿐인 상태를 위해 360일짜리 빈 탭을 두지 않는다.
+        admittedAt={ctx.admittedAt}
+        admissionSuggestions={admissionQuestions()}
+      />
     </>
   );
 }

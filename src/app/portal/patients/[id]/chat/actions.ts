@@ -8,6 +8,8 @@ import { HOSPITAL_PHONE } from "@/lib/hospital";
 
 export type Triage = "now" | "tomorrow" | "primary" | "ask_vet" | "asking" | "out_of_scope";
 export type Turn = { role: "user" | "assistant"; text: string };
+/** 채팅방 위 탭. 입원 중이 아니면 general 하나뿐이라 탭이 안 뜬다 */
+export type Mode = "admission" | "general";
 
 const MODEL = "claude-opus-5";
 
@@ -41,9 +43,6 @@ const SYSTEM = `당신은 SD동물의료센터(2차 의뢰 동물병원) 보호�
 3. **1차 병원(의뢰해 주신 병원)에 연락해 보세요** — 경미할 때만.
    ⚠️ 우리가 수술한 부위, 우리가 최근 처방한 약, 우리가 관리 중인 질환은 **경미로 내리지 않는다.**
 4. **담당 선생님께 확인해 드릴게요** — 위 셋 중 어디인지 못 정하겠으면 여기다. 지어내지 말고 넘긴다.
-
-⚠️ **입원 중이면 1~3번이 전부 틀린다.** 아이는 이미 우리 병원에 있고 보호자가 묻는 건 "지금 어때요" 다.
-병동의 현재 상황은 채팅이 모르니 **무조건 4번**으로 간다. 「데려오세요」는 절대 하지 않는다.
 
 ⚠️ **증상 문의가 아니면 분류하지 않는다** (out_of_scope). 두 종류다.
 
@@ -99,9 +98,38 @@ const SYSTEM = `당신은 SD동물의료센터(2차 의뢰 동물병원) 보호�
 **마크다운을 쓰지 않는다** — 화면이 말풍선에 글자 그대로 보여준다.
 「#」 제목도, 별표 두 개로 감싼 굵게도, 「-」 불릿도 기호가 그대로 노출된다. 줄바꿈만 쓴다.`;
 
+/**
+ * 채팅방 위 탭 — **입원 중일 때만 둘로 갈린다.**
+ * 같은 아이, 같은 기록인데 묻는 자리가 다르면 답도 달라야 한다.
+ */
+const ADMISSION_TAB = `## 지금은 「입원 중 문의」 탭이다
+
+아이는 **이미 우리 병원에 있다.** 그러니 1·2·3번이 전부 틀린다 — 「오세요」·「예약하세요」·
+「1차 병원에 가세요」는 어느 것도 말이 안 된다. **무조건 4번(담당 선생님께 확인)** 으로 간다.
+
+보호자가 묻는 건 거의 언제나 하나다 — **"지금 어떻게 지내요"**.
+그리고 **채팅은 그걸 모른다.** 병동의 지금 상황은 기록에 없다. 지어내지 않는다.
+"오늘 밥 먹었어요" 도, "잘 자고 있어요" 도 **확인하지 않고 말하지 않는다.**
+
+할 수 있는 건 셋이다.
+① 남기신 말을 담당자에게 전달하겠다고 분명히 말한다.
+② <기록>에 있는 것(입원 며칠째, 지난 일일 리포트에 나갔던 내용)은 알려줘도 된다.
+③ 걱정을 들어준다. 대신 "괜찮아요" 는 여전히 하지 않는다.
+
+⚠️ 단 **집에 있는 다른 일로 응급 신호**를 말하면 그건 1번이다(입원한 아이 얘기가 아닐 수 있다).`;
+
+const GENERAL_TAB = `## 지금은 「평소 문의」 탭이다
+
+보호자가 병동 상황이 아니라 **평소 것을 물으려고 이 탭을 골랐다.**
+퇴원 후 사료, 지난 검진, 집에서의 관리 같은 것 — 평소대로 답한다.
+
+⚠️ 다만 <기록>에 **지금 입원 중**이라고 되어 있으면, 그 아이는 병원에 있다.
+「데려오세요」·「예약하세요」는 그때도 하지 않는다.`;
+
 export async function ask(
   patientId: string,
   threadId: string,
+  mode: Mode,
   history: Turn[]
 ): Promise<{ ok: true; text: string; triage: Triage } | { ok: false; error: string }> {
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -141,6 +169,7 @@ export async function ask(
       },
       system: [
         { type: "text", text: SYSTEM },
+        { type: "text", text: mode === "admission" ? ADMISSION_TAB : GENERAL_TAB },
         // 기록은 프롬프트 뒤쪽·질문 앞에 둔다. 같은 아이를 계속 물으면 여기까지 캐시된다.
         { type: "text", text: `<기록>\n${ctx.text}\n</기록>`, cache_control: { type: "ephemeral" } },
       ],

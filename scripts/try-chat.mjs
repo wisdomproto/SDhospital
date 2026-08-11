@@ -20,11 +20,13 @@ const src = fs.readFileSync("src/app/portal/patients/[id]/chat/actions.ts", "utf
 const SYSTEM = src
   .slice(src.indexOf("const SYSTEM = `") + 16, src.indexOf("`;\n\nexport async function ask"))
   .replaceAll("${HOSPITAL_PHONE}", "02-2039-0303"); // 템플릿 변수는 여기서 채운다
+const tab = (name) => src.slice(src.indexOf(`const ${name} = \``) + name.length + 15, src.indexOf("`;", src.indexOf(`const ${name} = \``)));
+const MODE = process.env.MODE === "admission" ? tab("ADMISSION_TAB") : tab("GENERAL_TAB");
 
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 await sb.auth.signInWithPassword({ email: "1@example.com", password: "1234" });
 const { data: pets } = await sb.from("patient").select("id,name,species,breed,sex,birth_date");
-const p = pets.find((x) => x.name === "슈슈");
+const p = pets.find((x) => x.name === (process.env.PET || "슈슈"));
 
 const { data: visits } = await sb.from("visit")
   .select("visit_date, chief_complaint, note, report_comment, prescription(dose,frequency,duration,drug:drug_id(name))")
@@ -33,9 +35,11 @@ const { data: logs } = await sb.from("life_log")
   .select("logged_on,appetite,stool,energy,weight_kg,meds,note").eq("patient_id", p.id)
   .gte("logged_on", new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10)).order("logged_on", { ascending: false });
 const { data: intakes } = await sb.from("life_intake").select("label,started_on,stopped_on").eq("patient_id", p.id);
+const { data: adm } = await sb.from("admission").select("admitted_at,status").eq("patient_id", p.id).eq("status","admitted").limit(1);
 
 const ctx = [
   `# ${p.name}`, `${p.species} · ${p.breed} · ${p.sex} · ${p.birth_date} 생`, `오늘 날짜: ${new Date().toISOString().slice(0, 10)}`,
+  adm?.length ? `\n## ⚠️ 지금 우리 병원에 입원 중이다 (${adm[0].admitted_at} 입원)` : "\n지금 입원 중이 아니다.",
   "\n## 진료 기록 (최근 순)",
   ...visits.map((v) => `\n### ${v.visit_date} — ${v.chief_complaint}\n진료 원문: ${v.note}\n보호자 코멘트: ${v.report_comment}` +
     (v.prescription?.length ? `\n처방: ${v.prescription.map((r)=>[r.drug?.name,r.dose,r.frequency].filter(Boolean).join(" ")).join(" / ")}` : "")),

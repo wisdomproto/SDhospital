@@ -76,7 +76,7 @@ export function ChatBox({
           )}
           {(triage === "now" || triage === "tomorrow") && !pending && (
             <a className={`chat-call${triage === "now" ? " urgent" : ""}`} href={`tel:${HOSPITAL_PHONE}`}>
-              📞 병원에 전화하기 {HOSPITAL_PHONE}
+              📞 병원에 전화하기 · 24시간 {HOSPITAL_PHONE}
             </a>
           )}
           <div ref={endRef} />

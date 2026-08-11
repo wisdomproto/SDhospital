@@ -1507,7 +1507,7 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
 .tpl-items button:hover { background: var(--surface-soft); }
 .tpl-items button span { font-size: .72rem; color: var(--muted-2); }
 
-/* AI 채팅 — 준비 중 화면의 예시 질문 */
+/* AI 채팅 — 눌러서 물어보는 예시 질문 */
 .chat-sample {
   padding: 11px 13px;
   border: 1px solid var(--line);
@@ -1516,6 +1516,40 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
   font-size: .9rem;
   color: var(--muted);
 }
+/* 버튼이라 왼쪽 정렬과 줄바꿈을 되돌려 준다 — 기본값이면 가운데 정렬에 한 줄로 잘린다 */
+.chat-ask {
+  display: block; width: 100%; text-align: left; font: inherit; font-size: .9rem;
+  color: var(--muted); cursor: pointer; white-space: normal;
+}
+.chat-ask:hover:not(:disabled) { border-color: var(--primary); color: var(--text); }
+.chat-ask:disabled { opacity: .55; cursor: default; }
+
+.chat-log { display: grid; gap: 8px; }
+.chat-bubble {
+  max-width: 85%; padding: 11px 13px; border-radius: 16px;
+  font-size: .92rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.chat-bubble.user {
+  justify-self: end; background: var(--primary); color: white;
+  border-bottom-right-radius: 5px;
+}
+.chat-bubble.assistant {
+  justify-self: start; background: white; border: 1px solid var(--line);
+  border-bottom-left-radius: 5px;
+}
+.chat-typing { color: var(--muted-2); }
+
+.chat-form { display: flex; gap: 8px; }
+.chat-form input {
+  flex: 1 1 auto; min-width: 0; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: 14px; background: white;
+  font: inherit; font-size: .92rem;
+}
+.chat-form button {
+  flex: 0 0 auto; padding: 0 16px; border: 0; border-radius: 14px;
+  background: var(--primary); color: white; font: inherit; font-weight: 700; cursor: pointer;
+}
+.chat-form button:disabled { opacity: .45; cursor: default; }
 
 /* 입원은 그 회차에 딸린 기록 — 목록에서도 한 단 들여쓴다 */
 .portal-tile.portal-subtile {

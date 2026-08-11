@@ -29,6 +29,7 @@ GitHub 리포 연결 → 환경변수 설정 → Generate Domain → **Supabase 
 | `VAPID_PRIVATE_KEY` | ✅ | `npx web-push generate-vapid-keys` 로 만든다 |
 | `VAPID_SUBJECT` | ✅ | `mailto:...` |
 | `CONSENT_ENC_KEY` | ✅ | 주민등록번호 암호화 |
+| `ANTHROPIC_API_KEY` | AI 채팅용 | 없으면 채팅 화면에만 안내가 뜨고 **나머지 앱은 그대로 돈다** |
 | `CRON_SECRET` | 재검 알림용 | |
 | `SUPABASE_SERVICE_ROLE_KEY` | 재검 알림용 | |
 | `NEXT_PUBLIC_ENABLE_DEMO` | ❌ **넣지 말 것** | |
@@ -39,6 +40,14 @@ GitHub 리포 연결 → 환경변수 설정 → Generate Domain → **Supabase 
   Railway 에 로컬과 다른 값으로 넣고 **별도로 백업**해 둔다.
 - **`NEXT_PUBLIC_VAPID_PUBLIC_KEY`** — **공개키를 바꾸면 기존 구독이 전부 무효**가 된다.
   보호자가 알림을 다시 켜야 하고, 그 사람들은 대부분 다시 안 켠다.
+
+### ⚠️ `ANTHROPIC_API_KEY` — 로컬 키를 그대로 올리지 말 것
+
+- **로컬과 다른 키를 발급해서 넣는다.** 한쪽이 새면 그쪽만 폐기하면 된다.
+- **선불 크레딧이다.** 잔액이 떨어지면 채팅만 조용히 멈춘다 —
+  Console 에서 사용량 알림(Usage limits)을 걸어 둔다.
+- ⚠️ **횟수 제한이 없다.** 지금은 보호자가 누르는 만큼 그대로 나간다(회당 3센트 안팎).
+  실사용자에게 열기 전에 하루/사람당 상한을 붙여야 한다.
 
 ### ⚠️ 데모 로그인 게이트
 

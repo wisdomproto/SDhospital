@@ -685,6 +685,50 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_message: {
+        Row: {
+          id: string
+          patient_id: string
+          thread_id: string
+          role: string
+          content: string
+          triage: string | null
+          model: string | null
+          context_hash: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          patient_id: string
+          thread_id: string
+          role: string
+          content: string
+          triage?: string | null
+          model?: string | null
+          context_hash?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          patient_id?: string
+          thread_id?: string
+          role?: string
+          content?: string
+          triage?: string | null
+          model?: string | null
+          context_hash?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_message_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notice: {
         Row: {
           id: string
@@ -1132,6 +1176,18 @@ export type Database = {
         Returns: undefined
       }
       mark_admission_report_read: { Args: { p_report_id: string }; Returns: undefined }
+      log_chat: {
+        Args: {
+          p_patient_id: string
+          p_thread_id: string
+          p_question: string
+          p_answer: string
+          p_triage: string | null
+          p_model: string | null
+          p_context_hash: string | null
+        }
+        Returns: undefined
+      }
       sign_consent: {
         Args: {
           p_answers: Json

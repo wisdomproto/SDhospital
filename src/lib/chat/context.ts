@@ -27,7 +27,17 @@ export async function buildPatientContext(supabase: Client, patientId: string) {
     .single();
   if (!p) return null;
 
-  const [{ data: visits }, { data: checkups }, { data: logs }, { data: intakes }] = await Promise.all([
+  const [{ data: admissions }, { data: visits }, { data: checkups }, { data: logs }, { data: intakes }] = await Promise.all([
+    // 입원 이력 전부. **지금 입원 중인지**를 모르면 병원에 누워 있는 아이한테 "오세요" 라고 하고,
+    // **지난 입원을 모르면** 그 아이를 아는 척할 수가 없다 — 며칠을 어떻게 보냈는지가 주치의의 기억이다.
+    // ⚠️ 일일 리포트는 이미 보호자에게 나간 문장이라 인용해도 안전하다.
+    // 바이털 수치(`vital`)는 읽지 않는다 — 38.4 는 안심을 주지 못하고 검색 후 더 불안해진다.
+    supabase
+      .from("admission")
+      .select("admitted_at, discharged_at, status, note, admission_report(report_date, comment, sent_at)")
+      .eq("patient_id", patientId)
+      .order("admitted_at", { ascending: false })
+      .limit(5),
     supabase
       .from("visit")
       .select(
@@ -61,6 +71,39 @@ export async function buildPatientContext(supabase: Client, patientId: string) {
     [p.species, p.breed, p.sex, p.birth_date && `${p.birth_date} 생`].filter(Boolean).join(" · ")
   );
   lines.push(`오늘 날짜: ${today}`);
+  type Adm = {
+    admitted_at: string;
+    discharged_at: string | null;
+    status: string;
+    note: string | null;
+    admission_report: { report_date: string; comment: string | null; sent_at: string | null }[] | null;
+  };
+  const adms = (admissions ?? []) as Adm[];
+  const now = adms.find((a) => a.status === "admitted");
+
+  lines.push(
+    now
+      ? `\n## ⚠️ 지금 **우리 병원에 입원 중**이다 (${now.admitted_at} 입원)\n` +
+        "보호자는 집에 없는 아이의 지금 상태를 묻고 있다. **「지금 오세요」는 틀린 답이다.**\n" +
+        "병동의 현재 상황은 채팅이 모른다 — 지어내지 말고 담당자에게 넘긴다."
+      : "\n지금 입원 중이 아니다."
+  );
+
+  if (adms.length) {
+    lines.push("\n## 입원 이력");
+    for (const a of adms) {
+      const days = a.discharged_at
+        ? Math.round((Date.parse(a.discharged_at) - Date.parse(a.admitted_at)) / 864e5) + 1
+        : null;
+      lines.push(
+        `\n### ${a.admitted_at}${a.discharged_at ? ` ~ ${a.discharged_at} (${days}일)` : " ~ 입원 중"}` +
+          (a.note ? `\n${a.note}` : "")
+      );
+      // 보호자에게 이미 나간 문장만 — 미발송 리포트는 아직 우리끼리의 메모다
+      const sent = (a.admission_report ?? []).filter((r) => r.sent_at && r.comment);
+      for (const r of sent.slice(0, 8)) lines.push(`- ${r.report_date}: ${r.comment}`);
+    }
+  }
 
   lines.push("\n## 진료 기록 (최근 순)");
   for (const v of visits ?? []) {

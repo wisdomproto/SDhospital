@@ -36,6 +36,8 @@ const { data: logs } = await sb.from("life_log")
   .gte("logged_on", new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10)).order("logged_on", { ascending: false });
 const { data: intakes } = await sb.from("life_intake").select("label,started_on,stopped_on").eq("patient_id", p.id);
 const { data: adm } = await sb.from("admission").select("admitted_at,status").eq("patient_id", p.id).eq("status","admitted").limit(1);
+const { data: past } = await sb.from("chat_message").select("role,content,created_at")
+  .eq("patient_id", p.id).order("created_at", { ascending: false }).limit(20);
 
 const ctx = [
   `# ${p.name}`, `${p.species} · ${p.breed} · ${p.sex} · ${p.birth_date} 생`, `오늘 날짜: ${new Date().toISOString().slice(0, 10)}`,
@@ -47,6 +49,9 @@ const ctx = [
   "\n## 생활기록 (최근 1년)",
   ...logs.map((l) => `- ${l.logged_on}: 식사 ${l.appetite} · 배변 ${l.stool} · 활력 ${l.energy} · ${l.weight_kg}kg`),
   "\n## 먹이는 것", ...(intakes.length ? intakes.map((i)=>`- ${i.label} (${i.started_on}~${i.stopped_on ?? ""})`) : ["등록된 것 없음"]),
+  ...(past?.length ? ["\n## 지난 대화 (최근 것만)",
+    ...past.slice().reverse().map((m)=>`- ${m.created_at.slice(0,10)} ${m.role==="user"?"보호자":"우리"}: ${m.content.replace(/\s+/g," ").slice(0,300)}`),
+    "⚠️ 지난번에 우리가 한 말과 어긋나지 않게 답한다. 같은 것을 또 묻지 않는다."] : []),
 ].join("\n");
 console.log(`[컨텍스트 ${ctx.length}자 · 회차 ${visits.length} · 생활기록 ${logs.length}일]\n`);
 

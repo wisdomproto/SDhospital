@@ -18,9 +18,8 @@ create table chat_message (
   content text not null,
   -- 답이 어느 문으로 나갔나. 나중에 세어 보려면 지금 남겨야 한다
   -- (사후에 문장을 다시 읽어 분류하면 그건 추정이지 기록이 아니다)
-  -- 'asking' 은 **아직 분류하지 않았다**는 뜻이다. 되묻고 끝낸 턴을 억지로 넷 중 하나에
-  -- 밀어 넣으면, 나중에 "몇 번 만에 분류됐나" 를 셀 수가 없다.
-  triage text check (triage in ('now', 'tomorrow', 'primary', 'ask_vet', 'asking', 'out_of_scope')),
+  -- ('asking' 은 0029 에서 더한다 — 이 파일은 실제로 적용된 그대로 둔다)
+  triage text check (triage in ('now', 'tomorrow', 'primary', 'ask_vet', 'out_of_scope')),
   model text,
   -- 그때 무엇을 읽고 답했나. 프롬프트를 고친 뒤 "예전 답이 왜 저랬나" 를 되짚는 유일한 방법
   context_hash text,

@@ -17,7 +17,20 @@ type Client = SupabaseClient<Database>;
  * ⚠️ **의료영상은 넣지 않는다** — 판독 소견은 요청·승인을 거쳐야 나가는 것이라
  * 채팅이 우회로가 되면 안 된다.
  */
-export async function buildPatientContext(supabase: Client, patientId: string) {
+/**
+ * 지난 대화에서 컨텍스트에 넣는 **턴 수**. 개수를 고정하는 게 요점이다 —
+ * 대화가 천 건 쌓여도 읽는 건 이만큼이라 3년 뒤에도 비용이 그대로다.
+ * 오래된 것은 나중에 「그 집의 카드」가 대신한다.
+ */
+const RECENT_TURNS = 20;
+const RECENT_CHARS = 6000;
+
+export async function buildPatientContext(
+  supabase: Client,
+  patientId: string,
+  /** 지금 진행 중인 대화는 빼고 읽는다 — 그건 이미 messages 로 들어간다 */
+  exceptThreadId?: string
+) {
   const today = kstToday();
 
   const { data: p } = await supabase
@@ -27,7 +40,14 @@ export async function buildPatientContext(supabase: Client, patientId: string) {
     .single();
   if (!p) return null;
 
-  const [{ data: admissions }, { data: visits }, { data: checkups }, { data: logs }, { data: intakes }] = await Promise.all([
+  const [
+    { data: admissions },
+    { data: visits },
+    { data: checkups },
+    { data: logs },
+    { data: intakes },
+    { data: past },
+  ] = await Promise.all([
     // 입원 이력 전부. **지금 입원 중인지**를 모르면 병원에 누워 있는 아이한테 "오세요" 라고 하고,
     // **지난 입원을 모르면** 그 아이를 아는 척할 수가 없다 — 며칠을 어떻게 보냈는지가 주치의의 기억이다.
     // ⚠️ 일일 리포트는 이미 보호자에게 나간 문장이라 인용해도 안전하다.
@@ -60,6 +80,13 @@ export async function buildPatientContext(supabase: Client, patientId: string) {
       .select("id, label, photo_path, started_on, stopped_on")
       .eq("patient_id", patientId)
       .order("started_on", { ascending: false }),
+    // 지난 대화. **개수를 고정한다** — 쌓이는 건 무한이지만 읽는 건 늘 이만큼이다.
+    supabase
+      .from("chat_message")
+      .select("thread_id, role, content, triage, created_at")
+      .eq("patient_id", patientId)
+      .order("created_at", { ascending: false })
+      .limit(RECENT_TURNS * 2), // 지금 대화를 걸러낼 여유
   ]);
 
   const lines: string[] = [];
@@ -180,6 +207,32 @@ export async function buildPatientContext(supabase: Client, patientId: string) {
   lines.push(
     "\n⚠️ 이 목록은 낡을 수 있다. 먹는 것이 답에 영향을 준다면 지금도 맞는지 보호자에게 되물을 것."
   );
+
+  // ── 지난 대화 ──────────────────────────────────────────────────────────────
+  // 진료 기록은 "무슨 병이었나" 를, 대화는 **"이 집이 어떤 집인가"** 를 남긴다.
+  // ⚠️ 여기 들어가는 건 우리가 그 집에 실제로 한 말이다 — 지난번과 다른 소리를 하면 그때 신뢰가 깨진다.
+  type Msg = { thread_id: string; role: string; content: string; triage: string | null; created_at: string };
+  const older = ((past ?? []) as Msg[])
+    .filter((m) => m.thread_id !== exceptThreadId)
+    .slice(0, RECENT_TURNS)
+    .reverse(); // 오래된 것부터 읽히게
+  if (older.length) {
+    lines.push("\n## 지난 대화 (최근 것만)");
+    let used = 0;
+    for (const m of older) {
+      const who = m.role === "user" ? "보호자" : "우리";
+      const line = `- ${m.created_at.slice(0, 10)} ${who}: ${m.content.replace(/\s+/g, " ").slice(0, 300)}`;
+      used += line.length;
+      if (used > RECENT_CHARS) {
+        lines.push("- (이전 대화는 생략)");
+        break;
+      }
+      lines.push(line);
+    }
+    lines.push(
+      "⚠️ 지난번에 우리가 한 말과 어긋나지 않게 답한다. 같은 것을 또 묻지 않는다."
+    );
+  }
 
   const last = (visits ?? [])[0];
   return {

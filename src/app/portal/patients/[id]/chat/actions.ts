@@ -143,7 +143,7 @@ export async function ask(
 
   // 권한은 여기서도 RLS 가 잡는다 — 남의 아이 id 를 넣으면 컨텍스트 자체가 안 만들어진다.
   const supabase = await createClient();
-  const ctx = await buildPatientContext(supabase, patientId);
+  const ctx = await buildPatientContext(supabase, patientId, threadId);
   if (!ctx) return { ok: false, error: "환자를 찾을 수 없습니다" };
 
   const client = new Anthropic();

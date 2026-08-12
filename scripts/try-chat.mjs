@@ -30,10 +30,10 @@ const p = pets.find((x) => x.name === (process.env.PET || "슈슈"));
 
 const { data: visits } = await sb.from("visit")
   .select("visit_date, chief_complaint, note, report_comment, prescription(dose,frequency,duration,drug:drug_id(name))")
-  .eq("patient_id", p.id).order("visit_date", { ascending: false }).limit(15);
+  .eq("patient_id", p.id).order("visit_date", { ascending: false });
 const { data: logs } = await sb.from("life_log")
   .select("logged_on,appetite,stool,energy,weight_kg,meds,note").eq("patient_id", p.id)
-  .gte("logged_on", new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10)).order("logged_on", { ascending: false });
+  .gte("logged_on", new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10)).order("logged_on", { ascending: false });
 const { data: intakes } = await sb.from("life_intake").select("label,started_on,stopped_on").eq("patient_id", p.id);
 const { data: adm } = await sb.from("admission").select("admitted_at,status").eq("patient_id", p.id).eq("status","admitted").limit(1);
 
@@ -44,7 +44,7 @@ const ctx = [
   ...visits.map((v) => `\n### ${v.visit_date} — ${v.chief_complaint}\n진료 원문: ${v.note}\n보호자 코멘트: ${v.report_comment}` +
     (v.prescription?.length ? `\n처방: ${v.prescription.map((r)=>[r.drug?.name,r.dose,r.frequency].filter(Boolean).join(" ")).join(" / ")}` : "")),
   `\n최근 30일 내 우리 처방: 없음`,
-  "\n## 생활기록 (최근 30일)",
+  "\n## 생활기록 (최근 1년)",
   ...logs.map((l) => `- ${l.logged_on}: 식사 ${l.appetite} · 배변 ${l.stool} · 활력 ${l.energy} · ${l.weight_kg}kg`),
   "\n## 먹이는 것", ...(intakes.length ? intakes.map((i)=>`- ${i.label} (${i.started_on}~${i.stopped_on ?? ""})`) : ["등록된 것 없음"]),
 ].join("\n");
@@ -52,8 +52,9 @@ console.log(`[컨텍스트 ${ctx.length}자 · 회차 ${visits.length} · 생활
 
 const c = new Anthropic();
 for (const q of process.argv.slice(2)) {
+  const t0 = Date.now();
   const r = await c.messages.create({
-    model: "claude-opus-5", max_tokens: 4000, output_config: { effort: "low" },
+    model: "claude-opus-5", max_tokens: 8000, output_config: { effort: process.env.EFFORT || "low" },
     system: [{ type: "text", text: SYSTEM }, { type: "text", text: `<기록>\n${ctx}\n</기록>`, cache_control: { type: "ephemeral" } }],
     messages: [{ role: "user", content: q }],
   });

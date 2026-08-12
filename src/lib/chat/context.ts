@@ -36,27 +36,24 @@ export async function buildPatientContext(supabase: Client, patientId: string) {
       .from("admission")
       .select("admitted_at, discharged_at, status, note, admission_report(report_date, comment, sent_at)")
       .eq("patient_id", patientId)
-      .order("admitted_at", { ascending: false })
-      .limit(5),
+      .order("admitted_at", { ascending: false }),
     supabase
       .from("visit")
       .select(
         "id, visit_date, chief_complaint, note, report_comment, prescription(dose, frequency, duration, drug:drug_id(name))"
       )
       .eq("patient_id", patientId)
-      .order("visit_date", { ascending: false })
-      .limit(15),
+      .order("visit_date", { ascending: false }),
     supabase
       .from("checkup")
       .select("id, checked_on")
       .eq("patient_id", patientId)
-      .order("checked_on", { ascending: false })
-      .limit(2),
+      .order("checked_on", { ascending: false }),
     supabase
       .from("life_log")
       .select("logged_on, appetite, stool, energy, weight_kg, meds, note")
       .eq("patient_id", patientId)
-      .gte("logged_on", shiftDate(today, -30))
+      .gte("logged_on", shiftDate(today, -365))
       .order("logged_on", { ascending: false }),
     supabase
       .from("life_intake")
@@ -153,7 +150,7 @@ export async function buildPatientContext(supabase: Client, patientId: string) {
     );
   }
 
-  lines.push("\n## 생활기록 (보호자가 집에서 남긴 것, 최근 30일)");
+  lines.push("\n## 생활기록 (보호자가 집에서 남긴 것, 최근 1년)");
   const rows = (logs ?? []) as LifeLog[];
   if (!rows.length) lines.push("기록 없음 — 평소를 모른다. 「평소보다」라는 말을 쓰지 말 것.");
   for (const l of rows) {

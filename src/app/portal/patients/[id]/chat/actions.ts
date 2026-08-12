@@ -11,7 +11,12 @@ export type Turn = { role: "user" | "assistant"; text: string };
 /** 채팅방 위 탭. 입원 중이 아니면 general 하나뿐이라 탭이 안 뜬다 */
 export type Mode = "admission" | "general";
 
-const MODEL = "claude-opus-5";
+/**
+ * ⚠️ **모델은 언젠가 자체 서버 오픈 모델로 갈아끼울 것이다.** 그래서 여기 한 줄로 모아 둔다.
+ * 다만 **감으로 바꾸지 않는다** — 10년치 실제 문답을 평가 세트로 돌려
+ * "응급을 몇 건 놓쳤나" 를 두 모델에서 재고 나서 정한다. 이 제품의 실패 모드가 그것뿐이다.
+ */
+const MODEL = process.env.CHAT_MODEL || "claude-opus-5";
 
 /**
  * 샘플이라 **주치의 확인을 건너뛰고 바로 답한다.**

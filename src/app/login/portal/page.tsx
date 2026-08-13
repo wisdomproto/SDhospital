@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { signInPortal, quickOwner } from "./actions";
 import { DEMO_ENABLED } from "../demo";
+import { DemoPatients } from "./DemoPatients";
 import { PendingButton } from "../PendingButton";
 
 export default async function PortalLoginPage({
@@ -65,6 +66,7 @@ export default async function PortalLoginPage({
 
           {DEMO_ENABLED && (
             <>
+              <DemoPatients />
               <div className="login-divider">테스트 계정 · 클릭하면 바로 입장</div>
               {/* ⚠️ DEMO ONLY — gated by NEXT_PUBLIC_ENABLE_DEMO */}
               <form action={quickOwner}>

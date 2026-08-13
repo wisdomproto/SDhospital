@@ -81,6 +81,9 @@ export default async function LoginPage({
                 <a href="/deck/sd-ai-chat-plan.html" target="_blank" rel="noopener">
                   AI 채팅 기획서 <span>답변 초안 32건 포함</span>
                 </a>
+                <a href="/deck/sd-chat-analysis.html" target="_blank" rel="noopener">
+                  카톡 상담 재분석 <span>108채널 6,632건 · 퇴원 후 이탈</span>
+                </a>
               </div>
             </details>
           </div>

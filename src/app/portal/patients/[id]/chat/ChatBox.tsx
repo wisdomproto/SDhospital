@@ -129,6 +129,18 @@ export function ChatBox({
               📞 병원에 전화하기 {HOSPITAL_PHONE}
             </a>
           )}
+          {/* 사람에게 넘긴 질문. 전화 버튼을 대신 두지 않는다 —
+              기다려 달라고 해 놓고 전화 버튼을 띄우면 기다리라는 말이 아니게 된다.
+              대신 답이 여기로 온다는 것과, 급해지면 그때 전화하라는 것만 남긴다. */}
+          {c.triage === "ask_vet" && !pending && (
+            <div className="chat-waiting">
+              <b>담당 선생님께 전달했어요</b>
+              <span>
+                답이 오면 이 대화에 그대로 올라와요. 그 사이에 상태가 나빠지면 기다리지 마시고{" "}
+                <a href={`tel:${HOSPITAL_PHONE}`}>{HOSPITAL_PHONE}</a> 로 전화 주세요.
+              </span>
+            </div>
+          )}
           <div ref={endRef} />
         </div>
       )}

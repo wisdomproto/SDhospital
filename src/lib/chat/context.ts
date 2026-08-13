@@ -35,7 +35,7 @@ export async function buildPatientContext(
 
   const { data: p } = await supabase
     .from("patient")
-    .select("id, name, species, breed, sex, birth_date")
+    .select("id, name, species, breed, sex, birth_date, note")
     .eq("id", patientId)
     .single();
   if (!p) return null;
@@ -95,6 +95,18 @@ export async function buildPatientContext(
     [p.species, p.breed, p.sex, p.birth_date && `${p.birth_date} 생`].filter(Boolean).join(" · ")
   );
   lines.push(`오늘 날짜: ${today}`);
+
+  // ⚠️ **떠난 아이는 여기서 먼저 말한다.** 기록이 어느 시점에 멈춰 있는지 채팅은 알 수 없고,
+  // 살아 있는 것처럼 답하는 순간 그 보호자에게는 그게 전부가 된다. 실제로 그런 기록이 있다.
+  const gone = /사망|무지개|떠났|폐사|안락사/.test(p.note ?? "");
+  if (gone) {
+    lines.push(
+      `\n## ⚠️⚠️ **${p.name}는 이미 세상을 떠났다** (${p.note})\n` +
+        "**살아 있는 것처럼 말하지 않는다.** 지금 상태·다음 진료·먹이는 것을 말하지 않고,\n" +
+        "「오세요」·「예약」·「지켜보세요」 는 어느 것도 하지 않는다.\n" +
+        "보호자가 지난 일을 물으면 기록에 있는 것만 답하고, 그 외에는 담당 선생님께 넘긴다."
+    );
+  }
   type Adm = {
     admitted_at: string;
     discharged_at: string | null;
@@ -254,20 +266,23 @@ export type PatientContext = NonNullable<Awaited<ReturnType<typeof buildPatientC
  * 그 아이의 기록에서 뽑는다. 남의 아이한테도 맞는 질문만 늘어놓으면 "나한테 하는 말"로 안 읽힌다.
  */
 export function suggestQuestions(ctx: PatientContext): string[] {
+  // ⚠️ **실제 보호자가 쓰는 말투로 적는다.** 상담 466건을 보면 병원 말투로 묻지 않는다 —
+  // "괜찮을까요?" · "지켜봐도 되겠죠?" · "가야 할까요?" 가 압도적이다.
+  // 버튼이 병원 말투면 "나한테 하는 말"로 안 읽히고, 그러면 아무도 안 누른다.
   const qs: string[] = [];
   if (ctx.lastVisit?.complaint) {
-    qs.push(`${ctx.lastVisit.date}에 「${ctx.lastVisit.complaint}」로 갔었는데, 지금은 어떤가요?`);
+    qs.push(`${ctx.lastVisit.date}에 「${ctx.lastVisit.complaint}」로 갔었는데 지금도 괜찮을까요?`);
   }
-  if (ctx.recentRx.length) qs.push("지금 먹이는 약을 먹고 토했어요. 다시 먹여야 하나요?");
+  if (ctx.recentRx.length) qs.push("약 먹이고 나서 토했는데 다시 먹여도 될까요?");
 
   const bad = ctx.logs
     .slice(0, 7)
     .filter((l) => l.appetite && choiceOf("appetite", l.appetite)?.tone !== "good");
-  if (bad.length >= 3) qs.push("요즘 밥을 잘 안 먹는데 병원에 가야 할까요?");
+  if (bad.length >= 3) qs.push("요즘 밥을 잘 안 먹는데 좀 더 지켜봐도 될까요?");
 
   if (ctx.checkupCount) qs.push("지난 검진 결과에서 신경 써야 할 게 있나요?");
   qs.push("우리 애 전반적으로 건강 상태 좀 알려줘");
-  qs.push("숨쉬는 게 좀 가빠 보이는데 어떻게 하죠?");
+  qs.push("토하고 나서 기운없이 누워있어요");
   return qs.slice(0, 6);
 }
 
@@ -277,10 +292,10 @@ export function suggestQuestions(ctx: PatientContext): string[] {
  */
 export function admissionQuestions(): string[] {
   return [
-    "지금 어떻게 지내고 있나요?",
-    "밥은 먹었나요?",
+    "오늘은 좀 어떤가요? 밥은 먹었을까요?",
+    "면회 가도 될까요?",
     "오늘 사진 볼 수 있을까요?",
     "언제쯤 퇴원할 수 있을까요?",
-    "면회를 가도 될까요?",
+    "밤에 잘 잤는지 궁금해요",
   ];
 }

@@ -21,7 +21,7 @@ export default async function PortalPatientLayout({
   // RLS 상 보호자에게는 자기 반려동물만 조회된다
   const { data: pets } = await supabase
     .from("patient")
-    .select("id, name, species, breed, photo")
+    .select("id, name, species, breed, photo, emr_owner:emr_owner_id(name)")
     .order("name");
   const patient = (pets ?? []).find((p) => p.id === id);
   if (!patient) notFound();
@@ -33,7 +33,11 @@ export default async function PortalPatientLayout({
   let newsQuery = supabase.from("notice").select("id", { count: "exact", head: true });
   if (seen) newsQuery = newsQuery.gt("starts_on", seen.slice(0, 10));
   const { count: newNews } = await newsQuery;
-  const list: Pet[] = (pets ?? []).map((p) => ({ ...p, unread: unread.get(p.id) ?? 0 }));
+  const list: Pet[] = (pets ?? []).map((p) => ({
+    ...p,
+    owner: (p.emr_owner as unknown as { name: string } | null)?.name ?? null,
+    unread: unread.get(p.id) ?? 0,
+  }));
   const current = list.find((p) => p.id === id)!;
 
   return (

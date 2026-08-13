@@ -1558,6 +1558,15 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
 }
 .chat-call.urgent { background: #c0392b; color: white; border-color: #c0392b; }
 
+/* 사람에게 넘긴 질문. ⚠️ 전화 버튼처럼 보이면 안 된다 — 기다리라고 해 놓고 누르라고 하는 꼴이다.
+   그래서 눌리지 않는 상자로 두고, 급할 때 쓰는 번호만 문장 안에 둔다. */
+.chat-waiting {
+  display: grid; gap: 4px; margin-top: 2px; padding: 14px; border-radius: 16px;
+  background: var(--surface-soft); border: 1px dashed var(--line); color: var(--text);
+}
+.chat-waiting span { font-size: .84rem; color: var(--muted); line-height: 1.5; }
+.chat-waiting a { color: inherit; font-weight: 700; }
+
 .chat-form { display: flex; gap: 8px; }
 .chat-form input {
   flex: 1 1 auto; min-width: 0; padding: 12px 14px;

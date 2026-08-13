@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 export type Pet = {
@@ -8,6 +8,8 @@ export type Pet = {
   species: string | null;
   breed: string | null;
   photo: string | null;
+  /** 실제 보호자 이름 (원장님 EMR 데모). 없으면 안 보여준다 */
+  owner?: string | null;
   unread: number;
 };
 
@@ -34,6 +36,8 @@ const Avatar = ({ pet, size }: { pet: Pet; size: number }) =>
  */
 export function PetSwitcher({ pets, current }: { pets: Pet[]; current: Pet }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  // 106명이 되고 나서 필요해졌다 — 스무 명만 넘어도 훑어서는 못 찾는다
+  const [q, setQ] = useState("");
   const pathname = usePathname();
   const router = useRouter();
 
@@ -60,7 +64,22 @@ export function PetSwitcher({ pets, current }: { pets: Pet[]; current: Pet }) {
       <dialog ref={dialog} className="pet-sheet" onClick={() => dialog.current?.close()}>
         <div className="pet-sheet-box" onClick={(e) => e.stopPropagation()}>
           <div style={{ fontWeight: 800, padding: "2px 4px 10px" }}>어떤 아이를 볼까요?</div>
-          {pets.map((p) => (
+          {pets.length > 8 && (
+            <input
+              className="field"
+              placeholder="이름 · 보호자 · 품종으로 찾기"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              style={{ marginBottom: 8 }}
+              aria-label="검색"
+            />
+          )}
+          {pets
+            .filter((p) =>
+              !q.trim() ||
+              [p.name, p.owner, p.breed, p.species].filter(Boolean).join(" ").toLowerCase().includes(q.trim().toLowerCase())
+            )
+            .map((p) => (
             <button
               key={p.id}
               type="button"
@@ -71,7 +90,9 @@ export function PetSwitcher({ pets, current }: { pets: Pet[]; current: Pet }) {
                 <Avatar pet={p} size={38} />
               </span>
               <span style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
-                <span style={{ fontWeight: 700, display: "block" }}>{p.name}</span>
+                <span style={{ fontWeight: 700, display: "block" }}>
+                  {p.owner ? `${p.owner} · ` : ""}{p.name}
+                </span>
                 <span className="portal-tile-sub">
                   {[p.species, p.breed].filter(Boolean).join(" / ") || "-"}
                 </span>

@@ -35,7 +35,7 @@ export async function buildPatientContext(
 
   const { data: p } = await supabase
     .from("patient")
-    .select("id, name, species, breed, sex, birth_date")
+    .select("id, name, species, breed, sex, birth_date, note")
     .eq("id", patientId)
     .single();
   if (!p) return null;
@@ -95,6 +95,18 @@ export async function buildPatientContext(
     [p.species, p.breed, p.sex, p.birth_date && `${p.birth_date} 생`].filter(Boolean).join(" · ")
   );
   lines.push(`오늘 날짜: ${today}`);
+
+  // ⚠️ **떠난 아이는 여기서 먼저 말한다.** 기록이 어느 시점에 멈춰 있는지 채팅은 알 수 없고,
+  // 살아 있는 것처럼 답하는 순간 그 보호자에게는 그게 전부가 된다. 실제로 그런 기록이 있다.
+  const gone = /사망|무지개|떠났|폐사|안락사/.test(p.note ?? "");
+  if (gone) {
+    lines.push(
+      `\n## ⚠️⚠️ **${p.name}는 이미 세상을 떠났다** (${p.note})\n` +
+        "**살아 있는 것처럼 말하지 않는다.** 지금 상태·다음 진료·먹이는 것을 말하지 않고,\n" +
+        "「오세요」·「예약」·「지켜보세요」 는 어느 것도 하지 않는다.\n" +
+        "보호자가 지난 일을 물으면 기록에 있는 것만 답하고, 그 외에는 담당 선생님께 넘긴다."
+    );
+  }
   type Adm = {
     admitted_at: string;
     discharged_at: string | null;

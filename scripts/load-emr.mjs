@@ -88,6 +88,8 @@ async function load(dir) {
     owner_id: DEMO_OWNER, emr_owner_id: ownerId,
     name: j.name, species: j.species, breed: j.breed,
     sex: j.sex, birth_date: j.birth_date, chart_no: j.chart_no,
+    // ⚠️ 떠난 아이는 여기 남긴다 — 채팅이 살아 있는 것처럼 말하면 안 된다
+    note: j.deceased ? `사망: ${j.deceased_note ?? "기록에 사망 언급"}` : null,
   };
   if (p0) {
     patientId = p0.id;

@@ -25,7 +25,7 @@ const MODE = process.env.MODE === "admission" ? tab("ADMISSION_TAB") : tab("GENE
 
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 await sb.auth.signInWithPassword({ email: "1@example.com", password: "1234" });
-const { data: pets } = await sb.from("patient").select("id,name,species,breed,sex,birth_date");
+const { data: pets } = await sb.from("patient").select("id,name,species,breed,sex,birth_date,note");
 const p = pets.find((x) => x.name === (process.env.PET || "슈슈"));
 
 const { data: visits } = await sb.from("visit")
@@ -41,7 +41,9 @@ const { data: past } = await sb.from("chat_message").select("role,content,create
 
 const ctx = [
   `# ${p.name}`, `${p.species} · ${p.breed} · ${p.sex} · ${p.birth_date} 생`, `오늘 날짜: ${new Date().toISOString().slice(0, 10)}`,
-  adm?.length ? `\n## ⚠️ 지금 우리 병원에 입원 중이다 (${adm[0].admitted_at} 입원)` : "\n지금 입원 중이 아니다.",
+  /사망|무지개|떠났|안락사/.test(p.note ?? "")
+    ? `\n## ⚠️⚠️ **${p.name}는 이미 세상을 떠났다** (${p.note})\n살아 있는 것처럼 말하지 않는다. 지금 상태·다음 진료·먹이는 것을 말하지 않고, 「오세요」·「예약」·「지켜보세요」 는 어느 것도 하지 않는다. 보호자가 지난 일을 물으면 기록에 있는 것만 답한다.`
+    : adm?.length ? `\n## ⚠️ 지금 우리 병원에 입원 중이다 (${adm[0].admitted_at} 입원)` : "\n지금 입원 중이 아니다.",
   "\n## 진료 기록 (최근 순)",
   ...visits.map((v) => `\n### ${v.visit_date} — ${v.chief_complaint}\n진료 원문: ${v.note}\n보호자 코멘트: ${v.report_comment}` +
     (v.prescription?.length ? `\n처방: ${v.prescription.map((r)=>[r.drug?.name,r.dose,r.frequency].filter(Boolean).join(" ")).join(" / ")}` : "")),

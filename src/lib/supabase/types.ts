@@ -1148,7 +1148,20 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      // 0032 — 채팅이 사람에게 넘긴 질문 중 아직 답이 안 나간 것 (읽기 전용)
+      chat_pending: {
+        Row: {
+          id: string
+          patient_id: string
+          thread_id: string
+          asked_at: string
+          question: string | null
+          holding_reply: string
+          patient_name: string
+          patient_species: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_read_patient_file: { Args: { object_name: string }; Returns: boolean }
@@ -1176,6 +1189,14 @@ export type Database = {
         Returns: undefined
       }
       mark_admission_report_read: { Args: { p_report_id: string }; Returns: undefined }
+      answer_chat: {
+        Args: {
+          p_patient_id: string
+          p_thread_id: string
+          p_answer: string
+        }
+        Returns: undefined
+      }
       log_chat: {
         Args: {
           p_patient_id: string

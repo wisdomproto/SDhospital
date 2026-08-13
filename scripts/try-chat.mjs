@@ -60,12 +60,26 @@ console.log(`[컨텍스트 ${ctx.length}자 · 회차 ${visits.length} · 생활
 const c = new Anthropic();
 for (const q of process.argv.slice(2)) {
   const t0 = Date.now();
+  // ⚠️ **분류도 같이 받는다.** 답변 문장만 보면 안 된다 — 「여쭤보고 알려드릴게요」 라고 써 놓고
+  // 분류가 asking 으로 나가면 원장님 화면에 안 뜨고, 그러면 그 말이 거짓말이 된다.
   const r = await c.messages.create({
-    model: "claude-opus-5", max_tokens: 8000, output_config: { effort: process.env.EFFORT || "low" },
+    model: "claude-opus-5", max_tokens: 8000,
+    output_config: {
+      effort: process.env.EFFORT || "low",
+      format: { type: "json_schema", schema: {
+        type: "object",
+        properties: {
+          triage: { type: "string", enum: ["now","tomorrow","primary","ask_vet","asking","out_of_scope"] },
+          text: { type: "string" },
+        },
+        required: ["triage", "text"], additionalProperties: false,
+      } },
+    },
     system: [{ type: "text", text: SYSTEM }, { type: "text", text: `<기록>\n${ctx}\n</기록>`, cache_control: { type: "ephemeral" } }],
     messages: [{ role: "user", content: q }],
   });
-  console.log("──────────\nQ:", q, "\n\nA:", r.content.filter(b=>b.type==="text").map(b=>b.text).join(""),
+  const { triage, text } = JSON.parse(r.content.filter(b=>b.type==="text").map(b=>b.text).join(""));
+  console.log("──────────\nQ:", q, `\n\n[분류: ${triage}]\n\nA:`, text,
     `\n\n[in ${r.usage.input_tokens}+cache${r.usage.cache_creation_input_tokens+r.usage.cache_read_input_tokens} / out ${r.usage.output_tokens}]\n`);
 }
 process.exit(0);

@@ -2,7 +2,7 @@
 // 사람은 잊는 게 아니라 밀린다. 보낼 때까지 목록에서 사라지지 않는다.
 
 export type WorkItem = {
-  kind: "visit" | "admission" | "checkup" | "image_request";
+  kind: "visit" | "admission" | "checkup" | "image_request" | "question";
   href: string;
   patientName: string;
   species: string | null;
@@ -31,12 +31,12 @@ export function admittedDay(admittedAt: string, today: string): number {
 }
 
 export function sortWorkItems(items: WorkItem[]): WorkItem[] {
-  // 확인만 남은 것이 맨 위 — 남이 이미 채워 놨고 누르기만 하면 끝난다.
+  // ⚠️ **보호자가 답을 기다리는 질문이 제일 위다.** 나머지는 우리가 보낼 것이지만
+  // 이건 저쪽에서 기다리고 있는 것이고, 기다려 달라고 우리가 말해 놓은 것이다.
+  // 그다음 확인만 남은 것 — 남이 이미 채워 놨고 누르기만 하면 끝난다.
   // 그다음은 가장 오래 밀린 것, 같으면 회차부터 (진료가 기본이므로)
+  const first = (i: WorkItem) => (i.kind === "question" ? 2 : i.awaitingReview ? 1 : 0);
   return [...items].sort(
-    (a, b) =>
-      Number(Boolean(b.awaitingReview)) - Number(Boolean(a.awaitingReview)) ||
-      b.overdueDays - a.overdueDays ||
-      a.kind.localeCompare(b.kind)
+    (a, b) => first(b) - first(a) || b.overdueDays - a.overdueDays || a.kind.localeCompare(b.kind)
   );
 }

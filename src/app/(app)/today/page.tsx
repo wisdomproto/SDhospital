@@ -9,8 +9,14 @@ export default async function TodayWorklist() {
   const supabase = await createClient();
   const today = kstToday();
 
-  const [{ data: visitRows }, { data: admRows }, { data: todayReports }, { data: checkupRows }, { data: imgReqRows }] =
-    await Promise.all([
+  const [
+    { data: visitRows },
+    { data: admRows },
+    { data: todayReports },
+    { data: checkupRows },
+    { data: imgReqRows },
+    { data: questionRows },
+  ] = await Promise.all([
     // 진료가 끝났는데 아직 리포트가 안 나간 회차 (오늘 것 + 밀린 것)
     supabase
       .from("visit")
@@ -35,6 +41,11 @@ export default async function TodayWorklist() {
       .select("visit_id, requested_at, visit:visit_id(id, patient_id, visit_date, patient:patient_id(id, name, species))")
       .is("approved_at", null)
       .order("requested_at", { ascending: true }),
+    // 채팅이 답을 못 정하고 사람에게 넘긴 질문. 보호자는 기다리라고 듣고 기다리는 중이다
+    supabase
+      .from("chat_pending")
+      .select("id, patient_id, question, asked_at, patient_name, patient_species")
+      .order("asked_at", { ascending: true }),
   ]);
 
   const sentToday = new Set(
@@ -106,12 +117,27 @@ export default async function TodayWorklist() {
         subtitle: `의료영상 요청 · ${vi?.visit_date ?? ""} 진료`,
       };
     }),
+    ...(questionRows ?? []).map((q) => {
+      const askedDay = new Date(q.asked_at).toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+      return {
+        kind: "question" as const,
+        href: `/questions/${q.id}`,
+        patientName: q.patient_name ?? "-",
+        species: q.patient_species ?? null,
+        date: askedDay,
+        overdueDays: Math.max(0, daysBetween(askedDay, today)),
+        // 질문 자체를 보여 준다 — 열어 보지 않아도 급한지 아닌지 판단이 된다
+        subtitle: `채팅 질문 · ${(q.question ?? "").replace(/\s+/g, " ").slice(0, 40)}`,
+      };
+    }),
   ];
 
   const list = sortWorkItems(items);
-  const review = list.filter((i) => i.awaitingReview);
-  const overdue = list.filter((i) => !i.awaitingReview && i.overdueDays > 0);
-  const todayItems = list.filter((i) => !i.awaitingReview && i.overdueDays === 0);
+  const questions = list.filter((i) => i.kind === "question");
+  const rest = list.filter((i) => i.kind !== "question");
+  const review = rest.filter((i) => i.awaitingReview);
+  const overdue = rest.filter((i) => !i.awaitingReview && i.overdueDays > 0);
+  const todayItems = rest.filter((i) => !i.awaitingReview && i.overdueDays === 0);
 
   return (
     <div style={{ display: "grid", gap: 20 }}>
@@ -133,6 +159,10 @@ export default async function TodayWorklist() {
         </div>
       )}
 
+      {/* ⚠️ 맨 위다. 나머지는 우리가 보낼 것이고, 이건 보호자가 기다리고 있는 것이다 */}
+      {questions.length > 0 && (
+        <WorkSection title="보호자가 답을 기다리는 질문" tone="warning" items={questions} />
+      )}
       {review.length > 0 && <WorkSection title="확인 후 발송" tone="warning" items={review} />}
       {overdue.length > 0 && <WorkSection title="밀린 것" tone="warning" items={overdue} />}
       {todayItems.length > 0 && <WorkSection title="오늘" tone="muted" items={todayItems} />}

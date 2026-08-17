@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { answerAsVetForTest, ask, type Triage, type Turn } from "./actions";
+import { answerAsVetForTest, ask, polishVetAnswer, type Triage, type Turn } from "./actions";
 import { HOSPITAL_PHONE } from "@/lib/hospital";
 
 /**
@@ -41,6 +41,10 @@ export function ChatBox({
   const [vetDraft, setVetDraft] = useState("");
   const [vetSending, setVetSending] = useState(false);
   const [vetDone, setVetDone] = useState(false);
+  const [vetPolishing, setVetPolishing] = useState(false);
+  /** 다듬기 전 원문. null 이면 아직 안 다듬은 것 — 되돌릴 게 없다 */
+  const [vetOriginal, setVetOriginal] = useState<string | null>(null);
+  const [vetNote, setVetNote] = useState<string | null>(null);
   const threadId = useRef(crypto.randomUUID());
   const endRef = useRef<HTMLDivElement>(null);
   const vetDialog = useRef<HTMLDialogElement>(null);
@@ -111,25 +115,15 @@ export function ChatBox({
               📞 병원에 전화하기 {HOSPITAL_PHONE}
             </a>
           )}
-          {/* 사람에게 넘긴 질문. 전화 버튼을 대신 두지 않는다 —
-              기다려 달라고 해 놓고 전화 버튼을 띄우면 기다리라는 말이 아니게 된다.
-              대신 답이 여기로 온다는 것과, 급해지면 그때 전화하라는 것만 남긴다. */}
-          {triage === "ask_vet" && !pending && (
-            <>
-              <div className="chat-waiting">
-                <b>담당 선생님께 전달했어요</b>
-                <span>
-                  답이 오면 이 대화에 그대로 올라와요. 그 사이에 상태가 나빠지면 기다리지 마시고{" "}
-                  <a href={`tel:${HOSPITAL_PHONE}`}>{HOSPITAL_PHONE}</a> 로 전화 주세요.
-                </span>
-              </div>
-              {/* 창을 닫아 버렸으면 다시 열 수 있어야 한다 */}
-              {testMode && !vetDone && (
-                <button type="button" className="vet-reopen" onClick={() => vetDialog.current?.showModal()}>
-                  🩺 직원 답변 달기
-                </button>
-              )}
-            </>
+          {/* ⚠️ **넘겼다는 안내를 따로 붙이지 않는다.** 프롬프트가 `ask_vet` 답변에
+              ①선생님께 전하겠다 ②확인되는 대로 여기로 알려드리겠다 ③이러면 바로 전화 주세요
+              를 이미 말하게 되어 있다. 상자를 하나 더 두면 **같은 말이 두 번** 나가고,
+              두 번째는 사람 말이 아니라 시스템 안내로 읽혀서 앞의 문장까지 기계처럼 만든다.
+              창을 닫아 버렸을 때 다시 여는 버튼만 남긴다(테스트 전용). */}
+          {triage === "ask_vet" && !pending && testMode && !vetDone && (
+            <button type="button" className="vet-reopen" onClick={() => vetDialog.current?.showModal()}>
+              🩺 직원 답변 달기
+            </button>
           )}
           <div ref={endRef} />
         </div>
@@ -183,8 +177,8 @@ export function ChatBox({
         급한 문의는 병원으로 전화 주세요. 이 답변은 진단이 아니에요.
       </p>
 
-      {/* ⚠️ **테스트 전용 팝업.** 저장되는 행은 「오늘 할 일」로 답한 것과 완전히 같다
-          (`answer_chat` · `model='staff'`) — 테스트용 샛길로 다른 모양의 데이터를 만들지 않는다.
+      {/* ⚠️ **테스트 전용 팝업.** 여기서 보낸 답은 **저장되지 않는다** — 테스트 빌드는
+          대화를 아예 기록하지 않는다(`actions.ts` 의 `ask` 참고). 세션이 끝나면 사라진다.
           ⚠️ 닫힌 `<dialog>` 에 `display` 를 강제하면 화면에 그대로 깔린다. CSS 는 `[open]` 에만. */}
       <dialog ref={vetDialog} className="vet-sheet">
         <form
@@ -200,6 +194,8 @@ export function ChatBox({
             if (!res.ok) { setError(res.error); vetDialog.current?.close(); return; }
             setVetDone(true);
             setVetDraft("");
+            setVetOriginal(null);
+            setVetNote(null);
             setTurns((t) => [...t, { role: "assistant", text }]);
             vetDialog.current?.close();
           }}
@@ -217,10 +213,45 @@ export function ChatBox({
             placeholder="예) 사진 보니 절개선은 붙어 있고 주변만 붉은 정도입니다. 내일 오전에 한 번 보겠습니다."
             disabled={vetSending}
           />
-          <p className="vet-sheet-note">⚠️ 쓰신 그대로 보호자에게 갑니다. AI 가 다듬지 않습니다.</p>
-          <button type="submit" className="vet-sheet-send" disabled={vetSending || !vetDraft.trim()}>
-            {vetSending ? "보내는 중…" : "보호자에게 답변 보내기"}
-          </button>
+          {/* ⚠️ **다듬은 문장도 보고 나서 나간다.** 「나가는 문장은 원장님이 승인한 것만」은
+              다듬기에도 걸린다 — AI 가 고친 말이 확인 없이 나가면 그 규칙이 깨진다.
+              그래서 다듬기는 **칸을 채워 줄 뿐**이고, 보내는 건 여전히 사람이 누른다. */}
+          {vetOriginal === null ? (
+            <p className="vet-sheet-note">
+              ⚠️ 쓰신 그대로 갑니다. 메모처럼 쓰셔도 되고, 아래 「다듬기」를 누르면
+              말투만 고쳐 이 칸에 다시 넣어 드립니다 — 내용은 안 바꿉니다.
+            </p>
+          ) : (
+            <p className="vet-sheet-note polished">
+              ✨ 말투만 다듬었습니다. <b>읽어 보시고</b> 보내 주세요.{" "}
+              <button type="button" onClick={() => { setVetDraft(vetOriginal); setVetOriginal(null); }}>
+                원문으로 되돌리기
+              </button>
+            </p>
+          )}
+          <div className="vet-sheet-actions">
+            <button
+              type="button"
+              className="vet-sheet-polish"
+              disabled={vetSending || vetPolishing || !vetDraft.trim()}
+              onClick={async () => {
+                const before = vetDraft;
+                setVetPolishing(true);
+                const res = await polishVetAnswer(before);
+                setVetPolishing(false);
+                if (!res.ok) return setVetNote(res.error);
+                setVetNote(null);
+                setVetOriginal(before);
+                setVetDraft(res.text);
+              }}
+            >
+              {vetPolishing ? "다듬는 중…" : "✨ 다듬기"}
+            </button>
+            <button type="submit" className="vet-sheet-send" disabled={vetSending || vetPolishing || !vetDraft.trim()}>
+              {vetSending ? "보내는 중…" : "보내기"}
+            </button>
+          </div>
+          {vetNote && <p className="vet-sheet-note" style={{ color: "#a33" }}>{vetNote}</p>}
         </form>
       </dialog>
     </>

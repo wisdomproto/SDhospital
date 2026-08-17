@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { AnswerBox } from "./AnswerBox";
 import { sendVetAnswer } from "./actions";
 
 /**
@@ -128,24 +129,10 @@ export default async function AnswerQuestion({
         <div className="card-head">
           <h2 className="section-title">답변</h2>
         </div>
-        <p style={{ margin: 0, color: "var(--muted)", fontSize: ".85rem" }}>
-          ⚠️ 쓰신 그대로 보호자에게 갑니다. AI 가 다듬지 않습니다.
-        </p>
-        <textarea
-          name="answer"
-          rows={6}
-          required
-          placeholder="예) 오늘 한 번은 거르셔도 괜찮습니다. 내일 아침부터 다시 먹이시고, 또 토하면 연락 주세요."
-          style={{ width: "100%", padding: 12, font: "inherit" }}
-        />
-        <div style={{ display: "flex", gap: 10 }}>
-          <button type="submit" className="btn primary">
-            보호자에게 보내기
-          </button>
-          <Link href="/today" className="btn">
-            나중에
-          </Link>
-        </div>
+        <AnswerBox />
+        <Link href="/today" className="btn" style={{ justifySelf: "start" }}>
+          나중에
+        </Link>
       </form>
     </div>
   );

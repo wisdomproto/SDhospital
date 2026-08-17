@@ -361,3 +361,50 @@ export async function answerAsVetForTest(
   if (!DEMO_ENABLED) return { ok: false, error: "테스트 모드가 아닙니다" };
   return answer.trim() ? { ok: true } : { ok: false, error: "답변을 입력해 주세요" };
 }
+
+/**
+ * 선생님이 쓴 답을 **보호자가 읽을 말로 다듬는다.** 내용은 바꾸지 않는다.
+ *
+ * ⚠️ **다듬은 문장을 바로 보내지 않는다.** 화면의 칸에 되돌려 넣고, 선생님이 읽고
+ * 그대로 보내거나 원문으로 되돌린다. 「나가는 문장은 원장님이 승인한 것만」이라는 규칙은
+ * 다듬기에도 그대로 걸린다 — AI 가 쓴 문장이 확인 없이 나가면 그게 깨진다.
+ */
+export async function polishVetAnswer(
+  draft: string
+): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
+  const raw = draft.trim();
+  if (!raw) return { ok: false, error: "먼저 답변을 써 주세요" };
+  if (!process.env.ANTHROPIC_API_KEY) return { ok: false, error: "ANTHROPIC_API_KEY 가 없습니다" };
+
+  try {
+    const res = await new Anthropic().messages.create({
+      model: MODEL,
+      max_tokens: 1500,
+      output_config: { effort: "low" },
+      system: `당신은 동물병원 수의사가 보호자에게 보낼 답변의 **말투만** 고치는 사람이다.
+
+## 절대 바꾸지 않는 것
+**내용·판단·지시는 한 글자도 바꾸지 않는다.** 없던 말을 만들지 않고, 있던 말을 빼지 않는다.
+- 오라고 했으면 오라고 그대로 둔다. 지켜보라고 했으면 지켜보라고 그대로 둔다.
+- **경고를 부드럽게 만들지 않는다.** "바로 오세요"를 "가능하면 와 주세요"로 바꾸지 않는다.
+- **안심시키는 말을 보태지 않는다.** 「괜찮으실 거예요」·「너무 걱정 마세요」는 선생님이 쓰지 않았으면 넣지 않는다.
+- 약 이름·용량·횟수·날짜·숫자는 **그대로**. 없던 전화번호를 붙이지 않는다.
+
+## 고치는 것
+- 반말·메모투를 존댓말 문장으로 (「부종 경미, 경과관찰」 → 「부기는 경미해서 조금 더 지켜보려 합니다」)
+- 의학 용어를 보호자가 아는 말로 (술부 → 수술한 자리, 파행 → 다리를 저는 것)
+- 끊긴 문장을 잇고, 줄바꿈을 정리한다
+
+## 형식
+평문만. 마크다운(**·#·-)을 쓰지 않는다. 원문보다 길어지지 않게 한다.
+고칠 게 없으면 원문을 그대로 돌려준다. **다듬은 문장만 출력하고 설명하지 않는다.**`,
+      messages: [{ role: "user", content: raw }],
+    });
+    const text = res.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
+    if (!text) return { ok: false, error: "다듬지 못했습니다. 그대로 보내셔도 됩니다." };
+    return { ok: true, text };
+  } catch (e) {
+    console.error("[chat] polishVetAnswer failed", e);
+    return { ok: false, error: "다듬지 못했습니다. 그대로 보내셔도 됩니다." };
+  }
+}

@@ -1588,7 +1588,19 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
   width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 10px;
   font: inherit; font-size: .88rem; line-height: 1.55; resize: vertical;
 }
-.vet-sheet-note { margin: 0; font-size: .76rem; color: var(--muted); }
+.vet-sheet-note { margin: 0; font-size: .76rem; line-height: 1.5; color: var(--muted); }
+.vet-sheet-note.polished { color: var(--text); }
+.vet-sheet-note button {
+  border: 0; background: transparent; padding: 0; cursor: pointer;
+  font: inherit; color: var(--muted); text-decoration: underline;
+}
+/* 다듬기는 옆에, 보내기는 넓게 — 무엇이 기본 동작인지 크기로 말한다 */
+.vet-sheet-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
+.vet-sheet-polish {
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff;
+  font: inherit; font-weight: 700; font-size: .85rem; color: var(--text); cursor: pointer;
+}
+.vet-sheet-polish:disabled { opacity: .45; cursor: default; }
 .vet-sheet-send {
   padding: 12px; border: 0; border-radius: 12px; background: var(--text); color: #fff;
   font: inherit; font-weight: 800; font-size: .88rem; cursor: pointer;

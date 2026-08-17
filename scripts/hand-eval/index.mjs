@@ -6,4 +6,6 @@ import d from "./04-싸이먼-하루.mjs";
 import e from "./05-지금.mjs";
 import f from "./06-솜-먼지-행복이-장몽이-꼬미-도토리.mjs";
 import g from "./07-슈슈-귀남-까마쿤-나비-호야-시루.mjs";
-export default [...a, ...b, ...c, ...d, ...e, ...f, ...g];
+import h from "./08-두부-콩-몽실이-뭉치-루이스-죠스.mjs";
+import i from "./09-콜라-철수-토리-랑지-달이-미고.mjs";
+export default [...a, ...b, ...c, ...d, ...e, ...f, ...g, ...h, ...i];

@@ -1566,22 +1566,39 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
 @keyframes answer-pop { from { opacity: 0; transform: translateY(-6px); } }
 @media (prefers-reduced-motion: reduce) { .answer-toast { animation: none; } }
 
-/* ⚠️ 테스트 전용 — 대화창 안에서 직원이 직접 답을 다는 칸. 앱의 카드처럼 안 보이게 점선 */
-.vet-reply {
-  display: grid; gap: 8px; margin-top: 2px; padding: 12px;
-  border: 1px dashed var(--muted-2); border-radius: 14px;
+/* ⚠️ 테스트 전용 — `ask_vet` 이면 저절로 뜨는 직원 답변 창.
+   닫힌 dialog 에 display 를 강제하면 화면에 그대로 깔린다 — `[open]` 에만 준다. */
+.vet-sheet { border: 0; padding: 0; background: transparent; }
+.vet-sheet[open] { margin: auto; width: min(420px, calc(100% - 24px)); }
+.vet-sheet::backdrop { background: rgba(15, 23, 30, .45); }
+.vet-sheet-box {
+  display: grid; gap: 10px; padding: 16px;
+  background: #fff; border-radius: 18px; box-shadow: 0 10px 40px rgba(0,0,0,.22);
 }
-.vet-reply-head { display: grid; gap: 2px; font-size: .82rem; }
-.vet-reply-head span { color: var(--muted); font-size: .76rem; }
-.vet-reply textarea {
+.vet-sheet-head { display: flex; align-items: center; gap: 8px; font-size: .92rem; }
+.vet-sheet-head button {
+  margin-left: auto; border: 0; background: transparent; cursor: pointer;
+  font: inherit; color: var(--muted); padding: 2px 4px;
+}
+.vet-sheet-q {
+  margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--surface-soft);
+  font-size: .86rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.vet-sheet textarea {
   width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 10px;
   font: inherit; font-size: .88rem; line-height: 1.55; resize: vertical;
 }
-.vet-reply button {
-  padding: 10px; border: 0; border-radius: 10px; background: var(--text); color: white;
-  font: inherit; font-weight: 700; font-size: .85rem; cursor: pointer;
+.vet-sheet-note { margin: 0; font-size: .76rem; color: var(--muted); }
+.vet-sheet-send {
+  padding: 12px; border: 0; border-radius: 12px; background: var(--text); color: #fff;
+  font: inherit; font-weight: 800; font-size: .88rem; cursor: pointer;
 }
-.vet-reply button:disabled { opacity: .45; cursor: default; }
+.vet-sheet-send:disabled { opacity: .45; cursor: default; }
+.vet-reopen {
+  justify-self: start; padding: 8px 12px; border-radius: 999px;
+  border: 1px dashed var(--muted-2); background: transparent;
+  font: inherit; font-size: .8rem; font-weight: 700; color: var(--muted); cursor: pointer;
+}
 
 .chat-log { display: grid; gap: 8px; }
 .chat-bubble {

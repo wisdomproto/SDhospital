@@ -43,6 +43,14 @@ export function ChatBox({
   const [vetDone, setVetDone] = useState(false);
   const threadId = useRef(crypto.randomUUID());
   const endRef = useRef<HTMLDivElement>(null);
+  const vetDialog = useRef<HTMLDialogElement>(null);
+
+  // ⚠️ **`ask_vet` 이 나오면 창이 저절로 뜬다.** 지금 이걸 눌러 보는 사람은 직원이고,
+  // 답 하나 보려고 다른 창에서 「오늘 할 일」로 들어갔다 오게 하면 그 흐름을 끝까지 안 본다.
+  // 넘긴 자리에서 바로 쓰게 한다.
+  useEffect(() => {
+    if (testMode && triage === "ask_vet" && !pending && !vetDone) vetDialog.current?.showModal();
+  }, [testMode, triage, pending, vetDone]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -121,40 +129,11 @@ export function ChatBox({
                   <a href={`tel:${HOSPITAL_PHONE}`}>{HOSPITAL_PHONE}</a> 로 전화 주세요.
                 </span>
               </div>
-              {/* ⚠️ 테스트 전용. 지금 이걸 눌러 보는 사람은 직원이라, 답 하나 보려고
-                  다른 창에서 「오늘 할 일」로 들어갔다 오게 하면 흐름을 끝까지 안 본다.
-                  저장되는 행은 「오늘 할 일」로 답한 것과 **완전히 같다**. */}
+              {/* 창을 닫아 버렸으면 다시 열 수 있어야 한다 */}
               {testMode && !vetDone && (
-                <form
-                  className="vet-reply"
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    const text = vetDraft.trim();
-                    if (!text || vetSending) return;
-                    setVetSending(true);
-                    const res = await answerAsVetForTest(patientId, threadId.current, text);
-                    setVetSending(false);
-                    if (!res.ok) return setError(res.error);
-                    setVetDone(true);
-                    setVetDraft("");
-                    setTurns((t) => [...t, { role: "assistant", text }]);
-                  }}
-                >
-                  <div className="vet-reply-head">
-                    <b>🩺 직원용 · 여기서 바로 답하기</b>
-                    <span>쓰신 그대로 보호자에게 갑니다. AI 가 다듬지 않습니다.</span>
-                  </div>
-                  <textarea
-                    value={vetDraft}
-                    onChange={(e) => setVetDraft(e.target.value)}
-                    rows={3}
-                    placeholder="예) 사진 보니 절개선은 붙어 있고 주변만 붉은 정도입니다. 내일 오전에 한 번 보겠습니다."
-                    disabled={vetSending}
-                  />
-                  <button type="submit" disabled={vetSending || !vetDraft.trim()}>
-                    {vetSending ? "보내는 중…" : "담당 선생님 답변으로 보내기"}
-                  </button>
-                </form>
+                <button type="button" className="vet-reopen" onClick={() => vetDialog.current?.showModal()}>
+                  🩺 직원 답변 달기
+                </button>
               )}
             </>
           )}
@@ -209,6 +188,47 @@ export function ChatBox({
       <p className="portal-tile-sub" style={{ margin: "2px 2px 0" }}>
         급한 문의는 병원으로 전화 주세요. 이 답변은 진단이 아니에요.
       </p>
+
+      {/* ⚠️ **테스트 전용 팝업.** 저장되는 행은 「오늘 할 일」로 답한 것과 완전히 같다
+          (`answer_chat` · `model='staff'`) — 테스트용 샛길로 다른 모양의 데이터를 만들지 않는다.
+          ⚠️ 닫힌 `<dialog>` 에 `display` 를 강제하면 화면에 그대로 깔린다. CSS 는 `[open]` 에만. */}
+      <dialog ref={vetDialog} className="vet-sheet">
+        <form
+          method="dialog"
+          className="vet-sheet-box"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const text = vetDraft.trim();
+            if (!text || vetSending) return;
+            setVetSending(true);
+            const res = await answerAsVetForTest(patientId, threadId.current, text);
+            setVetSending(false);
+            if (!res.ok) { setError(res.error); vetDialog.current?.close(); return; }
+            setVetDone(true);
+            setVetDraft("");
+            setTurns((t) => [...t, { role: "assistant", text }]);
+            vetDialog.current?.close();
+          }}
+        >
+          <div className="vet-sheet-head">
+            <b>🩺 담당 선생님께 넘어온 질문입니다</b>
+            <button type="button" onClick={() => vetDialog.current?.close()} aria-label="닫기">✕</button>
+          </div>
+          <p className="vet-sheet-q">{turns.filter((t) => t.role === "user").slice(-1)[0]?.text}</p>
+          <textarea
+            value={vetDraft}
+            onChange={(e) => setVetDraft(e.target.value)}
+            rows={4}
+            autoFocus
+            placeholder="예) 사진 보니 절개선은 붙어 있고 주변만 붉은 정도입니다. 내일 오전에 한 번 보겠습니다."
+            disabled={vetSending}
+          />
+          <p className="vet-sheet-note">⚠️ 쓰신 그대로 보호자에게 갑니다. AI 가 다듬지 않습니다.</p>
+          <button type="submit" className="vet-sheet-send" disabled={vetSending || !vetDraft.trim()}>
+            {vetSending ? "보내는 중…" : "보호자에게 답변 보내기"}
+          </button>
+        </form>
+      </dialog>
     </>
   );
 }

@@ -55,6 +55,16 @@ export async function signIn() {
 
 export const GONE = /사망|무지개|떠났|폐사|안락사/;
 
+/** `src/lib/admission-report.ts` 의 보호자용 문장. 갈라지면 앱과 다른 걸 시험하게 된다 */
+const FEEDING = {
+  well: "밥을 잘 먹었어요", some: "평소보다 조금 먹었어요", little: "오늘은 거의 먹지 않았어요",
+  assist: "직접 먹지 않아 도와서 먹였어요", npo: "치료 일정 때문에 금식했어요",
+};
+const ELIMINATION = {
+  normal: "대소변 모두 정상이었어요", loose: "변이 묽었어요", none: "오늘은 변을 보지 않았어요",
+  urine_only: "소변만 봤어요", blood: "대소변에 피가 비쳐 확인 중이에요",
+};
+
 /**
  * 그 아이의 기록을 **기준일 시점으로** 조립한다.
  * ⚠️ 기준일 이후는 전부 뺀다 — 안 빼면 채팅이 미래를 알고 답해서 시나리오가 무의미해진다.
@@ -73,7 +83,10 @@ export async function buildContext(sb, p, today) {
       sb.from("life_intake").select("label,started_on,stopped_on")
         .eq("patient_id", p.id).lte("started_on", today),
       // 앱과 같이 **날짜로** 판정한다 (`status` 컬럼이 아니라) — 안 그러면 기준일을 옮겨도 입원 중이 안 된다
-      sb.from("admission").select("admitted_at,discharged_at")
+      // ⚠️ **일일 리포트를 같이 읽는다.** 앱은 읽는데 여기서 빠뜨려 놨었고,
+      // 그래서 「오늘 밥 먹었나요」를 시험하면 앱과 다른 답이 나왔다.
+      sb.from("admission")
+        .select("admitted_at,discharged_at,admission_report(report_date,comment,feeding,elimination,special,sent_at)")
         .eq("patient_id", p.id).lte("admitted_at", today).order("admitted_at", { ascending: false }),
       sb.from("chat_message").select("role,content,created_at")
         .eq("patient_id", p.id).order("created_at", { ascending: false }).limit(20),
@@ -93,10 +106,21 @@ export async function buildContext(sb, p, today) {
     gone
       ? `\n## ⚠️⚠️ **${p.name}는 이미 세상을 떠났다** (${p.note})\n살아 있는 것처럼 말하지 않는다. 지금 상태·다음 진료·먹이는 것을 말하지 않고, 「오세요」·「예약」·「지켜보세요」 는 어느 것도 하지 않는다. 보호자가 지난 일을 물으면 기록에 있는 것만 답하고, 그 외에는 담당 선생님께 넘긴다.`
       : here.length
-        ? `\n## ⚠️ 지금 **우리 병원에 입원 중**이다 (${here[0].admitted_at} 입원)\n보호자는 집에 없는 아이의 지금 상태를 묻고 있다. **「지금 오세요」는 틀린 답이다.**\n병동의 현재 상황은 채팅이 모른다 — 지어내지 말고 담당자에게 넘긴다.`
+        ? `\n## ⚠️ 지금 **우리 병원에 입원 중**이다 (${here[0].admitted_at} 입원)\n보호자는 집에 없는 아이의 지금 상태를 묻고 있다. **「지금 오세요」는 틀린 답이다.**\n⚠️ **아래 「입원 이력」의 일일 리포트를 먼저 읽는다.** 거기 그날 먹은 것·배변이 적혀 있고\n그건 이미 보호자에게 나간 문장이라 그대로 말해도 된다.\n**그날 리포트가 아직 없을 때만** 담당자에게 넘긴다 — 있는데도 모른다고 하면 안 된다.`
         : "\n지금 입원 중이 아니다.",
     "\n## 입원 이력",
-    ...(adms ?? []).map((a) => `- ${a.admitted_at} ~ ${a.discharged_at ?? "입원 중"}`),
+    ...(adms ?? []).flatMap((a) => [
+      `\n### ${a.admitted_at} ~ ${a.discharged_at ?? "입원 중"}`,
+      // 보호자에게 **이미 나간** 문장만. 기준일 뒤의 리포트는 뺀다.
+      ...(a.admission_report ?? [])
+        .filter((r) => r.sent_at && r.report_date <= today &&
+          (r.comment || r.feeding || r.elimination || r.special))
+        .sort((x, y) => (x.report_date < y.report_date ? 1 : -1))
+        .slice(0, 8)
+        .map((r) => `- ${r.report_date}: ` + [
+          FEEDING[r.feeding], ELIMINATION[r.elimination], r.special?.trim(), r.comment?.trim(),
+        ].filter(Boolean).join(" / ")),
+    ]),
     "\n## 진료 기록 (최근 순)",
     ...(visits ?? []).map((v) =>
       `\n### ${v.visit_date} — ${v.chief_complaint ?? "(주 증상 미기재)"}` +

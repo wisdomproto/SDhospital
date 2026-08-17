@@ -3,6 +3,7 @@ import type { Database } from "@/lib/supabase/types";
 import { kstToday } from "@/lib/worklist";
 import { choiceOf, shiftDate, isActive, FIELDS, type Intake, type LifeLog } from "@/lib/life-log";
 import { loadCheckup } from "@/lib/checkup/load";
+import { feedingOption, eliminationOption } from "@/lib/admission-report";
 import { VERDICT_LABEL } from "@/lib/checkup/evaluate";
 
 type Client = SupabaseClient<Database>;
@@ -60,7 +61,11 @@ export async function buildPatientContext(
     // 바이털 수치(`vital`)는 읽지 않는다 — 38.4 는 안심을 주지 못하고 검색 후 더 불안해진다.
     supabase
       .from("admission")
-      .select("admitted_at, discharged_at, status, note, admission_report(report_date, comment, sent_at)")
+      // ⚠️ **식사·배변을 같이 읽는다.** 예전엔 `comment` 만 읽어서, 「오늘 밥 먹었나요」에
+      // 채팅이 「병동만 압니다」라고 답했다 — **우리가 매일 체크해서 이미 보낸 것**인데도.
+      .select(
+        "admitted_at, discharged_at, status, note, admission_report(report_date, comment, feeding, elimination, special, sent_at)"
+      )
       .eq("patient_id", patientId)
       .lte("admitted_at", today)
       .order("admitted_at", { ascending: false }),
@@ -123,7 +128,16 @@ export async function buildPatientContext(
     discharged_at: string | null;
     status: string;
     note: string | null;
-    admission_report: { report_date: string; comment: string | null; sent_at: string | null }[] | null;
+    admission_report:
+      | {
+          report_date: string;
+          comment: string | null;
+          feeding: string | null;
+          elimination: string | null;
+          special: string | null;
+          sent_at: string | null;
+        }[]
+      | null;
   };
   const adms = (admissions ?? []) as Adm[];
   // ⚠️ `status` 가 아니라 **날짜로 판정한다.** 기준일을 옮기는 시나리오 테스트에서
@@ -135,7 +149,9 @@ export async function buildPatientContext(
     now
       ? `\n## ⚠️ 지금 **우리 병원에 입원 중**이다 (${now.admitted_at} 입원)\n` +
         "보호자는 집에 없는 아이의 지금 상태를 묻고 있다. **「지금 오세요」는 틀린 답이다.**\n" +
-        "병동의 현재 상황은 채팅이 모른다 — 지어내지 말고 담당자에게 넘긴다."
+        "⚠️ **위 「입원 이력」의 일일 리포트를 먼저 읽는다.** 거기 그날 먹은 것·배변이 적혀 있고\n" +
+        "그건 이미 보호자에게 나간 문장이라 그대로 말해도 된다.\n" +
+        "**그날 리포트가 아직 없을 때만** 담당자에게 넘긴다 — 있는데도 모른다고 하면 안 된다."
       : "\n지금 입원 중이 아니다."
   );
 
@@ -151,10 +167,23 @@ export async function buildPatientContext(
       );
       // 보호자에게 이미 나간 문장만 — 미발송 리포트는 아직 우리끼리의 메모다.
       // 기준일 뒤의 리포트도 뺀다 (입원 3일째에 5일째 경과가 보이면 안 된다)
+      // ⚠️ **코멘트가 없어도 버리지 않는다.** 예전엔 `r.comment` 를 조건에 걸어서,
+      // 「식사·배변만 골라도 발송」으로 나간 리포트가 통째로 사라졌다 —
+      // 그게 이 기능의 설계인데 정작 채팅은 그걸 못 읽었다.
       const sent = (a.admission_report ?? []).filter(
-        (r) => r.sent_at && r.comment && r.report_date <= today
+        (r) => r.sent_at && r.report_date <= today &&
+          (r.comment || r.feeding || r.elimination || r.special)
       );
-      for (const r of sent.slice(0, 8)) lines.push(`- ${r.report_date}: ${r.comment}`);
+      for (const r of sent.slice(0, 8)) {
+        // 보호자에게 이미 나간 그 문장 그대로 — 우리가 다시 지어내지 않는다
+        const parts = [
+          feedingOption(r.feeding)?.owner,
+          eliminationOption(r.elimination)?.owner,
+          r.special?.trim(),
+          r.comment?.trim(),
+        ].filter(Boolean);
+        if (parts.length) lines.push(`- ${r.report_date}: ${parts.join(" / ")}`);
+      }
     }
   }
 

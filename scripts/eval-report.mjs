@@ -39,7 +39,23 @@ const TRIAGE_KO = {
  */
 if (process.env.HAND) {
   const mod = await import("file://" + path.resolve(process.env.HAND));
-  renderHtml(mod.default, process.env.OUT || "eval-report.html");
+  const rows = mod.default;
+  // ⚠️ **진료 기록은 DB 에서 읽는다.** 손으로 옮겨 적으면 그 순간부터 실제와 갈라진다.
+  // API 호출이 아니라 DB 조회라 돈이 들지 않는다.
+  const sb0 = await signIn();
+  const charts = [...new Set(rows.map((r) => r.chart))];
+  const { data: pats } = await sb0.from("patient")
+    .select("id, chart_no, name, species, breed, sex, birth_date, note")
+    .in("chart_no", charts);
+  const history = {};
+  for (const p of pats ?? []) {
+    const [{ data: vs }, { data: as }] = await Promise.all([
+      sb0.from("visit").select("visit_date, chief_complaint").eq("patient_id", p.id).order("visit_date"),
+      sb0.from("admission").select("admitted_at, discharged_at").eq("patient_id", p.id).order("admitted_at"),
+    ]);
+    history[p.chart_no] = { patient: p, visits: vs ?? [], admissions: as ?? [] };
+  }
+  renderHtml(rows, process.env.OUT || "eval-report.html", history);
   process.exit(0);
 }
 
@@ -324,7 +340,7 @@ await Promise.all(Array.from({ length: CONCURRENCY }, worker));
 
 // ── HTML ─────────────────────────────────────────────────────────────────────
 /** 결과 배열 → HTML 한 장. `HAND` 로 손으로 쓴 것도 이 함수를 그대로 탄다 */
-function renderHtml(results, OUT) {
+function renderHtml(results, OUT, history = {}) {
   const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const byPatient = new Map();
   for (const r of results) {
@@ -350,18 +366,42 @@ function renderHtml(results, OUT) {
       </div>` : ""}`}
     </div>`).join("");
 
+  /** 누적 진료 기록 — **DB 에서 읽은 것 그대로.** 이게 있어야 답이 왜 그런지 읽힌다 */
+  const recordPane = (h) => {
+    if (!h) return `<div class="asof">진료 기록을 불러오지 못했습니다.</div>`;
+    const { patient: p, visits, admissions } = h;
+    const adm = new Map();
+    for (const a of admissions) adm.set(a.admitted_at, a);
+    return `
+      <div class="rec-head">
+        ${[p.species, p.breed, p.sex, p.birth_date && `${p.birth_date} 생`].filter(Boolean).map(esc).join(" · ")}
+        · 진료 ${visits.length}회 · 입원 ${admissions.length}회
+        ${p.note ? `<div class="rec-note">⚠️ ${esc(p.note)}</div>` : ""}
+      </div>
+      ${admissions.length ? `<div class="rec-adm">입원 — ${admissions.map((a) =>
+        `${esc(a.admitted_at)} ~ ${esc(a.discharged_at ?? "퇴원 기록 없음")}`).join(" · ")}</div>` : ""}
+      <table class="rec">
+        <thead><tr><th>날짜</th><th>주 증상 (직원이 EMR 에 쓴 그대로)</th></tr></thead>
+        <tbody>${visits.map((v) => `<tr${adm.has(v.visit_date) ? ' class="in"' : ""}>
+          <td>${esc(v.visit_date)}</td><td>${esc(v.chief_complaint ?? "-")}</td></tr>`).join("")}</tbody>
+      </table>
+      <p class="rec-foot">⚠️ 이 표는 <b>직원용 원문</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
+      주 증상에 다른 병원 이름·원내 표기가 섞여 있어 채팅은 이걸 인용하지 않습니다.</p>`;
+  };
+
   const patientPanes = charts.map((c, pi) => {
     const rs = byPatient.get(c);
     const p0 = rs[0];
     const keys = [...new Set(rs.map((r) => r.key))];
     return `<section class="pane" data-p="${pi}" ${pi ? "hidden" : ""}>
       <h2>${esc(p0.name)} <small>${esc(c)} · ${esc(p0.species ?? "")} ${esc(p0.breed ?? "")}${p0.gone ? ' · <b class="gone">떠난 아이</b>' : ""}</small></h2>
-      <nav class="stabs">${keys.map((k, si) =>
-        `<button data-p="${pi}" data-s="${si}" class="${si ? "" : "on"}">${LABEL[k]}</button>`).join("")}</nav>
-      ${keys.map((k, si) => `<div class="spane" data-p="${pi}" data-s="${si}" ${si ? "hidden" : ""}>
+      <nav class="stabs">${["record", ...keys].map((k, si) =>
+        `<button data-p="${pi}" data-s="${si}" class="${si ? "" : "on"}">${k === "record" ? "📋 진료 기록" : LABEL[k]}</button>`).join("")}</nav>
+      <div class="spane" data-p="${pi}" data-s="0">${recordPane(history[c])}</div>
+      ${keys.map((k, si0) => { const si = si0 + 1; return `<div class="spane" data-p="${pi}" data-s="${si}" hidden>
         <div class="asof">기준일 ${esc(rs.find((r) => r.key === k).asOf)} — 이 날짜를 「오늘」로 놓고 물었다</div>
         ${rowsHtml(rs.filter((r) => r.key === k))}
-      </div>`).join("")}
+      </div>`; }).join("")}
     </section>`;
   }).join("");
 
@@ -405,6 +445,15 @@ function renderHtml(results, OUT) {
   .vet-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:8px}
   .vet-cols b{font-size:.78rem;color:var(--muted)}
   .vet-cols p{white-space:pre-wrap;margin:4px 0 0;padding:10px;border:1px solid var(--line);border-radius:10px}
+.rec-head{font-size:.85rem;color:var(--muted);margin-bottom:10px}
+.rec-note{margin-top:6px;color:#a33;font-weight:700}
+.rec-adm{font-size:.82rem;margin-bottom:12px;padding:8px 10px;border-radius:10px;background:var(--soft)}
+table.rec{border-collapse:collapse;max-width:860px;width:100%;font-size:.85rem}
+table.rec th{text-align:left;padding:6px 8px;border-bottom:2px solid var(--line);color:var(--muted);font-weight:700}
+table.rec td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.rec td:first-child{white-space:nowrap;width:110px}
+table.rec tr.in td{background:#f2f7fb}
+.rec-foot{max-width:860px;margin-top:12px;font-size:.78rem;color:var(--muted);line-height:1.5}
   </style>
   <header>
     <h1>AI 채팅 시나리오 테스트 — 환자 ${charts.length}명 · 문답 ${results.length}건</h1>

@@ -65,6 +65,11 @@
 - `VetAnswers.tsx` — 사람에게 넘긴 질문과 그 답. **답이 붙는 순간 알림창이 뜬다**(`.answer-toast`).
   ⚠️ `router.refresh()` 로는 안 된다 — RSC 캐시가 17초 뒤에도 옛 화면을 준다. `pendingAnswers`
   서버 액션을 5초마다 직접 부른다(기다리는 게 있을 때만). 「이미 있던 답」은 안 알린다(`freshAnswer`).
+- ⚠️ **테스트 전용 둘은 `NEXT_PUBLIC_ENABLE_DEMO` 로 켜진다** — 시나리오 줄(`scenario-box`)과
+  **직원 답변 팝업**(`.vet-sheet`, `ask_vet` 이면 자동으로 `showModal()`). 저장되는 행은
+  「오늘 할 일」로 답한 것과 같다(`answer_chat`·`model='staff'`). RLS 우회가 아니라
+  **서버에서 데모 직원 계정으로 로그인**해 정식 함수를 부른다. 끄면 보호자가 자기 질문에
+  「담당 선생님 답변」을 달 수 없다. ⚠️ 닫힌 `<dialog>` 에 `display` 강제 금지 — `[open]` 에만.
 - ⚠️ **보호자 상세 화면은 「발송됐나」를 직접 확인한다** — 회차(`report_sent_at`)·검진(`sentAt`).
   목록은 걸러 주는데 주소를 직접 열면 **미발송 초안이 그대로 조립돼 나왔다.**
   의료영상은 이제 RLS 가 막는다(`0034`) — see [supabase/CLAUDE.md](../supabase/CLAUDE.md).

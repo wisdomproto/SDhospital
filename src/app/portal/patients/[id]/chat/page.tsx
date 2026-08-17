@@ -8,6 +8,7 @@ import { kstToday } from "@/lib/worklist";
 import { ChatBox } from "./ChatBox";
 import { VetAnswers } from "./VetAnswers";
 import { DEMO_ENABLED } from "@/app/login/demo";
+import { HOSPITAL_PHONE } from "@/lib/hospital";
 
 /**
  * AI 채팅 — **샘플**. 주치의 확인 없이 바로 답한다.
@@ -52,6 +53,30 @@ export default async function PortalChat({
 
   const ctx = await buildPatientContext(supabase, id, undefined, active.asOf);
   if (!ctx) notFound();
+
+  // ⚠️⚠️ **생사가 기록으로 확정되지 않은 아이는 채팅을 열지 않는다** (`patient_caution` 의 `confirm`).
+  // 17건이 그렇다 — 중환자로 퇴원했는데 이후 회차가 없거나, 호스피스로 전원했거나, CPR 이 청구돼 있다.
+  // 그 상태로 채팅을 열면 두 방향 다 사고다: 살아 있는 것처럼 답해도, 떠난 것처럼 답해도.
+  // ⚠️ 보호자에게는 **이유를 설명하지 않는다** — 「기록을 확인 중」이 우리가 할 수 있는 말의 전부다.
+  const { data: locked } = await supabase.rpc("chat_locked", { p_patient: id });
+  if (locked) {
+    return (
+      <>
+        <div style={{ fontWeight: 800, fontSize: "1.05rem", padding: "2px 2px 4px" }}>AI 채팅</div>
+        <div className="portal-card">
+          <div style={{ fontWeight: 800 }}>지금은 채팅으로 답을 드리기 어려워요</div>
+          <p className="portal-tile-sub" style={{ margin: "8px 0 0" }}>
+            {ctx.patient.name}의 기록을 담당 선생님이 확인하고 있어요. 확인이 끝나면 다시 열립니다.
+            <br />
+            궁금하신 것은 병원으로 전화 주시면 바로 답해 드릴게요.
+          </p>
+          <a className="chat-call" style={{ marginTop: 12 }} href={`tel:${HOSPITAL_PHONE}`}>
+            📞 병원에 전화하기 {HOSPITAL_PHONE}
+          </a>
+        </div>
+      </>
+    );
+  }
 
   // 사람에게 넘긴 질문과 그 답. 채팅 자체는 새로고침하면 비지만 **이건 남아야 한다** —
   // 답을 받으러 다시 들어왔는데 없으면 넘겼다는 말이 거짓말이 된다.

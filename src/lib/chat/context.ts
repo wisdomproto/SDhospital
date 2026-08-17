@@ -188,6 +188,38 @@ export async function buildPatientContext(
     }
   }
 
+  // ── 그 집의 사정 (`patient_caution`) ──────────────────────────────────────
+  // 진료기록을 사람이 읽어야만 나오는 것들이다 — 감각이 없는 발, 우리가 1차인 집,
+  // 양쪽 다 수술, 보호자가 이미 거부한 치료, 인슐린 용량을 모르는 집.
+  // ⚠️ **이게 없으면 채팅은 하루한테 「안 아파하면 괜찮습니다」라고 말한다.** 정확히 반대다.
+  //
+  // ⚠️ **`context` 만 읽는다.** `confirm`(생사 미확정)은 아예 안 읽고, 그 아이는 화면에서 잠근다 —
+  // 「사망이 거의 확실하나 확정 문구가 없다」를 읽은 채팅은 두 방향 다 위험하다.
+  //
+  // ⚠️ **service-role 로 읽는다.** `patient_caution` 은 직원 전용이고 그대로 둔다 —
+  // 보호자가 읽을 수 있게 열면 비용 협의·안락사 언급을 브라우저에서 그대로 가져간다.
+  // 서버만 읽어 여기 넣고, **화면으로는 절대 안 내려간다**(컨텍스트는 클라이언트로 안 간다).
+  // ⚠️ **import 를 여기서 한다.** 위에 올려 두면 `server-only` 가 딸려 들어와
+  // 이 파일을 쓰는 유닛테스트가 통째로 못 켜진다(실제로 겪었다).
+  const { createServiceClient } = await import("@/lib/supabase/service");
+  const admin = createServiceClient();
+  if (admin) {
+    const { data: cautions } = await admin
+      .from("patient_caution")
+      .select("body")
+      .eq("patient_id", patientId)
+      .eq("kind", "context")
+      .is("resolved_at", null);
+    if ((cautions ?? []).length) {
+      lines.push(
+        "\n## ⚠️ 이 집에 대해 알고 있어야 하는 것 (직원이 진료기록에서 옮긴 것)\n" +
+          "**진료 원문과 같은 규칙이다 — 읽고 판단하되 문장을 그대로 옮기지 않는다.**\n" +
+          "여기엔 보호자에게 말하면 안 되는 것(비용 협의·1차 병원과의 사정·지난 결정)이 섞여 있다."
+      );
+      for (const c of cautions!) lines.push(`- ${c.body}`);
+    }
+  }
+
   lines.push("\n## 진료 기록 (최근 순)");
   for (const v of visits ?? []) {
     lines.push(`\n### ${v.visit_date} — ${v.chief_complaint ?? "(주 증상 미기재)"}`);

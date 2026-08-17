@@ -774,6 +774,39 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_caution: {
+        Row: {
+          id: string
+          patient_id: string
+          kind: string
+          body: string
+          source: string
+          resolved_at: string | null
+          resolved_note: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          patient_id: string
+          kind?: string
+          body: string
+          source?: string
+          resolved_at?: string | null
+          resolved_note?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          patient_id?: string
+          kind?: string
+          body?: string
+          source?: string
+          resolved_at?: string | null
+          resolved_note?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       patient: {
         Row: {
           birth_date: string | null
@@ -1189,6 +1222,10 @@ export type Database = {
         Returns: undefined
       }
       mark_admission_report_read: { Args: { p_report_id: string }; Returns: undefined }
+      chat_locked: {
+        Args: { p_patient: string }
+        Returns: boolean
+      }
       answer_chat: {
         Args: {
           p_patient_id: string

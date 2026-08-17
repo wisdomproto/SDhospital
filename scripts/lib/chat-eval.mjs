@@ -53,6 +53,23 @@ export async function signIn() {
   return sb;
 }
 
+/**
+ * 직원 세션 — `patient_caution` 을 읽으려면 필요하다(그 표는 직원 전용이다).
+ * ⚠️ 앱은 service-role 로 읽는다. 여기서 직원으로 읽는 건 **같은 글이 프롬프트에 들어갔을 때
+ * 모델이 그걸 인용하는지**를 보기 위해서다 — 위험한 건 읽는 경로가 아니라 나가는 문장이다.
+ */
+let staffSb = null;
+export async function signInStaff() {
+  if (staffSb) return staffSb;
+  const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  const { error } = await sb.auth.signInWithPassword({
+    email: "staff@sdhospital.test", password: "sdhospital123!",
+  });
+  if (error) throw new Error("직원 로그인 실패: " + error.message);
+  staffSb = sb;
+  return sb;
+}
+
 export const GONE = /사망|무지개|떠났|폐사|안락사/;
 
 /** `src/lib/admission-report.ts` 의 보호자용 문장. 갈라지면 앱과 다른 걸 시험하게 된다 */
@@ -91,6 +108,12 @@ export async function buildContext(sb, p, today) {
       sb.from("chat_message").select("role,content,created_at")
         .eq("patient_id", p.id).order("created_at", { ascending: false }).limit(20),
     ]);
+
+  // 그 집의 사정 — `context` 만. `confirm` 은 읽지 않는다(그 아이는 앱에서 채팅이 잠긴다).
+  const staff = await signInStaff();
+  const { data: cautions } = await staff
+    .from("patient_caution").select("body")
+    .eq("patient_id", p.id).eq("kind", "context").is("resolved_at", null);
 
   const here = (adms ?? []).filter((a) => !a.discharged_at || a.discharged_at >= today);
   const gone = GONE.test(p.note ?? "");

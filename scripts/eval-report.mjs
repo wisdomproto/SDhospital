@@ -19,13 +19,43 @@ import path from "node:path";
 import { loadEnv, loadPrompts, signIn, buildContext, askOnce, GONE, PHONE } from "./lib/chat-eval.mjs";
 
 loadEnv();
+
+const TODAY = process.env.TODAY || new Date().toISOString().slice(0, 10);
+const LABEL = {
+  before: "입원 전날", during: "입원 중", after: "퇴원 3일째",
+  now: "지금", emergency: "응급", gone: "떠난 뒤",
+};
+const TRIAGE_KO = {
+  now: "지금 전화", tomorrow: "내일 예약", primary: "1차 병원",
+  ask_vet: "선생님께 넘김", asking: "되묻는 중", out_of_scope: "증상 문의 아님",
+};
+
+/**
+ * `HAND=파일.mjs` — **API 를 한 번도 안 부르고** 손으로 쓴 문답을 그대로 HTML 로 만든다.
+ * 그 파일은 결과 배열 하나를 default 로 내보내면 된다(형식은 아래 `append` 가 넣는 것과 같다).
+ *
+ * ⚠️ 왜 있나: 전수 실행이 4~6시간·수만 번 호출이라 가볍게 다시 돌릴 수 있는 게 아니다.
+ * 몇 명만 손으로 써서 화면을 먼저 보고 싶을 때가 실제로 있다.
+ */
+if (process.env.HAND) {
+  const mod = await import("file://" + path.resolve(process.env.HAND));
+  renderHtml(mod.default, process.env.OUT || "eval-report.html");
+  process.exit(0);
+}
+
 const { SYSTEM, ADMISSION_TAB, POLISH_SYSTEM } = loadPrompts();
 const anthropic = new Anthropic();
 const sb = await signIn();
 
-const TODAY = process.env.TODAY || new Date().toISOString().slice(0, 10);
 const CONCURRENCY = Number(process.env.CONCURRENCY || 6);
 const OUT = process.env.OUT || "eval-report.html";
+/**
+ * ⚠️⚠️ **한 건 끝날 때마다 여기에 적는다.** 이게 없어서 3,300건을 날렸다 —
+ * HTML 을 맨 끝에만 쓰게 해 놨더니 프로세스가 죽는 순간 메모리에 있던 게 전부 사라졌고,
+ * 그건 시간이 아니라 **이미 낸 돈**이다.
+ * 다시 켜면 여기 있는 건 건너뛰고 남은 것만 부른다. 같은 질문에 두 번 내지 않는다.
+ */
+const CACHE = process.env.CACHE || OUT.replace(/\.html$/, "") + ".jsonl";
 
 const shift = (iso, d) => new Date(Date.parse(`${iso}T00:00:00Z`) + d * 864e5).toISOString().slice(0, 10);
 const days = (a, b) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 864e5);
@@ -174,14 +204,6 @@ const POOL = {
   ],
 };
 
-const LABEL = {
-  before: "입원 전날", during: "입원 중", after: "퇴원 3일째",
-  now: "지금", emergency: "응급", gone: "떠난 뒤",
-};
-const TRIAGE_KO = {
-  now: "지금 전화", tomorrow: "내일 예약", primary: "1차 병원",
-  ask_vet: "선생님께 넘김", asking: "되묻는 중", out_of_scope: "증상 문의 아님",
-};
 
 /** `src/lib/chat/scenario.ts` 와 같은 계산 */
 function scenariosFor(adms) {
@@ -253,9 +275,28 @@ for (const p of targets) {
 }
 console.log(`환자 ${targets.length}명 · 문답 ${jobs.length}건 · 동시 ${CONCURRENCY}\n`);
 
+// 이미 받아 둔 것 — 죽었다 다시 켜도 여기서부터다
 const results = [];
+const seen = new Set();
+if (fs.existsSync(CACHE)) {
+  for (const line of fs.readFileSync(CACHE, "utf8").split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const r = JSON.parse(line);
+      results.push(r);
+      seen.add(`${r.chart}|${r.key}|${r.q}`);
+    } catch { /* 쓰다 만 마지막 줄은 버린다 */ }
+  }
+  const left = jobs.filter((j) => !seen.has(`${j.p.chart_no}|${j.s.key}|${j.q}`));
+  console.log(`이미 받아 둔 ${results.length}건은 건너뛴다 · 남은 ${left.length}건`);
+  jobs.length = 0;
+  jobs.push(...left);
+}
+
 let done = 0;
 const ctxCache = new Map();
+/** 받는 즉시 파일에 붙인다. 메모리에만 두지 않는다 — 그게 이번에 낸 수업료다 */
+const append = (r) => { results.push(r); fs.appendFileSync(CACHE, JSON.stringify(r) + "\n", "utf8"); };
 async function worker() {
   for (;;) {
     const job = jobs.shift();
@@ -270,10 +311,11 @@ async function worker() {
         context: ctx.text, question: q,
       });
       const vet = triage === "ask_vet" ? await vetReply(ctx.text, q, text) : null;
-      results.push({ chart: p.chart_no, name: p.name, species: p.species, breed: p.breed,
+      append({ chart: p.chart_no, name: p.name, species: p.species, breed: p.breed,
         gone: ctx.gone, key: s.key, asOf: s.asOf, q, trap, triage, text, vet });
     } catch (e) {
-      results.push({ chart: p.chart_no, name: p.name, key: s.key, asOf: s.asOf, q, trap, error: String(e.message ?? e) });
+      // ⚠️ 실패는 **적지 않는다** — 다음에 다시 켜면 그것만 재시도한다
+      console.error(`  ✗ ${p.chart_no} ${p.name} ${s.key}: ${String(e.message ?? e).slice(0, 80)}`);
     }
     if (++done % 20 === 0) console.log(`  ${done}/${done + jobs.length} 건…`);
   }
@@ -281,112 +323,119 @@ async function worker() {
 await Promise.all(Array.from({ length: CONCURRENCY }, worker));
 
 // ── HTML ─────────────────────────────────────────────────────────────────────
-const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const byPatient = new Map();
-for (const r of results) {
-  if (!byPatient.has(r.chart)) byPatient.set(r.chart, []);
-  byPatient.get(r.chart).push(r);
+/** 결과 배열 → HTML 한 장. `HAND` 로 손으로 쓴 것도 이 함수를 그대로 탄다 */
+function renderHtml(results, OUT) {
+  const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const byPatient = new Map();
+  for (const r of results) {
+    if (!byPatient.has(r.chart)) byPatient.set(r.chart, []);
+    byPatient.get(r.chart).push(r);
+  }
+  const charts = [...byPatient.keys()].sort();
+
+  const rowsHtml = (rs) => rs.map((r) => `
+    <div class="qa">
+      <div class="q">${esc(r.q)}</div>
+      <div class="trap">노리는 것 · ${esc(r.trap)}</div>
+      ${r.error ? `<div class="err">${esc(r.error)}</div>` : `
+      <div class="tri t-${r.triage}">${TRIAGE_KO[r.triage] ?? r.triage}</div>
+      <div class="a">${esc(r.text)}</div>
+      ${r.vet ? `
+      <div class="vet">
+        <div class="vet-h">넘긴 다음 — 담당의 답변 <span>⚠️ 실제 원장님이 쓴 게 아니라 기록으로 만든 예시입니다</span></div>
+        <div class="vet-cols">
+          <div><b>선생님이 쓴 메모</b><p>${esc(r.vet.memo)}</p></div>
+          <div><b>다듬어서 보호자에게</b><p>${r.vet.polished ? esc(r.vet.polished) : "<i>다듬기 실패 — 원문 그대로 나감</i>"}</p></div>
+        </div>
+      </div>` : ""}`}
+    </div>`).join("");
+
+  const patientPanes = charts.map((c, pi) => {
+    const rs = byPatient.get(c);
+    const p0 = rs[0];
+    const keys = [...new Set(rs.map((r) => r.key))];
+    return `<section class="pane" data-p="${pi}" ${pi ? "hidden" : ""}>
+      <h2>${esc(p0.name)} <small>${esc(c)} · ${esc(p0.species ?? "")} ${esc(p0.breed ?? "")}${p0.gone ? ' · <b class="gone">떠난 아이</b>' : ""}</small></h2>
+      <nav class="stabs">${keys.map((k, si) =>
+        `<button data-p="${pi}" data-s="${si}" class="${si ? "" : "on"}">${LABEL[k]}</button>`).join("")}</nav>
+      ${keys.map((k, si) => `<div class="spane" data-p="${pi}" data-s="${si}" ${si ? "hidden" : ""}>
+        <div class="asof">기준일 ${esc(rs.find((r) => r.key === k).asOf)} — 이 날짜를 「오늘」로 놓고 물었다</div>
+        ${rowsHtml(rs.filter((r) => r.key === k))}
+      </div>`).join("")}
+    </section>`;
+  }).join("");
+
+  const tally = {};
+  for (const r of results) tally[r.triage ?? "실패"] = (tally[r.triage ?? "실패"] ?? 0) + 1;
+
+  fs.mkdirSync(path.dirname(OUT) || ".", { recursive: true });
+  fs.writeFileSync(OUT, `<!doctype html><html lang="ko"><meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI 채팅 시나리오 테스트 — 환자 ${charts.length}명</title>
+  <style>
+  :root{--line:#e5e9ec;--muted:#6b7885;--soft:#f6f8f9;--text:#16202a}
+  *{box-sizing:border-box}body{margin:0;font:15px/1.6 -apple-system,"Segoe UI","Malgun Gothic",sans-serif;color:var(--text)}
+  header{padding:18px 22px;border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:1.15rem}
+  .sum{margin-top:6px;color:var(--muted);font-size:.85rem}
+  .wrap{display:grid;grid-template-columns:210px minmax(0,1fr);height:calc(100vh - 74px)}
+  .plist{border-right:1px solid var(--line);overflow:auto;padding:8px}
+  .plist button{display:block;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:9px;
+   background:none;font:inherit;font-size:.88rem;cursor:pointer;color:var(--text)}
+  .plist button.on{background:var(--text);color:#fff;font-weight:700}
+  main{overflow:auto;padding:20px 24px}
+  h2{margin:0 0 12px;font-size:1.05rem}h2 small{font-weight:400;color:var(--muted);font-size:.8rem}
+  .gone{color:#a33}
+  .stabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .stabs button{padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;
+   font:inherit;font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer}
+  .stabs button.on{background:var(--text);border-color:var(--text);color:#fff}
+  .asof{color:var(--muted);font-size:.8rem;margin-bottom:12px}
+  .qa{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;max-width:860px}
+  .q{font-weight:700}
+  .trap{color:var(--muted);font-size:.78rem;margin:3px 0 10px}
+  .tri{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;
+   background:var(--soft);color:var(--muted);margin-bottom:8px}
+  .t-now{background:#fde8e8;color:#a33}.t-tomorrow{background:#fdf1de;color:#8a5a12}
+  .t-primary{background:#e7f1fb;color:#1f5a8f}.t-ask_vet{background:#eaf5ef;color:#1d6b45}
+  .a{white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:10px}
+  .err{color:#a33}
+  .vet{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+  .vet-h{font-size:.82rem;font-weight:700}.vet-h span{font-weight:400;color:var(--muted);font-size:.75rem}
+  .vet-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:8px}
+  .vet-cols b{font-size:.78rem;color:var(--muted)}
+  .vet-cols p{white-space:pre-wrap;margin:4px 0 0;padding:10px;border:1px solid var(--line);border-radius:10px}
+  </style>
+  <header>
+    <h1>AI 채팅 시나리오 테스트 — 환자 ${charts.length}명 · 문답 ${results.length}건</h1>
+    <div class="sum">${Object.entries(tally).map(([k, v]) => `${TRIAGE_KO[k] ?? k} ${v}`).join(" · ")}
+     · 생성 ${esc(TODAY)} · 연락처 ${PHONE}</div>
+  </header>
+  <div class="wrap">
+    <nav class="plist">${charts.map((c, i) =>
+      `<button data-p="${i}" class="${i ? "" : "on"}">${esc(byPatient.get(c)[0].name)} <span style="opacity:.6">${esc(c)}</span></button>`).join("")}</nav>
+    <main>${patientPanes}</main>
+  </div>
+  <script>
+  const show=(sel,on)=>document.querySelectorAll(sel).forEach(e=>e.hidden=!on(e));
+  document.querySelectorAll('.plist button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('.plist button').forEach(x=>x.classList.toggle('on',x===b));
+    show('.pane',e=>e.dataset.p===b.dataset.p);
+    document.querySelector('main').scrollTop=0;
+  });
+  document.querySelectorAll('.stabs button').forEach(b=>b.onclick=()=>{
+    b.parentElement.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    show('.spane[data-p="'+b.dataset.p+'"]',e=>e.dataset.s===b.dataset.s);
+  });
+  </script>
+  </html>`, "utf8");
+
+  console.log(`\n환자 ${charts.length}명 · 문답 ${results.length}건`);
+  console.log(Object.entries(tally).map(([k, v]) => `  ${(TRIAGE_KO[k] ?? k).padEnd(14)} ${v}`).join("\n"));
+  console.log(`\n리포트: ${OUT}`);
+  process.exit(0);
+
 }
-const charts = [...byPatient.keys()].sort();
 
-const rowsHtml = (rs) => rs.map((r) => `
-  <div class="qa">
-    <div class="q">${esc(r.q)}</div>
-    <div class="trap">노리는 것 · ${esc(r.trap)}</div>
-    ${r.error ? `<div class="err">${esc(r.error)}</div>` : `
-    <div class="tri t-${r.triage}">${TRIAGE_KO[r.triage] ?? r.triage}</div>
-    <div class="a">${esc(r.text)}</div>
-    ${r.vet ? `
-    <div class="vet">
-      <div class="vet-h">넘긴 다음 — 담당의 답변 <span>⚠️ 실제 원장님이 쓴 게 아니라 기록으로 만든 예시입니다</span></div>
-      <div class="vet-cols">
-        <div><b>선생님이 쓴 메모</b><p>${esc(r.vet.memo)}</p></div>
-        <div><b>다듬어서 보호자에게</b><p>${r.vet.polished ? esc(r.vet.polished) : "<i>다듬기 실패 — 원문 그대로 나감</i>"}</p></div>
-      </div>
-    </div>` : ""}`}
-  </div>`).join("");
-
-const patientPanes = charts.map((c, pi) => {
-  const rs = byPatient.get(c);
-  const p0 = rs[0];
-  const keys = [...new Set(rs.map((r) => r.key))];
-  return `<section class="pane" data-p="${pi}" ${pi ? "hidden" : ""}>
-    <h2>${esc(p0.name)} <small>${esc(c)} · ${esc(p0.species ?? "")} ${esc(p0.breed ?? "")}${p0.gone ? ' · <b class="gone">떠난 아이</b>' : ""}</small></h2>
-    <nav class="stabs">${keys.map((k, si) =>
-      `<button data-p="${pi}" data-s="${si}" class="${si ? "" : "on"}">${LABEL[k]}</button>`).join("")}</nav>
-    ${keys.map((k, si) => `<div class="spane" data-p="${pi}" data-s="${si}" ${si ? "hidden" : ""}>
-      <div class="asof">기준일 ${esc(rs.find((r) => r.key === k).asOf)} — 이 날짜를 「오늘」로 놓고 물었다</div>
-      ${rowsHtml(rs.filter((r) => r.key === k))}
-    </div>`).join("")}
-  </section>`;
-}).join("");
-
-const tally = {};
-for (const r of results) tally[r.triage ?? "실패"] = (tally[r.triage ?? "실패"] ?? 0) + 1;
-
-fs.mkdirSync(path.dirname(OUT) || ".", { recursive: true });
-fs.writeFileSync(OUT, `<!doctype html><html lang="ko"><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI 채팅 시나리오 테스트 — 환자 ${charts.length}명</title>
-<style>
-:root{--line:#e5e9ec;--muted:#6b7885;--soft:#f6f8f9;--text:#16202a}
-*{box-sizing:border-box}body{margin:0;font:15px/1.6 -apple-system,"Segoe UI","Malgun Gothic",sans-serif;color:var(--text)}
-header{padding:18px 22px;border-bottom:1px solid var(--line)}
-h1{margin:0;font-size:1.15rem}
-.sum{margin-top:6px;color:var(--muted);font-size:.85rem}
-.wrap{display:grid;grid-template-columns:210px minmax(0,1fr);height:calc(100vh - 74px)}
-.plist{border-right:1px solid var(--line);overflow:auto;padding:8px}
-.plist button{display:block;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:9px;
- background:none;font:inherit;font-size:.88rem;cursor:pointer;color:var(--text)}
-.plist button.on{background:var(--text);color:#fff;font-weight:700}
-main{overflow:auto;padding:20px 24px}
-h2{margin:0 0 12px;font-size:1.05rem}h2 small{font-weight:400;color:var(--muted);font-size:.8rem}
-.gone{color:#a33}
-.stabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.stabs button{padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;
- font:inherit;font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer}
-.stabs button.on{background:var(--text);border-color:var(--text);color:#fff}
-.asof{color:var(--muted);font-size:.8rem;margin-bottom:12px}
-.qa{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;max-width:860px}
-.q{font-weight:700}
-.trap{color:var(--muted);font-size:.78rem;margin:3px 0 10px}
-.tri{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;
- background:var(--soft);color:var(--muted);margin-bottom:8px}
-.t-now{background:#fde8e8;color:#a33}.t-tomorrow{background:#fdf1de;color:#8a5a12}
-.t-primary{background:#e7f1fb;color:#1f5a8f}.t-ask_vet{background:#eaf5ef;color:#1d6b45}
-.a{white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:10px}
-.err{color:#a33}
-.vet{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
-.vet-h{font-size:.82rem;font-weight:700}.vet-h span{font-weight:400;color:var(--muted);font-size:.75rem}
-.vet-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:8px}
-.vet-cols b{font-size:.78rem;color:var(--muted)}
-.vet-cols p{white-space:pre-wrap;margin:4px 0 0;padding:10px;border:1px solid var(--line);border-radius:10px}
-</style>
-<header>
-  <h1>AI 채팅 시나리오 테스트 — 환자 ${charts.length}명 · 문답 ${results.length}건</h1>
-  <div class="sum">${Object.entries(tally).map(([k, v]) => `${TRIAGE_KO[k] ?? k} ${v}`).join(" · ")}
-   · 생성 ${esc(TODAY)} · 연락처 ${PHONE}</div>
-</header>
-<div class="wrap">
-  <nav class="plist">${charts.map((c, i) =>
-    `<button data-p="${i}" class="${i ? "" : "on"}">${esc(byPatient.get(c)[0].name)} <span style="opacity:.6">${esc(c)}</span></button>`).join("")}</nav>
-  <main>${patientPanes}</main>
-</div>
-<script>
-const show=(sel,on)=>document.querySelectorAll(sel).forEach(e=>e.hidden=!on(e));
-document.querySelectorAll('.plist button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.plist button').forEach(x=>x.classList.toggle('on',x===b));
-  show('.pane',e=>e.dataset.p===b.dataset.p);
-  document.querySelector('main').scrollTop=0;
-});
-document.querySelectorAll('.stabs button').forEach(b=>b.onclick=()=>{
-  b.parentElement.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
-  show('.spane[data-p="'+b.dataset.p+'"]',e=>e.dataset.s===b.dataset.s);
-});
-</script>
-</html>`, "utf8");
-
-console.log(`\n환자 ${charts.length}명 · 문답 ${results.length}건`);
-console.log(Object.entries(tally).map(([k, v]) => `  ${(TRIAGE_KO[k] ?? k).padEnd(14)} ${v}`).join("\n"));
-console.log(`\n리포트: ${OUT}`);
+renderHtml(results, OUT);
 process.exit(0);

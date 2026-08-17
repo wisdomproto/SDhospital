@@ -7,6 +7,7 @@ import { scenariosFor } from "@/lib/chat/scenario";
 import { kstToday } from "@/lib/worklist";
 import { ChatBox } from "./ChatBox";
 import { VetAnswers } from "./VetAnswers";
+import { DEMO_ENABLED } from "@/app/login/demo";
 
 /**
  * AI 채팅 — **샘플**. 주치의 확인 없이 바로 답한다.
@@ -101,6 +102,8 @@ export default async function PortalChat({
         }
         admittedAt={ctx.admittedAt}
         asOf={active.asOf}
+        // ⚠️ 테스트 전용 — 보호자에게 앱을 줄 때 NEXT_PUBLIC_ENABLE_DEMO 를 끈다
+        testMode={DEMO_ENABLED}
       />
     </>
   );

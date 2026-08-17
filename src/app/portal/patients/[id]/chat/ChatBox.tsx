@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ask, type Triage, type Turn } from "./actions";
+import { answerAsVetForTest, ask, type Triage, type Turn } from "./actions";
 import { HOSPITAL_PHONE } from "@/lib/hospital";
 
 /**
@@ -21,6 +21,7 @@ export function ChatBox({
   suggestions,
   admittedAt,
   asOf = null,
+  testMode = false,
 }: {
   patientId: string;
   patientName: string;
@@ -29,12 +30,17 @@ export function ChatBox({
   admittedAt: string | null;
   /** 직원 시나리오 테스트에서만 들어온다. 보호자 화면은 언제나 null */
   asOf?: string | null;
+  /** ⚠️ 테스트 전용. 켜져 있으면 `ask_vet` 밑에 직원이 직접 답을 쓰는 칸이 뜬다 */
+  testMode?: boolean;
 }) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [triage, setTriage] = useState<Triage | null>(null);
   const [draft, setDraft] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [vetDraft, setVetDraft] = useState("");
+  const [vetSending, setVetSending] = useState(false);
+  const [vetDone, setVetDone] = useState(false);
   const threadId = useRef(crypto.randomUUID());
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -50,6 +56,7 @@ export function ChatBox({
     setDraft("");
     setTriage(null);
     setError(null);
+    setVetDone(false);
     setPending(true);
     const res = await ask(patientId, threadId.current, next, asOf);
     setPending(false);
@@ -106,13 +113,50 @@ export function ChatBox({
               기다려 달라고 해 놓고 전화 버튼을 띄우면 기다리라는 말이 아니게 된다.
               대신 답이 여기로 온다는 것과, 급해지면 그때 전화하라는 것만 남긴다. */}
           {triage === "ask_vet" && !pending && (
-            <div className="chat-waiting">
-              <b>담당 선생님께 전달했어요</b>
-              <span>
-                답이 오면 이 대화에 그대로 올라와요. 그 사이에 상태가 나빠지면 기다리지 마시고{" "}
-                <a href={`tel:${HOSPITAL_PHONE}`}>{HOSPITAL_PHONE}</a> 로 전화 주세요.
-              </span>
-            </div>
+            <>
+              <div className="chat-waiting">
+                <b>담당 선생님께 전달했어요</b>
+                <span>
+                  답이 오면 이 대화에 그대로 올라와요. 그 사이에 상태가 나빠지면 기다리지 마시고{" "}
+                  <a href={`tel:${HOSPITAL_PHONE}`}>{HOSPITAL_PHONE}</a> 로 전화 주세요.
+                </span>
+              </div>
+              {/* ⚠️ 테스트 전용. 지금 이걸 눌러 보는 사람은 직원이라, 답 하나 보려고
+                  다른 창에서 「오늘 할 일」로 들어갔다 오게 하면 흐름을 끝까지 안 본다.
+                  저장되는 행은 「오늘 할 일」로 답한 것과 **완전히 같다**. */}
+              {testMode && !vetDone && (
+                <form
+                  className="vet-reply"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const text = vetDraft.trim();
+                    if (!text || vetSending) return;
+                    setVetSending(true);
+                    const res = await answerAsVetForTest(patientId, threadId.current, text);
+                    setVetSending(false);
+                    if (!res.ok) return setError(res.error);
+                    setVetDone(true);
+                    setVetDraft("");
+                    setTurns((t) => [...t, { role: "assistant", text }]);
+                  }}
+                >
+                  <div className="vet-reply-head">
+                    <b>🩺 직원용 · 여기서 바로 답하기</b>
+                    <span>쓰신 그대로 보호자에게 갑니다. AI 가 다듬지 않습니다.</span>
+                  </div>
+                  <textarea
+                    value={vetDraft}
+                    onChange={(e) => setVetDraft(e.target.value)}
+                    rows={3}
+                    placeholder="예) 사진 보니 절개선은 붙어 있고 주변만 붉은 정도입니다. 내일 오전에 한 번 보겠습니다."
+                    disabled={vetSending}
+                  />
+                  <button type="submit" disabled={vetSending || !vetDraft.trim()}>
+                    {vetSending ? "보내는 중…" : "담당 선생님 답변으로 보내기"}
+                  </button>
+                </form>
+              )}
+            </>
           )}
           <div ref={endRef} />
         </div>

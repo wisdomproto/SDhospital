@@ -195,7 +195,7 @@ export function ChatBox({
             const text = vetDraft.trim();
             if (!text || vetSending) return;
             setVetSending(true);
-            const res = await answerAsVetForTest(patientId, threadId.current, text);
+            const res = await answerAsVetForTest(text);
             setVetSending(false);
             if (!res.ok) { setError(res.error); vetDialog.current?.close(); return; }
             setVetDone(true);

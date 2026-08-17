@@ -6,8 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { buildPatientContext } from "@/lib/chat/context";
 import { HOSPITAL_PHONE } from "@/lib/hospital";
 import { pairVetQuestions, type ChatRow, type VetQuestion } from "@/lib/chat/vet-questions";
-import { createClient as createBrowserlessClient } from "@supabase/supabase-js";
-import { DEMO_ACCOUNTS, DEMO_ENABLED } from "@/app/login/demo";
+import { DEMO_ENABLED } from "@/app/login/demo";
 
 export type Triage = "now" | "tomorrow" | "primary" | "ask_vet" | "asking" | "out_of_scope";
 export type Turn = { role: "user" | "assistant"; text: string };
@@ -291,10 +290,14 @@ export async function ask(
     const text = out.text?.trim();
     if (!text) return { ok: false, error: "답변이 비어 있습니다. 다시 물어봐 주세요." };
 
-    // ⚠️ **시나리오 대화도 그대로 기록한다.** 기준일만 옮겼을 뿐 실제로 오간 문답이고,
-    // `ask_vet` 이 나오면 「오늘 할 일」→ 원장님 답변 → 이 대화까지 한 바퀴가 다 돌아야
-    // 그 기능을 본 것이다. 아직 아무도 이 앱을 쓰고 있지 않으니 섞일 것도 없다.
-    //
+    // ⚠️⚠️ **테스트 빌드에서는 대화를 기록하지 않는다** (`NEXT_PUBLIC_ENABLE_DEMO=1`).
+    // 눌러 보는 문답이 쌓이면 다음에 열었을 때 「답변을 기다리는 중」이 남의 얘기처럼 먼저 보이고,
+    // 답을 달 수 있는 자리는 이미 지나간 대화라 없다. **세션마다 빈 화면에서 시작한다.**
+    // ⚠️ 끄면(=실제 배포) 전부 기록한다 — 상용에서는 오간 말이 곧 증빙이다.
+    // ⚠️ `chat_message` 에는 **옮겨 넣은 카톡 상담 1,984건**이 같이 산다. 지우는 것으로
+    //    「초기화」하지 않는다 — 그건 채팅이 「지난 대화」로 읽는 자산이다.
+    if (DEMO_ENABLED) return { ok: true, text, triage: out.triage };
+
     // ⚠️ **보관에 실패해도 답은 나간다.** 보호자가 물어본 것에 답하는 게 먼저고,
     // 로그 때문에 화면이 멈추면 그때부터 아무도 안 쓴다. 대신 실패는 서버 로그에 남긴다.
     const q = history[history.length - 1]?.text ?? "";
@@ -346,39 +349,15 @@ export async function pendingAnswers(patientId: string): Promise<VetQuestion[]> 
  *
  * 지금 이걸 눌러 보는 사람은 직원이다. 답을 하나 보려고 다른 창을 열어 「오늘 할 일」로
  * 들어갔다 오게 하면 그 흐름을 아무도 끝까지 안 본다. 그래서 **답을 기다리는 그 자리에서**
- * 바로 쓰게 한다. 저장되는 것은 「오늘 할 일」로 답한 것과 **완전히 같은 행**이다
- * (`answer_chat`, `model='staff'`) — 테스트용 샛길로 다른 모양의 데이터를 만들지 않는다.
+ * 바로 쓰게 한다.
  *
- * ⚠️ **RLS 를 우회하지 않는다.** 서비스 키를 쓰는 대신 저장소에 이미 있는 **데모 직원 계정**으로
- * 서버에서 로그인해 정식 함수를 부른다 — 직원이 아니면 DB 가 거절한다.
- * ⚠️ **`NEXT_PUBLIC_ENABLE_DEMO=1` 일 때만 동작한다.** 보호자에게 앱을 줄 때는 이 값을 끈다
- * (안 그러면 보호자가 자기 질문에 「담당 선생님 답변」을 달 수 있다).
+ * ⚠️ **저장하지 않는다.** 테스트 빌드는 질문도 기록하지 않으므로(위 `ask` 참고) 붙일 대화가
+ * DB 에 없다. 답은 화면에만 붙고 세션이 끝나면 사라진다 — 그게 이 모드의 요점이다.
+ * 실제 흐름(원장님이 「오늘 할 일」에서 답 → 보호자 채팅에 붙음)은 `answer_chat` 이 그대로 한다.
  */
 export async function answerAsVetForTest(
-  patientId: string,
-  threadId: string,
   answer: string
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   if (!DEMO_ENABLED) return { ok: false, error: "테스트 모드가 아닙니다" };
-  const text = answer.trim();
-  if (!text) return { ok: false, error: "답변을 입력해 주세요" };
-
-  const sb = createBrowserlessClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { persistSession: false, autoRefreshToken: false } }
-  );
-  const { error: authErr } = await sb.auth.signInWithPassword(DEMO_ACCOUNTS.staff);
-  if (authErr) return { ok: false, error: "직원 계정으로 로그인하지 못했습니다" };
-
-  const { error } = await sb.rpc("answer_chat", {
-    p_patient_id: patientId,
-    p_thread_id: threadId,
-    p_answer: text,
-  });
-  if (error) {
-    console.error("[chat] answerAsVetForTest failed", error);
-    return { ok: false, error: "답변을 저장하지 못했습니다" };
-  }
-  return { ok: true };
+  return answer.trim() ? { ok: true } : { ok: false, error: "답변을 입력해 주세요" };
 }

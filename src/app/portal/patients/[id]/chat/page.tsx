@@ -55,12 +55,16 @@ export default async function PortalChat({
 
   // 사람에게 넘긴 질문과 그 답. 채팅 자체는 새로고침하면 비지만 **이건 남아야 한다** —
   // 답을 받으러 다시 들어왔는데 없으면 넘겼다는 말이 거짓말이 된다.
-  const { data: rows } = await supabase
-    .from("chat_message")
-    .select("thread_id, role, content, triage, model, created_at")
-    .eq("patient_id", id)
-    .order("created_at", { ascending: false })
-    .limit(60);
+  // ⚠️ **테스트 빌드에서는 읽지 않는다.** 눌러 본 문답이 다음 세션에 「답변을 기다리는 중」으로
+  // 남는데, 지나간 대화라 답을 달 자리가 없다. 테스트는 **매번 빈 화면에서** 시작한다.
+  const { data: rows } = DEMO_ENABLED
+    ? { data: null }
+    : await supabase
+        .from("chat_message")
+        .select("thread_id, role, content, triage, model, created_at")
+        .eq("patient_id", id)
+        .order("created_at", { ascending: false })
+        .limit(60);
   const vetQuestions = pairVetQuestions((rows ?? []).slice().reverse() as ChatRow[]).slice(0, 5);
 
   return (

@@ -363,6 +363,28 @@ function renderHtml(results, OUT, history = {}) {
   }
   const charts = [...byPatient.keys()].sort();
 
+  /**
+   * 넘긴 다음에 원장님이 쓰는 답. **두 가지 모양이 섞여 있다.**
+   * - 문자열 하나 — 보호자에게 그대로 나가는 문장 (`04`~`12` 파일)
+   * - `{memo, polished}` — 병동 메모와 다듬은 문장을 나눠 본 것 (`03` 파일, 앱의 「다듬기」 검증용)
+   *
+   * ⚠️ **객체만 그리다가 문자열 쪽이 통째로 빈칸으로 나갔다.** `r.vet.memo` 가 `undefined` 였고,
+   * `esc(undefined)` 는 빈 문자열이라 **에러 없이 조용히** 사라졌다. 413건 중 대부분이 그랬다.
+   * 넘겼다는 표시만 있고 답이 없으면, 보는 사람에게는 **넘기고 끝난 것으로 읽힌다.**
+   */
+  const vetHtml = (vet) => {
+    if (!vet) return "";
+    const head = `<div class="vet-h">넘긴 다음 — 담당의 답변 <span>⚠️ 실제 원장님이 쓴 게 아니라 기록으로 만든 예시입니다</span></div>`;
+    if (typeof vet === "string") {
+      return `<div class="vet">${head}<div class="vet-one"><p>${esc(vet)}</p></div></div>`;
+    }
+    return `<div class="vet">${head}
+      <div class="vet-cols">
+        <div><b>선생님이 쓴 메모</b><p>${esc(vet.memo ?? "")}</p></div>
+        <div><b>다듬어서 보호자에게</b><p>${vet.polished ? esc(vet.polished) : "<i>다듬기 실패 — 원문 그대로 나감</i>"}</p></div>
+      </div></div>`;
+  };
+
   const rowsHtml = (rs) => rs.map((r) => `
     <div class="qa">
       <div class="q">${esc(r.q)}</div>
@@ -370,14 +392,7 @@ function renderHtml(results, OUT, history = {}) {
       ${r.error ? `<div class="err">${esc(r.error)}</div>` : `
       <div class="tri t-${r.triage}">${TRIAGE_KO[r.triage] ?? r.triage}</div>
       <div class="a">${esc(r.text)}</div>
-      ${r.vet ? `
-      <div class="vet">
-        <div class="vet-h">넘긴 다음 — 담당의 답변 <span>⚠️ 실제 원장님이 쓴 게 아니라 기록으로 만든 예시입니다</span></div>
-        <div class="vet-cols">
-          <div><b>선생님이 쓴 메모</b><p>${esc(r.vet.memo)}</p></div>
-          <div><b>다듬어서 보호자에게</b><p>${r.vet.polished ? esc(r.vet.polished) : "<i>다듬기 실패 — 원문 그대로 나감</i>"}</p></div>
-        </div>
-      </div>` : ""}`}
+      ${vetHtml(r.vet)}`}
     </div>`).join("");
 
   /** 누적 진료 기록 — **DB 에서 읽은 것 그대로.** 이게 있어야 답이 왜 그런지 읽힌다 */
@@ -483,6 +498,8 @@ function renderHtml(results, OUT, history = {}) {
   .vet-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:8px}
   .vet-cols b{font-size:.78rem;color:var(--muted)}
   .vet-cols p{white-space:pre-wrap;margin:4px 0 0;padding:10px;border:1px solid var(--line);border-radius:10px}
+  .vet-one p{white-space:pre-wrap;margin:8px 0 0;padding:10px 12px;border:1px solid #d7e6d9;
+   border-radius:10px;background:#f5faf6;max-width:760px}
 .rec-head{font-size:.85rem;color:var(--muted);margin-bottom:10px}
 .rec-note{margin-top:6px;color:#a33;font-weight:700}
 .rec-adm{font-size:.82rem;margin-bottom:12px;padding:8px 10px;border-radius:10px;background:var(--soft)}

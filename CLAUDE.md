@@ -62,11 +62,17 @@
 ## 지금 상태
 EMR·보호자 앱 MVP·레퍼럴 브릿지·건강검진·생활기록 **완료**.
 
-**AI 채팅은 실제 환자 69명의 기록 위에서 돌고, 그 69명 전수로 검증한다**
-(`ANTHROPIC_API_KEY` 필요 · `node scripts/eval-scenarios.mjs` 291문답 자동 채점 ·
-`node scripts/try-chat.mjs "질문"` 한 마리만 · **see [docs/superpowers/plans/2026-08-17-chat-eval.md]**).
+**AI 채팅은 실제 환자 71명의 기록 위에서 돌고, 그 전수로 검증한다.** 길이 둘이다 —
+**기계 채점**(`node scripts/eval-scenarios.mjs` 291문답 · `try-chat.mjs "질문"` 한 마리만 ·
+`caution-leak.mjs` 사정 유출 미끼 · `ANTHROPIC_API_KEY` 필요)과
+**손으로 쓴 전수**(`HAND=scripts/hand-eval/index.mjs node scripts/eval-report.mjs` — **API 0회**).
+⚠️ **원장님이 보는 건 손으로 쓴 쪽이다** — `docs/review/2026-08-17-chat-eval-report.html`,
+**56마리 · 1,050문답**. 환자 탭 안에 진료 원문과 시나리오별 문답이 나란히 있어
+**채팅이 무엇을 보고 그렇게 답했는지**를 그 자리에서 맞춰 볼 수 있다.
+남은 15명은 생사 미확정이라 앱에서 감춰져 있어 애초에 문답이 없다.
+**see [docs/superpowers/plans/2026-08-17-chat-eval.md]**
 
-세운 선 — 전부 69명 위에서 0건까지 확인했다:
+세운 선 — 전부 전수에서 0건까지 확인했다:
 ① **떠난 아이에게 살아 있는 것처럼 말하지 않는다** (사망 6명, `patient.note`)
 ② **모르면 지어내지 않고 사람에게 넘긴다** — `ask_vet` 이 「오늘 할 일」 맨 위로 뜨고,
 원장님이 쓴 답이 그대로 보호자 채팅에 붙는다

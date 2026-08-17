@@ -1,5 +1,6 @@
 /** 손으로 쓴 문답 전부 — `HAND=scripts/hand-eval/index.mjs` 로 부른다 */
 import a from "./01-고구마-루이.mjs";
-import b from "./02-싸이먼-진솜-하루-야무.mjs";
+import b from "./02-진솜-야무.mjs";
 import c from "./03-앙이-코코x2-미남-쪼랭이-망고.mjs";
-export default [...a, ...b, ...c];
+import d from "./04-싸이먼-하루.mjs";
+export default [...a, ...b, ...c, ...d];

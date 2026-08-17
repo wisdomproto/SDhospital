@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pairVetQuestions, type ChatRow } from "./vet-questions";
+import { freshAnswer, type VetQuestion, pairVetQuestions, type ChatRow } from "./vet-questions";
 
 const row = (o: Partial<ChatRow> & Pick<ChatRow, "thread_id" | "role" | "content" | "created_at">): ChatRow => ({
   triage: null,
@@ -60,5 +60,30 @@ describe("pairVetQuestions", () => {
     ]);
     expect(got.find((q) => q.question === "입원 질문")?.answer).toBeNull();
     expect(got.find((q) => q.question === "평소 질문")?.answer).toBe("t2 답");
+  });
+});
+
+const q = (askedAt: string, answer: string | null): VetQuestion => ({
+  threadId: askedAt, question: "물어본 것", askedAt, answer,
+  answeredAt: answer ? askedAt : null,
+});
+
+describe("freshAnswer — 무엇을 「방금 도착」으로 볼 것인가", () => {
+  it("들어와 보니 이미 있던 답은 알리지 않는다", () => {
+    const seen = new Set(["1"]);
+    expect(freshAnswer(seen, [q("1", "예전 답")])).toBeNull();
+  });
+
+  it("보고 있는 동안 붙은 답만 알린다", () => {
+    const seen = new Set(["1"]);
+    expect(freshAnswer(seen, [q("1", "예전 답"), q("2", "방금 온 답")])?.answer).toBe("방금 온 답");
+  });
+
+  it("아직 답이 없는 것은 도착이 아니다", () => {
+    expect(freshAnswer(new Set(), [q("1", null)])).toBeNull();
+  });
+
+  it("아무것도 없으면 null", () => {
+    expect(freshAnswer(new Set(), [])).toBeNull();
   });
 });

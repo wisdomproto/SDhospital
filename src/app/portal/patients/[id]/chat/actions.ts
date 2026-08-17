@@ -5,6 +5,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { buildPatientContext } from "@/lib/chat/context";
 import { HOSPITAL_PHONE } from "@/lib/hospital";
+import { pairVetQuestions, type ChatRow, type VetQuestion } from "@/lib/chat/vet-questions";
 
 export type Triage = "now" | "tomorrow" | "primary" | "ask_vet" | "asking" | "out_of_scope";
 export type Turn = { role: "user" | "assistant"; text: string };
@@ -316,4 +317,24 @@ export async function ask(
       error: "지금 답변을 만들지 못했어요. 잠시 후 다시 물어봐 주시고, 급하시면 병원으로 전화 주세요.",
     };
   }
+}
+
+/**
+ * 선생님께 넘긴 질문과 그 답을 **지금 다시 읽어 온다.**
+ *
+ * ⚠️ `router.refresh()` 로는 안 됐다 — RSC 캐시 때문에 5초마다 두드려도 화면이 그대로였다
+ * (실측: 17초 뒤에도 「답변을 기다리는 중」). 답이 붙는 순간을 보여주는 게 요점인데
+ * 그 순간이 안 오면 기능이 없는 것과 같다. 그래서 **클라이언트가 이 액션을 직접 부른다.**
+ *
+ * 권한은 RLS 가 잡는다 — 남의 아이 id 를 넣으면 행이 안 나온다.
+ */
+export async function pendingAnswers(patientId: string): Promise<VetQuestion[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("chat_message")
+    .select("thread_id, role, content, triage, model, created_at")
+    .eq("patient_id", patientId)
+    .order("created_at", { ascending: false })
+    .limit(60);
+  return pairVetQuestions(((data ?? []) as ChatRow[]).slice().reverse()).slice(0, 5);
 }

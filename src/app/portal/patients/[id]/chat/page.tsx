@@ -84,7 +84,7 @@ export default async function PortalChat({
         </div>
       )}
 
-      <VetAnswers items={vetQuestions} />
+      <VetAnswers patientId={id} items={vetQuestions} />
       {/* key 로 갈아 끼운다 — 시나리오를 바꿨는데 앞 시나리오의 대화가 남아 있으면 안 된다 */}
       <ChatBox
         key={active.key}

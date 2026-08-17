@@ -1542,6 +1542,30 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
   display: grid; gap: 3px; font-size: .78rem; line-height: 1.45; color: var(--muted);
 }
 
+/* 주 증상이 보호자에게 나가면 안 될 것처럼 보일 때. **막지 않고 알린다** */
+.cc-warn {
+  display: block; margin: 6px 0 0; font-size: .78rem; line-height: 1.45;
+  color: #a3560b; font-weight: 600;
+}
+
+/* 답변이 도착한 순간의 표시. **푸시가 아니라 보고 있는 화면 안에서만** 뜬다 */
+.answer-toast {
+  border: 1px solid var(--primary); border-radius: 14px; padding: 12px 14px;
+  background: color-mix(in srgb, var(--primary) 8%, white);
+  animation: answer-pop .28s ease-out;
+}
+.answer-toast-head { display: flex; align-items: center; gap: 8px; font-size: .9rem; }
+.answer-toast-head button {
+  margin-left: auto; border: 0; background: transparent; cursor: pointer;
+  font: inherit; color: var(--muted); padding: 2px 4px;
+}
+.answer-toast p {
+  margin: 8px 0 0; font-size: .88rem; line-height: 1.6; white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+@keyframes answer-pop { from { opacity: 0; transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .answer-toast { animation: none; } }
+
 .chat-log { display: grid; gap: 8px; }
 .chat-bubble {
   max-width: 85%; padding: 11px 13px; border-radius: 16px;

@@ -50,6 +50,28 @@ export function formatAge(birthDate: string | null, on: string): string | null {
 
 const kg = (n: number) => `${n.toFixed(2).replace(/\.?0+$/, "")}kg`;
 
+/**
+ * 주 증상이 **보호자에게 나가면 안 될 것처럼 보이면** 이유를 돌려준다. 괜찮으면 null.
+ *
+ * ⚠️ **막지 않고 알린다.** 이 값은 리포트 제목이 되고(`${cc} 진료 리포트`) 다음 회차의
+ * 「지난 방문에는 ~로 내원하셨어요」 문장이 된다. 그런데 진료기록을 EMR 에서 옮겨 넣으면서
+ * **원내 표기가 그대로 들어간 회차가 93건** 있다 — 실제 값이 이렇다:
+ * 「검사자료(더케이동물병원)」(최다) · 「정형외과) Lt.TPLO/수술1일」 · 「안락사」 · 「치료비 정산」.
+ *
+ * 자동으로 걸러 내려다 그만뒀다 — 화이트리스트를 짜 보니 69명 중 12명이 통과했고
+ * 그 안에 「안락사」가 있었다. **무엇이 걸렸는지 사람에게 보여주고 사람이 고치게 한다.**
+ * 오탐이 나도 손해가 없다. 발송 버튼을 막지는 않는다.
+ */
+export function chiefComplaintWarning(raw: string | null | undefined): string | null {
+  const s = (raw ?? "").trim();
+  if (!s) return null;
+  if (/병원|의원|벳|랩/.test(s)) return "다른 병원·검사기관 이름이 들어 있습니다";
+  if (/안락사|폐사|임종|사망/.test(s)) return "제목에 그대로 나갑니다 — 보호자가 먼저 보는 문장입니다";
+  if (/정산|수납|진단서|자료등록|검사자료|외부검사/.test(s)) return "진료가 아니라 행정 처리 기록으로 보입니다";
+  if (/[()[\]:*]|[A-Za-z]{2,}/.test(s)) return "원내 표기·영문 약어가 섞여 있습니다";
+  return null;
+}
+
 export function buildOwnerReport(
   patient: ReportPatient,
   visit: ReportVisit,

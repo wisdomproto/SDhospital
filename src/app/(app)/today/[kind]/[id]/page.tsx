@@ -4,7 +4,7 @@ import { PhotoPicker } from "./PhotoPicker";
 import { kstToday, admittedDay } from "@/lib/worklist";
 import { OwnerPreview } from "@/app/(app)/patients/[id]/v/[visitId]/OwnerPreview";
 import { FEEDING, ELIMINATION } from "@/lib/admission-report";
-import type { ReportVisit } from "@/lib/owner-report";
+import { chiefComplaintWarning, type ReportVisit } from "@/lib/owner-report";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -174,6 +174,12 @@ export default async function WardEntry({
             <label>
               주 증상 (C.C.)
               <input name="chief_complaint" defaultValue={previewCtx.chiefComplaint} placeholder="보행 시 균형 불균형" />
+              {/* ⚠️ 여기가 리포트 제목이 된다. 막지 않고 알린다 — 판단은 사람이 한다 */}
+              {chiefComplaintWarning(previewCtx.chiefComplaint) && (
+                <span className="cc-warn">
+                  ⚠️ {chiefComplaintWarning(previewCtx.chiefComplaint)} — 보호자가 읽을 말로 고쳐 주세요
+                </span>
+              )}
             </label>
             <label>
               체중 kg

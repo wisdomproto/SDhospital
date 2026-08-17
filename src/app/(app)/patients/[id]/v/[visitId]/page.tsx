@@ -6,6 +6,7 @@ import { PrescriptionForm } from "./PrescriptionForm";
 import { SoapTemplate } from "./SoapTemplate";
 import { ConsentIssue } from "./ConsentIssue";
 import { OwnerPreview } from "./OwnerPreview";
+import { chiefComplaintWarning } from "@/lib/owner-report";
 import { ImageUpload, MediaUpload } from "./FileUpload";
 import { createAdmission } from "../../admissions/actions";
 import { DataTable } from "@/components/DataTable";
@@ -161,6 +162,14 @@ export default async function VisitDetail({
                 placeholder="예) 보행 시 균형 불균형 및 안구 진탕"
                 className={inputClass}
               />
+              {/* ⚠️ 막지 않고 알린다 — 이 칸은 리포트 제목이 되고 다음 회차의
+                  「지난 방문에는 ~로 내원하셨어요」가 된다. EMR 에서 옮겨 온 회차엔
+                  「검사자료(더케이동물병원)」 같은 원내 표기가 그대로 들어 있다. */}
+              {chiefComplaintWarning(v.chief_complaint) && (
+                <p className="cc-warn">
+                  ⚠️ {chiefComplaintWarning(v.chief_complaint)} — 보호자가 읽을 말로 고쳐 주세요
+                </p>
+              )}
             </FormField>
             <FormField label="체중 (kg)">
               <input

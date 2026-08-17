@@ -59,3 +59,16 @@ export function pairVetQuestions(rows: ChatRow[]): VetQuestion[] {
   // 최근 것이 위로
   return out.reverse();
 }
+
+/**
+ * 이번에 **새로 도착한** 답 하나. 없으면 null.
+ *
+ * ⚠️ 화면이 열려 있는 동안 붙은 것만 「도착」이다 — 들어와 보니 이미 답이 있던 것은
+ * 알릴 일이 아니다. 그걸 구분 못 하면 채팅을 열 때마다 옛날 답이 팝업으로 뜬다.
+ *
+ * ⚠️ **이 판단은 브라우저에서만 돌아서 로컬 프리뷰로는 확인이 안 된다**
+ * (그 환경은 클라이언트 React 를 실행하지 않는다). 그래서 순수 함수로 떼어 여기서 검증한다.
+ */
+export function freshAnswer(seen: Set<string>, next: VetQuestion[]): VetQuestion | null {
+  return next.find((q) => q.answer && !seen.has(q.askedAt)) ?? null;
+}

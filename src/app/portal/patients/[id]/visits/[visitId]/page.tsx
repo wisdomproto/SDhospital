@@ -27,6 +27,17 @@ export default async function PortalVisitDetail({
     .single();
   if (!v) notFound();
 
+  // ⚠️ **발송 전 회차는 보여주지 않는다.** 목록·피드는 `report_sent_at` 으로 거르는데
+  // 이 화면만 안 걸러서, 주소를 직접 열면 아직 안 보낸 초안이 그대로 조립돼 나왔다.
+  // 「발송은 자동이 아니라 사람이 누를 때만」이 이 한 줄로 무너진다.
+  //
+  // ⚠️ **RLS 로는 못 막는다.** 채팅 컨텍스트(`lib/chat/context.ts`)가 **보호자 세션으로**
+  // 그 아이의 회차를 전부 읽어야 하고(923건 중 703건이 미발송이다), 거기서 잘라내면
+  // 채팅이 「우리가 수술한 부위」인지도 모르고 경미로 내려 버린다.
+  // 그래서 여기서는 **누구의 것인가는 RLS 가, 무엇을 보여줄 것인가는 화면이** 정한다 —
+  // `visit.note` 를 보호자 쿼리에서 아예 뺀 것과 같은 방식이다.
+  if (!v.report_sent_at) notFound();
+
   const [{ data: patient }, { data: prev }] = await Promise.all([
     supabase.from("patient").select("name, species, breed, birth_date").eq("id", v.patient_id).single(),
     supabase

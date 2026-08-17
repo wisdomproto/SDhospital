@@ -21,6 +21,10 @@ export default async function PortalCheckup({
   const supabase = await createClient();
   const c = await loadCheckup(supabase, checkupId);
   if (!c || c.patientId !== id) notFound();
+  // ⚠️ **발송 전 검진은 보여주지 않는다.** 「발송은 자동이 아니라 사람이 누를 때만」이고,
+  // 소견을 아직 안 쓴 검진은 수치만 남은 채로 나간다 — 그게 제일 위험한 상태다.
+  // 목록에서 링크가 안 걸릴 뿐 주소를 직접 열면 그대로 조립됐다.
+  if (!c.sentAt) notFound();
 
   const justRead = c.sentAt != null && c.readAt == null;
   if (justRead) await supabase.rpc("mark_checkup_read", { p_checkup_id: checkupId });

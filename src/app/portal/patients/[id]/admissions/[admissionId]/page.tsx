@@ -19,18 +19,28 @@ export default async function PortalAdmissionDetail({
   const supabase = await createClient();
   const { data: a } = await supabase
     .from("admission")
-    .select("id, admitted_at, discharged_at, status")
+    .select("id, visit_id, admitted_at, discharged_at, status")
     .eq("id", admissionId)
     .single();
   if (!a) notFound();
 
   // 바이털 수치는 보호자에게 내보내지 않는다 — 38.4라는 숫자는 안심을 주지 못한다.
   // 매일 필요한 건 "잘 먹었나 · 잘 쌌나"이고, 이상이 있으면 특이사항으로 적어 보낸다.
-  const [{ data: images }, { data: media }] = await Promise.all([
+  const [{ data: images }, { data: media }, { data: imgReq }] = await Promise.all([
     supabase.from("medical_image").select("id, modality, file_name, storage_path, preview_path").eq("admission_id", admissionId),
     supabase.from("media").select("id, kind, file_name, storage_path").eq("admission_id", admissionId),
+    // ⚠️ 승인은 **회차**에 달린다 (`image_request.visit_id`). 입원은 회차에 딸린 기록이라
+    // 그 회차의 승인을 그대로 따른다 — 보호자는 회차 화면에서 요청한다.
+    a.visit_id
+      ? supabase.from("image_request").select("approved_at").eq("visit_id", a.visit_id).maybeSingle()
+      : { data: null },
   ]);
-  const imageLinks = await signMedicalImages(images ?? []);
+  // ⚠️⚠️ **승인 전에는 서명 URL 자체를 만들지 않는다.** 회차 화면은 이걸 지키고 있었는데
+  // **이 화면만 안 지켰다** — 그리고 의료영상 37건 중 30건이 회차가 아니라 입원에 붙어 있어서,
+  // 규칙이 19%에만 걸리고 81%는 그대로 새고 있었다.
+  // 판독 소견 없이 X-ray 를 띄우면 보호자가 스스로 해석한다. 그게 이 규칙이 있는 이유다.
+  const imageLinks = imgReq?.approved_at ? await signMedicalImages(images ?? []) : [];
+  // 아이 사진·진료 중 영상(`media`)은 그대로 나간다 — 그건 안심시키려고 보내는 것이다.
   const mediaLinks = await signAll((media as Omit<SignedFile, "url">[]) ?? []);
 
   // 발송된 일일 리포트만 보여주고, 최신 것을 열람 처리한다 (DEFINER 함수로만 기록 가능)

@@ -349,6 +349,39 @@ do $$ begin
   end if;
 end $$;
 
+-- ── medical_image: 승인 전에는 행 자체가 안 보인다 (0034) ──────────────────
+-- ⚠️ 이 검사가 있는 이유: 승인 확인이 **화면에만** 있던 시절, 회차 화면은 지키고
+--    입원 화면은 안 지켰다. 그런데 의료영상의 81%가 입원에 붙어 있어서
+--    규칙이 19% 에만 걸려 있었다. 화면은 또 늘어나므로 DB 에서 막는다.
+-- ⚠️ 입원에 붙은 영상은 **그 입원이 딸린 회차**의 승인을 따른다.
+reset role;
+insert into admission (id, patient_id, visit_id, admitted_at)
+values ('dddddddd-0000-0000-0000-0000000000a1', 'cccccccc-0000-0000-0000-000000000001',
+        'dddddddd-0000-0000-0000-0000000000f1', current_date);
+insert into medical_image (visit_id, admission_id, modality, file_name, storage_path) values
+  ('dddddddd-0000-0000-0000-0000000000f1', null, 'xray', 'v.jpg', 'x/v.jpg'),
+  (null, 'dddddddd-0000-0000-0000-0000000000a1', 'ct', 'a.jpg', 'x/a.jpg');
+
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+do $$ begin
+  if (select count(*) from medical_image) <> 0 then
+    raise exception 'medical_image: 승인 전인데 보호자에게 보인다';
+  end if;
+end $$;
+
+reset role;  -- 직원이 승인한다
+update image_request set approved_at = now() where visit_id = 'dddddddd-0000-0000-0000-0000000000f1';
+
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+do $$ begin
+  -- 회차에 붙은 것과 입원에 붙은 것 **둘 다** 열려야 한다
+  if (select count(*) from medical_image) <> 2 then
+    raise exception 'medical_image: 승인했는데 안 보인다 (입원에 붙은 것을 놓쳤을 수 있다)';
+  end if;
+end $$;
+
 -- ── 채팅 로그 (0028) ───────────────────────────────────────────────────────
 -- 보호자에게 INSERT 정책을 주지 않았다. **여기엔 우리가 한 말이 같이 들어가서**,
 -- 직접 쓸 수 있으면 증빙이 증빙이 아니게 된다. 쓰기는 log_chat DEFINER 하나뿐.

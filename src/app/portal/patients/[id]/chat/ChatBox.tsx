@@ -24,12 +24,15 @@ export function ChatBox({
   suggestions,
   admittedAt,
   admissionSuggestions,
+  asOf = null,
 }: {
   patientId: string;
   patientName: string;
   suggestions: string[];
   admittedAt: string | null;
   admissionSuggestions: string[];
+  /** 직원 시나리오 테스트에서만 들어온다. 보호자 화면은 언제나 null */
+  asOf?: string | null;
 }) {
   const [mode, setMode] = useState<Mode>(admittedAt ? "admission" : "general");
   const [convos, setConvos] = useState<Record<Mode, Convo>>({
@@ -57,7 +60,7 @@ export function ChatBox({
     patch(at, { turns: next, draft: "", triage: null });
     setError(null);
     setPending(true);
-    const res = await ask(patientId, convos[at].threadId, at, next);
+    const res = await ask(patientId, convos[at].threadId, at, next, asOf);
     setPending(false);
     if (res.ok) patch(at, { turns: [...next, { role: "assistant", text: res.text }], triage: res.triage });
     else setError(res.error);

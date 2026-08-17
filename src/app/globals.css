@@ -1535,6 +1535,23 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
 }
 .chat-modes button.active { background: white; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
 
+/* 채팅 시나리오 테스트. **보호자에게 앱을 줄 때 뗀다** —
+   그래서 앱의 카드처럼 생기지 않게 점선으로 둘러 「이건 우리 것」임을 눈에 띄게 한다 */
+.scenario-box {
+  display: grid; gap: 8px; padding: 10px;
+  border: 1px dashed var(--muted-2); border-radius: 14px;
+}
+.scenario-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+.scenario-picker a {
+  padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px;
+  background: white; font-size: .82rem; font-weight: 700; color: var(--muted);
+  text-decoration: none;
+}
+.scenario-picker a.active { background: var(--text); border-color: var(--text); color: white; }
+.scenario-hint {
+  display: grid; gap: 3px; font-size: .78rem; line-height: 1.45; color: var(--muted);
+}
+
 .chat-log { display: grid; gap: 8px; }
 .chat-bubble {
   max-width: 85%; padding: 11px 13px; border-radius: 16px;

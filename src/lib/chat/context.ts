@@ -29,9 +29,15 @@ export async function buildPatientContext(
   supabase: Client,
   patientId: string,
   /** 지금 진행 중인 대화는 빼고 읽는다 — 그건 이미 messages 로 들어간다 */
-  exceptThreadId?: string
+  exceptThreadId?: string,
+  /**
+   * 「오늘」을 다른 날로 놓고 본다 (직원 시나리오 테스트 전용, `lib/chat/scenario.ts`).
+   * ⚠️ **이 날짜 이후의 기록은 전부 뺀다** — 안 그러면 채팅이 미래를 알고 답해서
+   * 「그날 물었으면 어떻게 답했나」를 못 본다.
+   */
+  asOf?: string | null
 ) {
-  const today = kstToday();
+  const today = asOf ?? kstToday();
 
   const { data: p } = await supabase
     .from("patient")
@@ -56,6 +62,7 @@ export async function buildPatientContext(
       .from("admission")
       .select("admitted_at, discharged_at, status, note, admission_report(report_date, comment, sent_at)")
       .eq("patient_id", patientId)
+      .lte("admitted_at", today)
       .order("admitted_at", { ascending: false }),
     supabase
       .from("visit")
@@ -63,22 +70,26 @@ export async function buildPatientContext(
         "id, visit_date, chief_complaint, note, report_comment, prescription(dose, frequency, duration, drug:drug_id(name))"
       )
       .eq("patient_id", patientId)
+      .lte("visit_date", today)
       .order("visit_date", { ascending: false }),
     supabase
       .from("checkup")
       .select("id, checked_on")
       .eq("patient_id", patientId)
+      .lte("checked_on", today)
       .order("checked_on", { ascending: false }),
     supabase
       .from("life_log")
       .select("logged_on, appetite, stool, energy, weight_kg, meds, note")
       .eq("patient_id", patientId)
       .gte("logged_on", shiftDate(today, -365))
+      .lte("logged_on", today)
       .order("logged_on", { ascending: false }),
     supabase
       .from("life_intake")
       .select("id, label, photo_path, started_on, stopped_on")
       .eq("patient_id", patientId)
+      .lte("started_on", today)
       .order("started_on", { ascending: false }),
     // 지난 대화. **개수를 고정한다** — 쌓이는 건 무한이지만 읽는 건 늘 이만큼이다.
     supabase
@@ -115,7 +126,10 @@ export async function buildPatientContext(
     admission_report: { report_date: string; comment: string | null; sent_at: string | null }[] | null;
   };
   const adms = (admissions ?? []) as Adm[];
-  const now = adms.find((a) => a.status === "admitted");
+  // ⚠️ `status` 가 아니라 **날짜로 판정한다.** 기준일을 옮기는 시나리오 테스트에서
+  // 컬럼을 믿으면 「그날 입원 중이었다」가 안 나온다. 미마감 기록(퇴원일 없음)은
+  // 컬럼을 봤을 때와 똑같이 계속 입원 중으로 잡힌다 — 거기서 달라지는 건 없다.
+  const now = adms.find((a) => a.admitted_at <= today && (!a.discharged_at || a.discharged_at >= today));
 
   lines.push(
     now
@@ -135,8 +149,11 @@ export async function buildPatientContext(
         `\n### ${a.admitted_at}${a.discharged_at ? ` ~ ${a.discharged_at} (${days}일)` : " ~ 입원 중"}` +
           (a.note ? `\n${a.note}` : "")
       );
-      // 보호자에게 이미 나간 문장만 — 미발송 리포트는 아직 우리끼리의 메모다
-      const sent = (a.admission_report ?? []).filter((r) => r.sent_at && r.comment);
+      // 보호자에게 이미 나간 문장만 — 미발송 리포트는 아직 우리끼리의 메모다.
+      // 기준일 뒤의 리포트도 뺀다 (입원 3일째에 5일째 경과가 보이면 안 된다)
+      const sent = (a.admission_report ?? []).filter(
+        (r) => r.sent_at && r.comment && r.report_date <= today
+      );
       for (const r of sent.slice(0, 8)) lines.push(`- ${r.report_date}: ${r.comment}`);
     }
   }

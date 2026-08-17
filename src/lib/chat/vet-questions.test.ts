@@ -87,3 +87,22 @@ describe("freshAnswer — 무엇을 「방금 도착」으로 볼 것인가", ()
     expect(freshAnswer(new Set(), [])).toBeNull();
   });
 });
+
+describe("같은 타임스탬프 — log_chat 이 질문과 답을 한 번에 넣는다", () => {
+  // ⚠️ 실제로 화면에 빈 말풍선이 떴다. 정렬이 답을 먼저 주면 질문을 못 찾는다.
+  const T = "2026-08-17T04:22:41.173Z";
+  const rows: ChatRow[] = [
+    { thread_id: "t", role: "assistant", content: "여쭤보고 답을 드릴게요", triage: "ask_vet", model: "claude-opus-5", created_at: T },
+    { thread_id: "t", role: "user", content: "내일 입원인데 오늘 밤부터 굶겨야 하나요?", triage: null, model: null, created_at: T },
+  ];
+
+  it("답이 먼저 와도 질문을 찾아낸다", () => {
+    expect(pairVetQuestions(rows)[0].question).toBe("내일 입원인데 오늘 밤부터 굶겨야 하나요?");
+  });
+
+  it("순서가 반대여도 같은 결과", () => {
+    expect(pairVetQuestions(rows.slice().reverse())[0].question).toBe(
+      "내일 입원인데 오늘 밤부터 굶겨야 하나요?"
+    );
+  });
+});

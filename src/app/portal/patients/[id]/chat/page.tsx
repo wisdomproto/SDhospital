@@ -85,7 +85,6 @@ export default async function PortalChat({
         </div>
       )}
 
-      <VetAnswers patientId={id} items={vetQuestions} />
       {/* key 로 갈아 끼운다 — 시나리오를 바꿨는데 앞 시나리오의 대화가 남아 있으면 안 된다 */}
       <ChatBox
         key={active.key}
@@ -105,6 +104,10 @@ export default async function PortalChat({
         // ⚠️ 테스트 전용 — 보호자에게 앱을 줄 때 NEXT_PUBLIC_ENABLE_DEMO 를 끈다
         testMode={DEMO_ENABLED}
       />
+      {/* ⚠️ **맨 위가 아니다.** 채팅을 열자마자 「답변을 기다리는 중」이 먼저 보이면
+          지금 물으러 온 사람에게는 남의 얘기 같고, 화면이 어지럽다.
+          답이 붙는 순간은 알림창이 알려 주고, 지난 것은 여기 아래에 남는다. */}
+      <VetAnswers patientId={id} items={vetQuestions} />
     </>
   );
 }

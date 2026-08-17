@@ -33,6 +33,16 @@ export function pairVetQuestions(rows: ChatRow[]): VetQuestion[] {
   // 타래별로 아직 답이 안 붙은 넘김의 위치
   const open = new Map<string, number>();
 
+  // ⚠️ **`log_chat` 이 질문과 답을 같은 타임스탬프로 넣는다** (한 트랜잭션의 `now()`).
+  // 그래서 `created_at` 만으로 정렬하면 둘의 순서가 보장되지 않고, 답이 먼저 오면
+  // 질문을 못 찾아 **빈 말풍선**이 화면에 뜬다. 실제로 그렇게 나갔다.
+  // 같은 시각이면 질문을 앞에 둔다.
+  rows = rows.slice().sort((a, b) =>
+    a.created_at === b.created_at
+      ? (a.role === "user" ? -1 : 0) - (b.role === "user" ? -1 : 0)
+      : a.created_at < b.created_at ? -1 : 1
+  );
+
   for (const r of rows) {
     if (r.role === "user") {
       lastUser.set(r.thread_id, r.content);

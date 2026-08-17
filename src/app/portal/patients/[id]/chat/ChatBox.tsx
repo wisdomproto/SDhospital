@@ -78,22 +78,16 @@ export function ChatBox({
     <>
       {turns.length === 0 && (
         <div className="portal-card">
-          <div style={{ fontWeight: 800 }}>
-            {admittedAt
-              ? `${patientName}는 지금 입원 중이에요`
-              : `${patientName}에 대해 물어보세요`}
-          </div>
+          {/* ⚠️ **「지금 입원 중이에요」라고 알려주지 않는다.** 자기 애가 병원에 있는 걸
+              보호자가 모를 리 없다. 여기서 할 말은 **무엇을 물어도 되는지**뿐이다. */}
+          <div style={{ fontWeight: 800 }}>{patientName}에 대해 물어보세요</div>
           <p className="portal-tile-sub" style={{ margin: "6px 0 0" }}>
-            {admittedAt ? (
+            {patientName}의 진료 기록과 다이어리를 같이 읽고 답해요. 진단은 하지 않고{" "}
+            <b>지금 가야 하는지</b>를 알려드려요.
+            {admittedAt && (
               <>
-                {admittedAt} 입원. 병동 상황은 담당 선생님이 직접 확인해서 알려드려요.
                 <br />
-                평소 궁금하신 것도 여기서 그대로 물어보시면 됩니다.
-              </>
-            ) : (
-              <>
-                {patientName}의 진료 기록과 다이어리를 같이 읽고 답해요. 진단은 하지 않고{" "}
-                <b>지금 가야 하는지</b>를 알려드려요.
+                지금 병동 상황은 담당 선생님이 확인해서 알려드려요.
               </>
             )}
           </p>

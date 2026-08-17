@@ -18,6 +18,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { loadEnv, loadPrompts, signIn, signInStaff, buildContext, askOnce, GONE, PHONE } from "./lib/chat-eval.mjs";
 
+// ⚠️ **원장님 자료실에 떨어뜨린다.** 루트에 두면 다음 사람이 못 찾고, 두 벌이 생긴다.
+const REPORT_PATH = "docs/review/2026-08-17-chat-eval-report.html";
+
 loadEnv();
 
 const TODAY = process.env.TODAY || new Date().toISOString().slice(0, 10);
@@ -59,7 +62,7 @@ if (process.env.HAND) {
     ]);
     history[p.chart_no] = { patient: p, visits: vs ?? [], admissions: as ?? [] };
   }
-  renderHtml(rows, process.env.OUT || "eval-report.html", history);
+  renderHtml(rows, process.env.OUT || REPORT_PATH, history);
   process.exit(0);
 }
 
@@ -68,7 +71,7 @@ const anthropic = new Anthropic();
 const sb = await signIn();
 
 const CONCURRENCY = Number(process.env.CONCURRENCY || 6);
-const OUT = process.env.OUT || "eval-report.html";
+const OUT = process.env.OUT || REPORT_PATH;
 /**
  * ⚠️⚠️ **한 건 끝날 때마다 여기에 적는다.** 이게 없어서 3,300건을 날렸다 —
  * HTML 을 맨 끝에만 쓰게 해 놨더니 프로세스가 죽는 순간 메모리에 있던 게 전부 사라졌고,

@@ -9,6 +9,7 @@
 |---|---|
 | 사업 기획서 | `docs/proposal/2026-07-26-sd-platform-proposal.md` (`.html` 은 `scripts/build_proposal.py` 로 생성) |
 | AI 채팅 기획서 (원장 검토용) | `docs/review/2026-08-03-ai-chat-plan.html` |
+| **채팅 문답 전수 (원장 검토용)** | `docs/review/2026-08-17-chat-eval-report.html` — 56마리 · 1,050문답 · 진료 원문 포함 |
 | 계획서·진행 상황·채팅 설계 | **see [docs/CLAUDE.md](docs/CLAUDE.md)** |
 | 화면·UI 결정 | **see [src/CLAUDE.md](src/CLAUDE.md)** |
 | 스키마·RLS·시드 | **see [supabase/CLAUDE.md](supabase/CLAUDE.md)** |

@@ -8,6 +8,7 @@
 |---|---|
 | `proposal/2026-07-26-sd-platform-proposal.md` | **사업 기획서.** `.html` 은 `scripts/build_proposal.py` 로 생성 — **`.md` 만 고치고 다시 돌린다** |
 | `review/2026-08-03-ai-chat-plan.html` | **원장님과 같이 보는 채팅 기획서.** 12절 + **부록에 답변 초안 32건과 승인/수정 체크칸** |
+| `review/2026-08-17-chat-eval-report.html` | **원장님이 채팅을 눌러 보는 자리.** 56마리 × 문답 1,050건 — 환자별 탭 안에 진료 기록(회차별 원문·처방)과 시나리오별(입원 전·중·후) 문답이 같이 있다. **`HAND=scripts/hand-eval/index.mjs node scripts/eval-report.mjs` 로 다시 만든다**(API 0회, 답은 전부 손으로 쓴 것) |
 | `superpowers/plans/` | 구현 계획과 진행 상황. **결정 근거는 전부 여기** |
 | `superpowers/specs/2026-07-07-vet-emr-design.md` | 최초 설계 스펙 |
 | `deploy.md` | 배포·환경변수 |

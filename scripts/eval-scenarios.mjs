@@ -21,7 +21,7 @@ import path from "node:path";
 import { loadEnv, loadPrompts, signIn, buildContext, askOnce, PHONE, GONE } from "./lib/chat-eval.mjs";
 
 loadEnv();
-const { SYSTEM, ADMISSION_TAB, GENERAL_TAB } = loadPrompts();
+const { SYSTEM, ADMISSION_TAB } = loadPrompts();
 const anthropic = new Anthropic();
 const sb = await signIn();
 
@@ -100,15 +100,15 @@ function scenariosFor(adms) {
   const out = [];
   const a = adms.filter((x) => x.admitted_at <= TODAY).sort((x, y) => (x.admitted_at < y.admitted_at ? 1 : -1))[0];
   if (a) {
-    out.push({ key: "before", asOf: shift(a.admitted_at, -1), tab: "general" });
+    out.push({ key: "before", asOf: shift(a.admitted_at, -1) });
     const mid = a.discharged_at
       ? shift(a.admitted_at, Math.max(1, Math.floor(days(a.admitted_at, a.discharged_at) / 2)))
       : shift(a.admitted_at, 1);
-    out.push({ key: "during", asOf: mid < (a.discharged_at ?? mid) ? mid : (a.discharged_at ?? mid), tab: "admission" });
-    if (a.discharged_at) out.push({ key: "after", asOf: shift(a.discharged_at, 3), tab: "general" });
+    out.push({ key: "during", asOf: mid < (a.discharged_at ?? mid) ? mid : (a.discharged_at ?? mid) });
+    if (a.discharged_at) out.push({ key: "after", asOf: shift(a.discharged_at, 3) });
   }
-  out.push({ key: "now", asOf: TODAY, tab: "general" });
-  out.push({ key: "emergency", asOf: TODAY, tab: "general" });
+  out.push({ key: "now", asOf: TODAY });
+  out.push({ key: "emergency", asOf: TODAY });
   return out;
 }
 
@@ -214,7 +214,7 @@ for (const [i, p] of targets.entries()) {
   // 입원 중 시점으로 옮겨도 컨텍스트가 「이미 떠났다」고 말한다 — 그 상태로 「오늘 밥 먹었나요」를
   // 물으면 무엇을 시험하는지 알 수 없는 문답이 된다. 대신 그 집에 실제로 오는 질문을 던진다.
   if (GONE.test(p.note ?? "")) {
-    jobs.push({ p, s: { key: "gone", asOf: TODAY, tab: "general" }, lastDischarge, i });
+    jobs.push({ p, s: { key: "gone", asOf: TODAY }, lastDischarge, i });
     continue;
   }
   for (const s of scenariosFor(adms ?? [])) jobs.push({ p, s, lastDischarge, i });
@@ -242,7 +242,8 @@ async function worker() {
       const question = pick(s.key, i);
       const { triage, text } = await askOnce(anthropic, {
         system: SYSTEM,
-        tab: s.tab === "admission" ? ADMISSION_TAB : GENERAL_TAB,
+        // ⚠️ 시나리오가 아니라 **그날 실제로 입원 중이었는지**가 정한다 (앱과 같다)
+        tab: ctx.admittedNow ? ADMISSION_TAB : null,
         context: ctx.text,
         question,
       });

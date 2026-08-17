@@ -38,9 +38,9 @@ export function loadPrompts() {
   const SYSTEM = grab("SYSTEM");
   // 잘라낸 게 맞는지 여기서 걸린다. 조용히 틀리느니 멈추는 게 낫다.
   if (SYSTEM.includes("export async function") || SYSTEM.includes("면회 시간")) {
-    throw new Error("SYSTEM 에 코드나 다른 탭이 섞였다 — 잘라내기가 또 깨졌다");
+    throw new Error("SYSTEM 에 코드나 입원 블록이 섞였다 — 잘라내기가 또 깨졌다");
   }
-  return { SYSTEM, ADMISSION_TAB: grab("ADMISSION_TAB"), GENERAL_TAB: grab("GENERAL_TAB") };
+  return { SYSTEM, ADMISSION_TAB: grab("ADMISSION_TAB") };
 }
 
 export async function signIn() {
@@ -134,7 +134,11 @@ const SCHEMA = {
   additionalProperties: false,
 };
 
-/** 앱과 같은 순서로 넣는다 — SYSTEM · 탭 · 기록. 하나라도 빠지면 다른 걸 검증하는 셈이다. */
+/**
+ * 앱과 같은 순서로 넣는다 — SYSTEM · (입원 중이면) 입원 블록 · 기록.
+ * ⚠️ `tab` 은 **입원 중일 때만** 넘긴다. 앱에도 탭 UI 가 없고 `ctx.admittedAt` 이 정한다 —
+ * 여기서 임의로 고르면 앱이 안 하는 조합을 검증하게 된다.
+ */
 export async function askOnce(anthropic, { system, tab, context, question, effort = "low" }) {
   const r = await anthropic.messages.create({
     model: process.env.CHAT_MODEL || "claude-opus-5",
@@ -142,7 +146,7 @@ export async function askOnce(anthropic, { system, tab, context, question, effor
     output_config: { effort, format: { type: "json_schema", schema: SCHEMA } },
     system: [
       { type: "text", text: system },
-      { type: "text", text: tab },
+      ...(tab ? [{ type: "text", text: tab }] : []),
       { type: "text", text: `<기록>\n${context}\n</기록>`, cache_control: { type: "ephemeral" } },
     ],
     messages: [{ role: "user", content: question }],

@@ -1,11 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ask, type Mode, type Triage, type Turn } from "./actions";
+import { ask, type Triage, type Turn } from "./actions";
 import { HOSPITAL_PHONE } from "@/lib/hospital";
-
-type Convo = { turns: Turn[]; triage: Triage | null; threadId: string; draft: string };
-const empty = (): Convo => ({ turns: [], triage: null, threadId: crypto.randomUUID(), draft: "" });
 
 /**
  * 샘플 채팅 — 물어보면 그 자리에서 답한다(주치의 확인 단계 없음).
@@ -13,97 +10,70 @@ const empty = (): Convo => ({ turns: [], triage: null, threadId: crypto.randomUU
  * **질문 버튼이 먼저다.** 빈 입력칸만 두면 보호자는 무엇을 물어도 되는지 몰라서 안 쓴다.
  * 대화가 시작된 뒤에도 버튼을 남겨 둔다 — 두 번째 질문이 더 안 나온다.
  *
- * **입원 중이면 위에 탭이 둘로 갈린다.** 아이가 병원에 있는 동안 묻는 것과
- * 평소에 묻는 것은 답이 아예 다르다. ⚠️ 그렇다고 입원 모드로 **가둬 두지는 않는다** —
- * 입원 중에도 "퇴원하면 사료 뭐 먹여요" 를 물을 데가 있어야 한다.
- * 두 대화는 각자 따로 쌓인다(스레드가 다르다).
+ * ⚠️ **탭은 없다.** 입원 중일 때 「입원 중 문의 / 평소 문의」로 갈라 놨었는데 없앴다 —
+ * 보호자에게 자기 질문을 분류하게 시키는 것 자체가 부담이고, 무엇보다
+ * **틀린 방에서 물으면 그 방의 규칙이 적용된다.** 병동 얘기인지 평소 얘기인지는
+ * 문장을 읽으면 알 수 있어서 서버가 정한다(`actions.ts` 의 ADMISSION_TAB).
  */
 export function ChatBox({
   patientId,
   patientName,
   suggestions,
   admittedAt,
-  admissionSuggestions,
   asOf = null,
 }: {
   patientId: string;
   patientName: string;
   suggestions: string[];
+  /** 입원 중이면 첫 화면 문구가 달라진다. 탭을 만들지는 않는다 */
   admittedAt: string | null;
-  admissionSuggestions: string[];
   /** 직원 시나리오 테스트에서만 들어온다. 보호자 화면은 언제나 null */
   asOf?: string | null;
 }) {
-  const [mode, setMode] = useState<Mode>(admittedAt ? "admission" : "general");
-  const [convos, setConvos] = useState<Record<Mode, Convo>>({
-    admission: empty(),
-    general: empty(),
-  });
+  const [turns, setTurns] = useState<Turn[]>([]);
+  const [triage, setTriage] = useState<Triage | null>(null);
+  const [draft, setDraft] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const threadId = useRef(crypto.randomUUID());
   const endRef = useRef<HTMLDivElement>(null);
-
-  const c = convos[mode];
-  const qs = mode === "admission" ? admissionSuggestions : suggestions;
-  const patch = (m: Mode, v: Partial<Convo>) =>
-    setConvos((prev) => ({ ...prev, [m]: { ...prev[m], ...v } }));
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [c.turns, pending]);
+  }, [turns, pending]);
 
   async function send(text: string) {
     const q = text.trim();
     if (!q || pending) return;
-    const at = mode; // 답이 오는 사이에 탭을 바꿔도 원래 탭에 붙어야 한다
-    const next: Turn[] = [...convos[at].turns, { role: "user", text: q }];
-    patch(at, { turns: next, draft: "", triage: null });
+    const next: Turn[] = [...turns, { role: "user", text: q }];
+    setTurns(next);
+    setDraft("");
+    setTriage(null);
     setError(null);
     setPending(true);
-    const res = await ask(patientId, convos[at].threadId, at, next, asOf);
+    const res = await ask(patientId, threadId.current, next, asOf);
     setPending(false);
-    if (res.ok) patch(at, { turns: [...next, { role: "assistant", text: res.text }], triage: res.triage });
-    else setError(res.error);
+    if (res.ok) {
+      setTurns([...next, { role: "assistant", text: res.text }]);
+      setTriage(res.triage);
+    } else setError(res.error);
   }
 
   return (
     <>
-      {admittedAt && (
-        <div className="chat-modes" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === "admission"}
-            className={mode === "admission" ? "active" : ""}
-            onClick={() => setMode("admission")}
-          >
-            입원 중 문의
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === "general"}
-            className={mode === "general" ? "active" : ""}
-            onClick={() => setMode("general")}
-          >
-            평소 문의
-          </button>
-        </div>
-      )}
-
-      {c.turns.length === 0 && (
+      {turns.length === 0 && (
         <div className="portal-card">
           <div style={{ fontWeight: 800 }}>
-            {mode === "admission"
+            {admittedAt
               ? `${patientName}는 지금 입원 중이에요`
               : `${patientName}에 대해 물어보세요`}
           </div>
           <p className="portal-tile-sub" style={{ margin: "6px 0 0" }}>
-            {mode === "admission" ? (
+            {admittedAt ? (
               <>
                 {admittedAt} 입원. 병동 상황은 담당 선생님이 직접 확인해서 알려드려요.
                 <br />
-                여기서 남기시면 담당자에게 전달됩니다.
+                평소 궁금하신 것도 여기서 그대로 물어보시면 됩니다.
               </>
             ) : (
               <>
@@ -115,9 +85,9 @@ export function ChatBox({
         </div>
       )}
 
-      {c.turns.length > 0 && (
+      {turns.length > 0 && (
         <div className="chat-log">
-          {c.turns.map((t, i) => (
+          {turns.map((t, i) => (
             <div key={i} className={`chat-bubble ${t.role}`}>
               {t.text}
             </div>
@@ -127,15 +97,15 @@ export function ChatBox({
               {patientName}의 기록을 읽고 있어요…
             </div>
           )}
-          {(c.triage === "now" || c.triage === "tomorrow") && !pending && (
-            <a className={`chat-call${c.triage === "now" ? " urgent" : ""}`} href={`tel:${HOSPITAL_PHONE}`}>
+          {(triage === "now" || triage === "tomorrow") && !pending && (
+            <a className={`chat-call${triage === "now" ? " urgent" : ""}`} href={`tel:${HOSPITAL_PHONE}`}>
               📞 병원에 전화하기 {HOSPITAL_PHONE}
             </a>
           )}
           {/* 사람에게 넘긴 질문. 전화 버튼을 대신 두지 않는다 —
               기다려 달라고 해 놓고 전화 버튼을 띄우면 기다리라는 말이 아니게 된다.
               대신 답이 여기로 온다는 것과, 급해지면 그때 전화하라는 것만 남긴다. */}
-          {c.triage === "ask_vet" && !pending && (
+          {triage === "ask_vet" && !pending && (
             <div className="chat-waiting">
               <b>담당 선생님께 전달했어요</b>
               <span>
@@ -156,10 +126,10 @@ export function ChatBox({
 
       <div className="portal-card">
         <div style={{ fontWeight: 800, marginBottom: 10 }}>
-          {c.turns.length ? "이런 것도 물어보실 수 있어요" : "이런 걸 물어보실 수 있어요"}
+          {turns.length ? "이런 것도 물어보실 수 있어요" : "이런 걸 물어보실 수 있어요"}
         </div>
         <div style={{ display: "grid", gap: 8 }}>
-          {qs.map((q) => (
+          {suggestions.map((q) => (
             <button
               key={q}
               type="button"
@@ -177,17 +147,17 @@ export function ChatBox({
         className="chat-form"
         onSubmit={(e) => {
           e.preventDefault();
-          send(c.draft);
+          send(draft);
         }}
       >
         <input
-          value={c.draft}
-          onChange={(e) => patch(mode, { draft: e.target.value })}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
           placeholder="직접 물어보기"
           disabled={pending}
           aria-label="질문"
         />
-        <button type="submit" disabled={pending || !c.draft.trim()}>
+        <button type="submit" disabled={pending || !draft.trim()}>
           보내기
         </button>
       </form>

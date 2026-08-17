@@ -74,7 +74,7 @@ export function scenariosFor(admissions: Adm[], today: string): Scenario[] {
       key: "during",
       label: "입원 중",
       asOf: min(mid, a.discharged_at ?? mid),
-      hint: `${a.admitted_at} 입원 중. 위에 「입원 중 문의」 탭이 뜬다`,
+      hint: `${a.admitted_at} 입원 중. 「병동 얘기는 사람에게, 평소 얘기는 평소대로」가 갈리는지 본다`,
       questions: [],  // 화면이 admissionQuestions() 를 쓴다 — 이미 있는 것을 또 쓰지 않는다
     });
 

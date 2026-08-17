@@ -3,7 +3,7 @@
  *
  *   node scripts/try-chat.mjs "숨을 가쁘게 쉬어요" "발톱이 갈라졌어요"
  *   PET=고구마 AS_OF=2026-08-09 node scripts/try-chat.mjs "수술한 데가 빨개요"
- *   MODE=admission PET=고구마 AS_OF=2026-08-05 node scripts/try-chat.mjs "밥은 먹었나요?"
+ *   PET=고구마 AS_OF=2026-08-05 node scripts/try-chat.mjs "밥은 먹었나요?"   # 그날 입원 중이면 자동으로 입원 규칙
  *
  * `AS_OF` 는 앱의 **시나리오 모드와 같은 것**이다 (`src/lib/chat/scenario.ts`) —
  * 「오늘」을 옮기고 그 뒤의 기록은 뺀다. 샘플 데이터가 전부 과거라
@@ -16,8 +16,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { loadEnv, loadPrompts, signIn, buildContext, askOnce } from "./lib/chat-eval.mjs";
 
 loadEnv();
-const { SYSTEM, ADMISSION_TAB, GENERAL_TAB } = loadPrompts();
-const tab = process.env.MODE === "admission" ? ADMISSION_TAB : GENERAL_TAB;
+const { SYSTEM, ADMISSION_TAB } = loadPrompts();
 
 const sb = await signIn();
 const { data: pets } = await sb.from("patient").select("id,name,species,breed,sex,birth_date,note");
@@ -36,7 +35,9 @@ for (const q of process.argv.slice(2)) {
   // ⚠️ **분류도 같이 받는다.** 답변 문장만 보면 안 된다 — 「여쭤보고 알려드릴게요」 라고 써 놓고
   // 분류가 asking 으로 나가면 원장님 화면에 안 뜨고, 그러면 그 말이 거짓말이 된다.
   const { triage, text, usage } = await askOnce(anthropic, {
-    system: SYSTEM, tab, context: ctx.text, question: q, effort: process.env.EFFORT || "low",
+    // ⚠️ 입원 블록은 **기록이 정한다** — 앱에 탭이 없어졌으니 MODE 로 고르지 않는다
+    system: SYSTEM, tab: ctx.admittedNow ? ADMISSION_TAB : null,
+    context: ctx.text, question: q, effort: process.env.EFFORT || "low",
   });
   console.log("──────────\nQ:", q, `\n\n[분류: ${triage}]\n\nA:`, text,
     `\n\n[in ${usage.input_tokens}+cache${usage.cache_creation_input_tokens + usage.cache_read_input_tokens} / out ${usage.output_tokens}]\n`);

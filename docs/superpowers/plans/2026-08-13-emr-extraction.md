@@ -90,5 +90,6 @@ node scripts/load-cautions.mjs "D:/sd hospital/_추출"   # _pending ⚠️ → 
 - `0032_chat_pending.sql` — 채팅이 사람에게 넘긴 질문 (`ask_vet`) 을 「오늘 할 일」 맨 위로.
   원장님이 답을 쓰면 보호자 채팅에 그대로 붙는다. **응급은 넘기지 않고 즉시 전화**(검증됨).
 - `0033_patient_caution.sql` — 위의 표. 직원 전용.
+  (그 뒤 이어진 채팅 검증은 **see [2026-08-17-chat-eval.md](2026-08-17-chat-eval.md)**)
 - `scripts/try-chat.mjs` 가 이제 **분류(triage)도 같이 찍는다** — 문장만 보면
   「여쭤볼게요」라고 써 놓고 분류가 `asking` 으로 나가는 걸 못 잡는다.

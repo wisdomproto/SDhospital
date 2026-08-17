@@ -90,11 +90,16 @@ export default async function PortalChat({
         key={active.key}
         patientId={id}
         patientName={ctx.patient.name}
-        suggestions={active.questions.length ? active.questions : suggestQuestions(ctx)}
-        // 입원 중일 때만 위에 탭이 생긴다. 아니면 탭 자체가 없다 —
-        // 1년에 며칠뿐인 상태를 위해 360일짜리 빈 탭을 두지 않는다.
+        // ⚠️ **방은 하나다.** 입원 중이면 병동 질문을 위로 올리되 평소 질문도 남긴다 —
+        // 입원 중에도 "퇴원하면 사료 뭐 먹여요" 를 물을 데가 있어야 한다.
+        suggestions={
+          active.questions.length
+            ? active.questions
+            : ctx.admittedAt
+              ? [...admissionQuestions().slice(0, 4), ...suggestQuestions(ctx).slice(0, 2)]
+              : suggestQuestions(ctx)
+        }
         admittedAt={ctx.admittedAt}
-        admissionSuggestions={admissionQuestions()}
         asOf={active.asOf}
       />
     </>

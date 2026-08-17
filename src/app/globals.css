@@ -1525,16 +1525,6 @@ button.topbar-search { font: inherit; text-align: left; cursor: pointer; }
 .chat-ask:disabled { opacity: .55; cursor: default; }
 
 /* 채팅방 안 탭 — 입원 중일 때만 뜬다. 아래 탭바는 다섯 개에서 늘리지 않는다 */
-.chat-modes {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px;
-  padding: 4px; border-radius: 14px; background: var(--surface-soft);
-}
-.chat-modes button {
-  padding: 9px 8px; border: 0; border-radius: 11px; background: transparent;
-  font: inherit; font-size: .88rem; font-weight: 700; color: var(--muted); cursor: pointer;
-}
-.chat-modes button.active { background: white; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-
 /* 채팅 시나리오 테스트. **보호자에게 앱을 줄 때 뗀다** —
    그래서 앱의 카드처럼 생기지 않게 점선으로 둘러 「이건 우리 것」임을 눈에 띄게 한다 */
 .scenario-box {

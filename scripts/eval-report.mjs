@@ -389,16 +389,21 @@ function renderHtml(results, OUT, history = {}) {
       주 증상에 다른 병원 이름·원내 표기가 섞여 있어 채팅은 이걸 인용하지 않습니다.</p>`;
   };
 
+  // ⚠️⚠️ **탭을 JS 로 만들지 않는다.** 이 파일은 앱의 미리보기 패널에서 열리는데
+  // 거기서는 스크립트가 실행되지 않아 아무것도 안 눌렸다. 라디오 + `:checked` 로 바꿨다 —
+  // CSS 만으로 도니 어디서 열어도 눌린다.
+  const keysOf = (c) => [...new Set(byPatient.get(c).map((r) => r.key))];
+
   const patientPanes = charts.map((c, pi) => {
     const rs = byPatient.get(c);
     const p0 = rs[0];
-    const keys = [...new Set(rs.map((r) => r.key))];
-    return `<section class="pane" data-p="${pi}" ${pi ? "hidden" : ""}>
+    const keys = keysOf(c);
+    return `<section class="pane" data-p="${pi}">
       <h2>${esc(p0.name)} <small>${esc(c)} · ${esc(p0.species ?? "")} ${esc(p0.breed ?? "")}${p0.gone ? ' · <b class="gone">떠난 아이</b>' : ""}</small></h2>
       <nav class="stabs">${["record", ...keys].map((k, si) =>
-        `<button data-p="${pi}" data-s="${si}" class="${si ? "" : "on"}">${k === "record" ? "📋 진료 기록" : LABEL[k]}</button>`).join("")}</nav>
+        `<label for="p${pi}s${si}">${k === "record" ? "📋 진료 기록" : LABEL[k]}</label>`).join("")}</nav>
       <div class="spane" data-p="${pi}" data-s="0">${recordPane(history[c])}</div>
-      ${keys.map((k, si0) => { const si = si0 + 1; return `<div class="spane" data-p="${pi}" data-s="${si}" hidden>
+      ${keys.map((k, si0) => { const si = si0 + 1; return `<div class="spane" data-p="${pi}" data-s="${si}">
         <div class="asof">기준일 ${esc(rs.find((r) => r.key === k).asOf)} — 이 날짜를 「오늘」로 놓고 물었다</div>
         ${rowsHtml(rs.filter((r) => r.key === k))}
       </div>`; }).join("")}
@@ -454,30 +459,33 @@ table.rec td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:
 table.rec td:first-child{white-space:nowrap;width:110px}
 table.rec tr.in td{background:#f2f7fb}
 .rec-foot{max-width:860px;margin-top:12px;font-size:.78rem;color:var(--muted);line-height:1.5}
+/* ⚠️ 탭은 CSS 로만 돈다 — 미리보기 패널에서 스크립트가 실행되지 않기 때문이다 */
+input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:none}
+.pane,.spane{display:none}
+.plist label{display:block;padding:8px 10px;border-radius:9px;font-size:.88rem;cursor:pointer;color:var(--text)}
+.stabs label{padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;
+ font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer;user-select:none}
+${charts.map((c, i) => `
+#p${i}:checked~.wrap .pane[data-p="${i}"]{display:block}
+#p${i}:checked~.wrap .plist label[for="p${i}"]{background:var(--text);color:#fff;font-weight:700}
+` + ["record", ...keysOf(c)].map((k, si) => `
+#p${i}s${si}:checked~.wrap .spane[data-p="${i}"][data-s="${si}"]{display:block}
+#p${i}s${si}:checked~.wrap .stabs label[for="p${i}s${si}"]{background:var(--text);border-color:var(--text);color:#fff}
+`).join("")).join("")}
   </style>
   <header>
     <h1>AI 채팅 시나리오 테스트 — 환자 ${charts.length}명 · 문답 ${results.length}건</h1>
     <div class="sum">${Object.entries(tally).map(([k, v]) => `${TRIAGE_KO[k] ?? k} ${v}`).join(" · ")}
      · 생성 ${esc(TODAY)} · 연락처 ${PHONE}</div>
   </header>
-  <div class="wrap">
+  ${charts.map((c, i) => `<input type="radio" name="pt" id="p${i}"${i ? "" : " checked"}>` +
+  ["record", ...keysOf(c)].map((k, si) => `<input type="radio" name="s${i}" id="p${i}s${si}"${si ? "" : " checked"}>`).join("")).join("")}
+<div class="wrap">
     <nav class="plist">${charts.map((c, i) =>
-      `<button data-p="${i}" class="${i ? "" : "on"}">${esc(byPatient.get(c)[0].name)} <span style="opacity:.6">${esc(c)}</span></button>`).join("")}</nav>
+      `<label for="p${i}">${esc(byPatient.get(c)[0].name)} <span style="opacity:.6">${esc(c)}</span></label>`).join("")}</nav>
     <main>${patientPanes}</main>
   </div>
-  <script>
-  const show=(sel,on)=>document.querySelectorAll(sel).forEach(e=>e.hidden=!on(e));
-  document.querySelectorAll('.plist button').forEach(b=>b.onclick=()=>{
-    document.querySelectorAll('.plist button').forEach(x=>x.classList.toggle('on',x===b));
-    show('.pane',e=>e.dataset.p===b.dataset.p);
-    document.querySelector('main').scrollTop=0;
-  });
-  document.querySelectorAll('.stabs button').forEach(b=>b.onclick=()=>{
-    b.parentElement.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
-    show('.spane[data-p="'+b.dataset.p+'"]',e=>e.dataset.s===b.dataset.s);
-  });
-  </script>
-  </html>`, "utf8");
+    </html>`, "utf8");
 
   console.log(`\n환자 ${charts.length}명 · 문답 ${results.length}건`);
   console.log(Object.entries(tally).map(([k, v]) => `  ${(TRIAGE_KO[k] ?? k).padEnd(14)} ${v}`).join("\n"));

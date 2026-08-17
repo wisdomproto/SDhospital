@@ -3,4 +3,5 @@ import a from "./01-고구마-루이.mjs";
 import b from "./02-진솜-야무.mjs";
 import c from "./03-앙이-코코x2-미남-쪼랭이-망고.mjs";
 import d from "./04-싸이먼-하루.mjs";
-export default [...a, ...b, ...c, ...d];
+import e from "./05-지금.mjs";
+export default [...a, ...b, ...c, ...d, ...e];

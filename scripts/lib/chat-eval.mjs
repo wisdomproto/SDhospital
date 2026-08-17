@@ -40,7 +40,7 @@ export function loadPrompts() {
   if (SYSTEM.includes("export async function") || SYSTEM.includes("면회 시간")) {
     throw new Error("SYSTEM 에 코드나 입원 블록이 섞였다 — 잘라내기가 또 깨졌다");
   }
-  return { SYSTEM, ADMISSION_TAB: grab("ADMISSION_TAB") };
+  return { SYSTEM, ADMISSION_TAB: grab("ADMISSION_TAB"), POLISH_SYSTEM: grab("POLISH_SYSTEM") };
 }
 
 export async function signIn() {

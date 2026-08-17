@@ -16,7 +16,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import fs from "node:fs";
 import path from "node:path";
-import { loadEnv, loadPrompts, signIn, buildContext, askOnce, GONE, PHONE } from "./lib/chat-eval.mjs";
+import { loadEnv, loadPrompts, signIn, signInStaff, buildContext, askOnce, GONE, PHONE } from "./lib/chat-eval.mjs";
 
 loadEnv();
 
@@ -42,7 +42,9 @@ if (process.env.HAND) {
   const rows = mod.default;
   // ⚠️ **진료 기록은 DB 에서 읽는다.** 손으로 옮겨 적으면 그 순간부터 실제와 갈라진다.
   // API 호출이 아니라 DB 조회라 돈이 들지 않는다.
-  const sb0 = await signIn();
+  // ⚠️ **직원 세션으로 읽는다.** 보호자 세션으로 읽으면 생사 미확정인 아이(0038)가 통째로 안 나온다.
+  // 그리고 이 표는 애초에 직원용이다 — 진료 원문이 그대로 실린다.
+  const sb0 = await signInStaff();
   const charts = [...new Set(rows.map((r) => r.chart))];
   const { data: pats } = await sb0.from("patient")
     .select("id, chart_no, name, species, breed, sex, birth_date, note")
@@ -50,7 +52,9 @@ if (process.env.HAND) {
   const history = {};
   for (const p of pats ?? []) {
     const [{ data: vs }, { data: as }] = await Promise.all([
-      sb0.from("visit").select("visit_date, chief_complaint").eq("patient_id", p.id).order("visit_date"),
+      sb0.from("visit")
+        .select("visit_date, chief_complaint, note, report_comment, prescription(dose, frequency, duration, drug:drug_id(name))")
+        .eq("patient_id", p.id).order("visit_date"),
       sb0.from("admission").select("admitted_at, discharged_at").eq("patient_id", p.id).order("admitted_at"),
     ]);
     history[p.chart_no] = { patient: p, visits: vs ?? [], admissions: as ?? [] };
@@ -380,13 +384,23 @@ function renderHtml(results, OUT, history = {}) {
       </div>
       ${admissions.length ? `<div class="rec-adm">입원 — ${admissions.map((a) =>
         `${esc(a.admitted_at)} ~ ${esc(a.discharged_at ?? "퇴원 기록 없음")}`).join(" · ")}</div>` : ""}
-      <table class="rec">
-        <thead><tr><th>날짜</th><th>주 증상 (직원이 EMR 에 쓴 그대로)</th></tr></thead>
-        <tbody>${visits.map((v) => `<tr${adm.has(v.visit_date) ? ' class="in"' : ""}>
-          <td>${esc(v.visit_date)}</td><td>${esc(v.chief_complaint ?? "-")}</td></tr>`).join("")}</tbody>
-      </table>
-      <p class="rec-foot">⚠️ 이 표는 <b>직원용 원문</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
-      주 증상에 다른 병원 이름·원내 표기가 섞여 있어 채팅은 이걸 인용하지 않습니다.</p>`;
+      <div class="recs">${visits.map((v) => {
+        // ⚠️ 처방에서 **약만** 남긴다. 진료비·검사·마취·처치 줄이 절반이 넘어서 그대로 두면
+        // 진료 내용이 청구 내역에 묻힌다. 채팅이 읽는 것도 약 이름 쪽이다.
+        const rx = (v.prescription ?? [])
+          .map((r) => [r.drug?.name, r.dose, r.frequency, r.duration && `${r.duration}일`].filter(Boolean).join(" "))
+          .filter((t) => t && !/^(진료비|검사|마취|처치|수술|입원|주사|수액|방사선|초음파|혈액검사|외부검사|안약|물약|내복약조제|넥칼라|진단서|CT|MRI|특수주사|혈압측정|입원중검사|침치료|안구|귀-|피부소독제|프리폴|프로바이브|미다컴|유한케타민|부토판)/.test(t));
+        return `<article class="rec-v${adm.has(v.visit_date) ? " in" : ""}">
+          <div class="rec-d">${esc(v.visit_date)}${adm.has(v.visit_date) ? ' <b class="badge">입원</b>' : ""}
+            <span>${esc(v.chief_complaint ?? "(주 증상 미기재)")}</span></div>
+          ${v.note?.trim() ? `<pre class="rec-n">${esc(v.note.trim())}</pre>` : ""}
+          ${v.report_comment?.trim() ? `<div class="rec-c"><b>보호자에게 나간 코멘트</b> ${esc(v.report_comment.trim())}</div>` : ""}
+          ${rx.length ? `<div class="rec-rx"><b>처방</b> ${esc(rx.join(" / "))}</div>` : ""}
+        </article>`;
+      }).join("")}</div>
+      <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
+      원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
+      채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p>`;
   };
 
   // ⚠️⚠️ **탭을 JS 로 만들지 않는다.** 이 파일은 앱의 미리보기 패널에서 열리는데
@@ -453,6 +467,16 @@ function renderHtml(results, OUT, history = {}) {
 .rec-head{font-size:.85rem;color:var(--muted);margin-bottom:10px}
 .rec-note{margin-top:6px;color:#a33;font-weight:700}
 .rec-adm{font-size:.82rem;margin-bottom:12px;padding:8px 10px;border-radius:10px;background:var(--soft)}
+  .recs{display:grid;gap:10px;max-width:860px}
+  .rec-v{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+  .rec-v.in{border-color:#c9dcea;background:#f7fbfe}
+  .rec-d{font-size:.86rem;font-weight:700;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .rec-d span{font-weight:400;color:var(--muted)}
+  .rec-d .badge{font-size:.7rem;background:#dcecf8;color:#1b5b86;border-radius:5px;padding:1px 5px}
+  .rec-n{margin:6px 0 0;padding:8px 10px;background:var(--soft);border-radius:8px;
+   font:inherit;font-size:.83rem;white-space:pre-wrap;word-break:break-word;overflow-x:auto}
+  .rec-c,.rec-rx{margin-top:6px;font-size:.82rem;color:var(--muted);word-break:break-word}
+  .rec-c b,.rec-rx b{color:var(--text)}
 table.rec{border-collapse:collapse;max-width:860px;width:100%;font-size:.85rem}
 table.rec th{text-align:left;padding:6px 8px;border-bottom:2px solid var(--line);color:var(--muted);font-weight:700}
 table.rec td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}

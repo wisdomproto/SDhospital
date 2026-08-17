@@ -393,6 +393,11 @@ function renderHtml(results, OUT, history = {}) {
       <div class="tri t-${r.triage}">${TRIAGE_KO[r.triage] ?? r.triage}</div>
       <div class="a">${esc(r.text)}</div>
       ${vetHtml(r.vet)}`}
+      <label class="memo">
+        <span>✍️ 원장님 코멘트</span>
+        <textarea rows="2" placeholder="이 답이 틀렸거나 이렇게 말해야 한다 싶은 것을 적어 주세요"
+          data-k="${esc(r.chart)}|${esc(r.key)}|${esc(r.q)}" data-when="${esc(LABEL[r.key] ?? r.key)}"></textarea>
+      </label>
     </div>`).join("");
 
   /** 누적 진료 기록 — **DB 에서 읽은 것 그대로.** 이게 있어야 답이 왜 그런지 읽힌다 */
@@ -500,6 +505,21 @@ function renderHtml(results, OUT, history = {}) {
   .vet-cols p{white-space:pre-wrap;margin:4px 0 0;padding:10px;border:1px solid var(--line);border-radius:10px}
   .vet-one p{white-space:pre-wrap;margin:8px 0 0;padding:10px 12px;border:1px solid #d7e6d9;
    border-radius:10px;background:#f5faf6;max-width:760px}
+  /* 원장님이 직접 쓰는 자리. ⚠️ 브라우저에만 저장된다 — 아래 막대로 꺼내야 남는다 */
+  .memo{display:block;margin-top:12px;max-width:760px}
+  .memo span{font-size:.78rem;font-weight:700;color:#8a6d1f}
+  .memo textarea{display:block;width:100%;margin-top:5px;padding:9px 11px;border:1px solid #e6d9a8;
+   border-radius:10px;background:#fffdf3;font:inherit;font-size:.85rem;color:var(--text);resize:vertical}
+  .memo textarea:focus{outline:2px solid #e0c56a;outline-offset:1px;background:#fff}
+  .qa:has(.memo textarea.filled){box-shadow:inset 3px 0 0 #e0b93a}
+  .memobar{position:fixed;right:16px;bottom:16px;z-index:5;display:flex;gap:8px;align-items:center;
+   background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 9px 7px 14px;
+   box-shadow:0 4px 18px rgba(0,0,0,.13);font-size:.82rem}
+  .memobar b{color:#8a6d1f}
+  .memobar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;
+   font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
+  .memobar button:hover{background:var(--soft)}
+  .memobar.none{opacity:.55}
 .rec-head{font-size:.85rem;color:var(--muted);margin-bottom:10px}
 .rec-note{margin-top:6px;color:#a33;font-weight:700}
 .rec-adm{font-size:.82rem;margin-bottom:12px;padding:8px 10px;border-radius:10px;background:var(--soft)}
@@ -553,6 +573,63 @@ ${charts.map((c, i) => `
       `<label for="p${i}">${esc(byPatient.get(c)[0].name)} <span style="opacity:.6">${esc(c)}</span></label>`).join("")}</nav>
     <main>${patientPanes}</main>
   </div>
+  <div class="memobar none" id="memobar">
+    <span>✍️ 코멘트 <b id="memon">0</b>개</span>
+    <button type="button" id="memocopy">복사</button>
+    <button type="button" id="memosave">파일로 저장</button>
+  </div>
+  <script>
+  /* ⚠️ **탭은 이 스크립트 없이도 돈다**(라디오+CSS). 여기서 얹는 건 메모장뿐이라,
+     스크립트가 막힌 데서 열어도 보고서는 그대로 읽힌다.
+     ⚠️⚠️ **코멘트는 이 브라우저에만 저장된다**(localStorage). 서버로 안 간다 —
+     주소가 달라지면(로컬 vs 배포본) 안 따라오고, 방문기록을 지우면 사라진다.
+     그래서 다 쓰고 나면 **아래 막대에서 반드시 꺼내야 한다.** */
+  (function () {
+    var KEY = "sdchat-memo:", bar = document.getElementById("memobar"), n = document.getElementById("memon");
+    var boxes = [].slice.call(document.querySelectorAll(".memo textarea"));
+    function count() {
+      var c = boxes.filter(function (b) { return b.value.trim(); }).length;
+      n.textContent = c; bar.className = "memobar" + (c ? "" : " none");
+    }
+    boxes.forEach(function (b) {
+      var k = KEY + b.dataset.k;
+      try { b.value = localStorage.getItem(k) || ""; } catch (e) {}
+      if (b.value.trim()) b.classList.add("filled");
+      b.addEventListener("input", function () {
+        try { b.value.trim() ? localStorage.setItem(k, b.value) : localStorage.removeItem(k); } catch (e) {}
+        b.classList.toggle("filled", !!b.value.trim());
+        count();
+      });
+    });
+    count();
+    /** 쓴 것만 모아 환자별로 묶는다. 질문과 채팅 답까지 같이 담아야 나중에 짝이 맞는다. */
+    function dump() {
+      var out = [], last = "";
+      boxes.forEach(function (b) {
+        if (!b.value.trim()) return;
+        var qa = b.closest(".qa"), pane = b.closest(".pane");
+        var who = pane ? pane.querySelector("h2").textContent.trim() : b.dataset.k.split("|")[0];
+        var when = b.dataset.when || b.dataset.k.split("|")[1];
+        if (who !== last) { out.push("\\n\\n## " + who); last = who; }
+        out.push("\\n\\n### [" + when + "] " + qa.querySelector(".q").textContent.trim());
+        out.push("\\n- 채팅 답: " + qa.querySelector(".a").textContent.trim().replace(/\\s+/g, " "));
+        out.push("\\n- **원장님:** " + b.value.trim());
+      });
+      return "# 채팅 검토 코멘트 (" + new Date().toISOString().slice(0, 10) + ")\\n"
+        + "총 " + boxes.filter(function (b) { return b.value.trim(); }).length + "건" + out.join("");
+    }
+    document.getElementById("memocopy").onclick = function () {
+      var t = dump();
+      navigator.clipboard.writeText(t).then(function () { alert("코멘트를 복사했습니다. 붙여넣어 보내 주세요."); },
+        function () { window.prompt("아래를 복사해 주세요", t); });
+    };
+    document.getElementById("memosave").onclick = function () {
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([dump()], { type: "text/markdown;charset=utf-8" }));
+      a.download = "채팅검토-코멘트.md"; a.click(); URL.revokeObjectURL(a.href);
+    };
+  })();
+  </script>
     </html>`;
 
   // OUT 을 따로 주면 그 자리에만 쓴다(임시본). 기본으로 돌리면 원본과 자료실 사본이 같이 간다.

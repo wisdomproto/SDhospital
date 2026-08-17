@@ -32,3 +32,5 @@ next-env.d.ts
 data/
 *.zip
 docs/proposal/shots/.chrome/
+
+caution-leak.jsonl

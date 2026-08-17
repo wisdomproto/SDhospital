@@ -425,13 +425,20 @@ function renderHtml(results, OUT, history = {}) {
     const rs = byPatient.get(c);
     const p0 = rs[0];
     const keys = keysOf(c);
+    // ⚠️ **탭 하나는 실제로 있었던 일이고 나머지는 전부 지어낸 상황이다.**
+    // 같은 모양으로 나란히 두면 원장님이 아래 문답도 실제 오간 대화로 읽는다.
+    // 라벨에 「시뮬레이션」을 박고 **색을 가른다** — 회색(사실) 대 보라(가정).
     return `<section class="pane" data-p="${pi}">
       <h2>${esc(p0.name)} <small>${esc(c)} · ${esc(p0.species ?? "")} ${esc(p0.breed ?? "")}${p0.gone ? ' · <b class="gone">떠난 아이</b>' : ""}</small></h2>
       <nav class="stabs">${["record", ...keys].map((k, si) =>
-        `<label for="p${pi}s${si}">${k === "record" ? "📋 진료 기록" : LABEL[k]}</label>`).join("")}</nav>
+        k === "record"
+          ? `<label for="p${pi}s${si}" class="t-rec">📋 진료 기록</label>`
+          : `<label for="p${pi}s${si}" class="t-sim">🤖 시뮬레이션 · ${LABEL[k]}</label>`).join("")}</nav>
       <div class="spane" data-p="${pi}" data-s="0">${recordPane(history[c])}</div>
-      ${keys.map((k, si0) => { const si = si0 + 1; return `<div class="spane" data-p="${pi}" data-s="${si}">
-        <div class="asof">기준일 ${esc(rs.find((r) => r.key === k).asOf)} — 이 날짜를 「오늘」로 놓고 물었다</div>
+      ${keys.map((k, si0) => { const si = si0 + 1; return `<div class="spane sim" data-p="${pi}" data-s="${si}">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — ${LABEL[k]}</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 ${esc(rs.find((r) => r.key === k).asOf)} 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         ${rowsHtml(rs.filter((r) => r.key === k))}
       </div>`; }).join("")}
     </section>`;
@@ -501,12 +508,20 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 .plist label{display:block;padding:8px 10px;border-radius:9px;font-size:.88rem;cursor:pointer;color:var(--text)}
 .stabs label{padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;
  font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer;user-select:none}
+/* ⚠️ 사실(진료 기록)과 가정(시뮬레이션)을 색으로 가른다 — 라벨 글자만으로는 안 읽힌다 */
+.stabs label.t-sim{border-color:#d9cdf0;background:#faf7ff;color:#6b4ea8}
+.spane.sim{border-left:3px solid #b79ee6;padding-left:14px;margin-left:1px}
+.simbar{background:#f4efff;border:1px solid #ddd0f4;border-radius:10px;padding:9px 12px;
+ margin-bottom:12px;font-size:.82rem;color:#4d3a7a;line-height:1.55}
+.simbar b{color:#3d2a68}
 ${charts.map((c, i) => `
 #p${i}:checked~.wrap .pane[data-p="${i}"]{display:block}
 #p${i}:checked~.wrap .plist label[for="p${i}"]{background:var(--text);color:#fff;font-weight:700}
 ` + ["record", ...keysOf(c)].map((k, si) => `
 #p${i}s${si}:checked~.wrap .spane[data-p="${i}"][data-s="${si}"]{display:block}
-#p${i}s${si}:checked~.wrap .stabs label[for="p${i}s${si}"]{background:var(--text);border-color:var(--text);color:#fff}
+#p${i}s${si}:checked~.wrap .stabs label[for="p${i}s${si}"]{${si === 0
+  ? "background:var(--text);border-color:var(--text);color:#fff"
+  : "background:#6b4ea8;border-color:#6b4ea8;color:#fff"}}
 `).join("")).join("")}
   </style>
   <header>

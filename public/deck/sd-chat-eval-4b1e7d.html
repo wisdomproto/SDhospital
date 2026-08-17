@@ -59,6 +59,12 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 .plist label{display:block;padding:8px 10px;border-radius:9px;font-size:.88rem;cursor:pointer;color:var(--text)}
 .stabs label{padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;
  font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer;user-select:none}
+/* ⚠️ 사실(진료 기록)과 가정(시뮬레이션)을 색으로 가른다 — 라벨 글자만으로는 안 읽힌다 */
+.stabs label.t-sim{border-color:#d9cdf0;background:#faf7ff;color:#6b4ea8}
+.spane.sim{border-left:3px solid #b79ee6;padding-left:14px;margin-left:1px}
+.simbar{background:#f4efff;border:1px solid #ddd0f4;border-radius:10px;padding:9px 12px;
+ margin-bottom:12px;font-size:.82rem;color:#4d3a7a;line-height:1.55}
+.simbar b{color:#3d2a68}
 
 #p0:checked~.wrap .pane[data-p="0"]{display:block}
 #p0:checked~.wrap .plist label[for="p0"]{background:var(--text);color:#fff;font-weight:700}
@@ -67,13 +73,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p0s0:checked~.wrap .stabs label[for="p0s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p0s1:checked~.wrap .spane[data-p="0"][data-s="1"]{display:block}
-#p0s1:checked~.wrap .stabs label[for="p0s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p0s1:checked~.wrap .stabs label[for="p0s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p0s2:checked~.wrap .spane[data-p="0"][data-s="2"]{display:block}
-#p0s2:checked~.wrap .stabs label[for="p0s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p0s2:checked~.wrap .stabs label[for="p0s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p0s3:checked~.wrap .spane[data-p="0"][data-s="3"]{display:block}
-#p0s3:checked~.wrap .stabs label[for="p0s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p0s3:checked~.wrap .stabs label[for="p0s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p1:checked~.wrap .pane[data-p="1"]{display:block}
 #p1:checked~.wrap .plist label[for="p1"]{background:var(--text);color:#fff;font-weight:700}
@@ -82,13 +88,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p1s0:checked~.wrap .stabs label[for="p1s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p1s1:checked~.wrap .spane[data-p="1"][data-s="1"]{display:block}
-#p1s1:checked~.wrap .stabs label[for="p1s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p1s1:checked~.wrap .stabs label[for="p1s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p1s2:checked~.wrap .spane[data-p="1"][data-s="2"]{display:block}
-#p1s2:checked~.wrap .stabs label[for="p1s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p1s2:checked~.wrap .stabs label[for="p1s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p1s3:checked~.wrap .spane[data-p="1"][data-s="3"]{display:block}
-#p1s3:checked~.wrap .stabs label[for="p1s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p1s3:checked~.wrap .stabs label[for="p1s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p2:checked~.wrap .pane[data-p="2"]{display:block}
 #p2:checked~.wrap .plist label[for="p2"]{background:var(--text);color:#fff;font-weight:700}
@@ -97,7 +103,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p2s0:checked~.wrap .stabs label[for="p2s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p2s1:checked~.wrap .spane[data-p="2"][data-s="1"]{display:block}
-#p2s1:checked~.wrap .stabs label[for="p2s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p2s1:checked~.wrap .stabs label[for="p2s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p3:checked~.wrap .pane[data-p="3"]{display:block}
 #p3:checked~.wrap .plist label[for="p3"]{background:var(--text);color:#fff;font-weight:700}
@@ -106,16 +112,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p3s0:checked~.wrap .stabs label[for="p3s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p3s1:checked~.wrap .spane[data-p="3"][data-s="1"]{display:block}
-#p3s1:checked~.wrap .stabs label[for="p3s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p3s1:checked~.wrap .stabs label[for="p3s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p3s2:checked~.wrap .spane[data-p="3"][data-s="2"]{display:block}
-#p3s2:checked~.wrap .stabs label[for="p3s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p3s2:checked~.wrap .stabs label[for="p3s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p3s3:checked~.wrap .spane[data-p="3"][data-s="3"]{display:block}
-#p3s3:checked~.wrap .stabs label[for="p3s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p3s3:checked~.wrap .stabs label[for="p3s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p3s4:checked~.wrap .spane[data-p="3"][data-s="4"]{display:block}
-#p3s4:checked~.wrap .stabs label[for="p3s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p3s4:checked~.wrap .stabs label[for="p3s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p4:checked~.wrap .pane[data-p="4"]{display:block}
 #p4:checked~.wrap .plist label[for="p4"]{background:var(--text);color:#fff;font-weight:700}
@@ -124,13 +130,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p4s0:checked~.wrap .stabs label[for="p4s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p4s1:checked~.wrap .spane[data-p="4"][data-s="1"]{display:block}
-#p4s1:checked~.wrap .stabs label[for="p4s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p4s1:checked~.wrap .stabs label[for="p4s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p4s2:checked~.wrap .spane[data-p="4"][data-s="2"]{display:block}
-#p4s2:checked~.wrap .stabs label[for="p4s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p4s2:checked~.wrap .stabs label[for="p4s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p4s3:checked~.wrap .spane[data-p="4"][data-s="3"]{display:block}
-#p4s3:checked~.wrap .stabs label[for="p4s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p4s3:checked~.wrap .stabs label[for="p4s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p5:checked~.wrap .pane[data-p="5"]{display:block}
 #p5:checked~.wrap .plist label[for="p5"]{background:var(--text);color:#fff;font-weight:700}
@@ -139,7 +145,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p5s0:checked~.wrap .stabs label[for="p5s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p5s1:checked~.wrap .spane[data-p="5"][data-s="1"]{display:block}
-#p5s1:checked~.wrap .stabs label[for="p5s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p5s1:checked~.wrap .stabs label[for="p5s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p6:checked~.wrap .pane[data-p="6"]{display:block}
 #p6:checked~.wrap .plist label[for="p6"]{background:var(--text);color:#fff;font-weight:700}
@@ -148,7 +154,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p6s0:checked~.wrap .stabs label[for="p6s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p6s1:checked~.wrap .spane[data-p="6"][data-s="1"]{display:block}
-#p6s1:checked~.wrap .stabs label[for="p6s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p6s1:checked~.wrap .stabs label[for="p6s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p7:checked~.wrap .pane[data-p="7"]{display:block}
 #p7:checked~.wrap .plist label[for="p7"]{background:var(--text);color:#fff;font-weight:700}
@@ -157,13 +163,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p7s0:checked~.wrap .stabs label[for="p7s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p7s1:checked~.wrap .spane[data-p="7"][data-s="1"]{display:block}
-#p7s1:checked~.wrap .stabs label[for="p7s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p7s1:checked~.wrap .stabs label[for="p7s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p7s2:checked~.wrap .spane[data-p="7"][data-s="2"]{display:block}
-#p7s2:checked~.wrap .stabs label[for="p7s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p7s2:checked~.wrap .stabs label[for="p7s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p7s3:checked~.wrap .spane[data-p="7"][data-s="3"]{display:block}
-#p7s3:checked~.wrap .stabs label[for="p7s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p7s3:checked~.wrap .stabs label[for="p7s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p8:checked~.wrap .pane[data-p="8"]{display:block}
 #p8:checked~.wrap .plist label[for="p8"]{background:var(--text);color:#fff;font-weight:700}
@@ -172,13 +178,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p8s0:checked~.wrap .stabs label[for="p8s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p8s1:checked~.wrap .spane[data-p="8"][data-s="1"]{display:block}
-#p8s1:checked~.wrap .stabs label[for="p8s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p8s1:checked~.wrap .stabs label[for="p8s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p8s2:checked~.wrap .spane[data-p="8"][data-s="2"]{display:block}
-#p8s2:checked~.wrap .stabs label[for="p8s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p8s2:checked~.wrap .stabs label[for="p8s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p8s3:checked~.wrap .spane[data-p="8"][data-s="3"]{display:block}
-#p8s3:checked~.wrap .stabs label[for="p8s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p8s3:checked~.wrap .stabs label[for="p8s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p9:checked~.wrap .pane[data-p="9"]{display:block}
 #p9:checked~.wrap .plist label[for="p9"]{background:var(--text);color:#fff;font-weight:700}
@@ -187,13 +193,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p9s0:checked~.wrap .stabs label[for="p9s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p9s1:checked~.wrap .spane[data-p="9"][data-s="1"]{display:block}
-#p9s1:checked~.wrap .stabs label[for="p9s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p9s1:checked~.wrap .stabs label[for="p9s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p9s2:checked~.wrap .spane[data-p="9"][data-s="2"]{display:block}
-#p9s2:checked~.wrap .stabs label[for="p9s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p9s2:checked~.wrap .stabs label[for="p9s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p9s3:checked~.wrap .spane[data-p="9"][data-s="3"]{display:block}
-#p9s3:checked~.wrap .stabs label[for="p9s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p9s3:checked~.wrap .stabs label[for="p9s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p10:checked~.wrap .pane[data-p="10"]{display:block}
 #p10:checked~.wrap .plist label[for="p10"]{background:var(--text);color:#fff;font-weight:700}
@@ -202,13 +208,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p10s0:checked~.wrap .stabs label[for="p10s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p10s1:checked~.wrap .spane[data-p="10"][data-s="1"]{display:block}
-#p10s1:checked~.wrap .stabs label[for="p10s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p10s1:checked~.wrap .stabs label[for="p10s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p10s2:checked~.wrap .spane[data-p="10"][data-s="2"]{display:block}
-#p10s2:checked~.wrap .stabs label[for="p10s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p10s2:checked~.wrap .stabs label[for="p10s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p10s3:checked~.wrap .spane[data-p="10"][data-s="3"]{display:block}
-#p10s3:checked~.wrap .stabs label[for="p10s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p10s3:checked~.wrap .stabs label[for="p10s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p11:checked~.wrap .pane[data-p="11"]{display:block}
 #p11:checked~.wrap .plist label[for="p11"]{background:var(--text);color:#fff;font-weight:700}
@@ -217,13 +223,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p11s0:checked~.wrap .stabs label[for="p11s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p11s1:checked~.wrap .spane[data-p="11"][data-s="1"]{display:block}
-#p11s1:checked~.wrap .stabs label[for="p11s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p11s1:checked~.wrap .stabs label[for="p11s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p11s2:checked~.wrap .spane[data-p="11"][data-s="2"]{display:block}
-#p11s2:checked~.wrap .stabs label[for="p11s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p11s2:checked~.wrap .stabs label[for="p11s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p11s3:checked~.wrap .spane[data-p="11"][data-s="3"]{display:block}
-#p11s3:checked~.wrap .stabs label[for="p11s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p11s3:checked~.wrap .stabs label[for="p11s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p12:checked~.wrap .pane[data-p="12"]{display:block}
 #p12:checked~.wrap .plist label[for="p12"]{background:var(--text);color:#fff;font-weight:700}
@@ -232,13 +238,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p12s0:checked~.wrap .stabs label[for="p12s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p12s1:checked~.wrap .spane[data-p="12"][data-s="1"]{display:block}
-#p12s1:checked~.wrap .stabs label[for="p12s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p12s1:checked~.wrap .stabs label[for="p12s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p12s2:checked~.wrap .spane[data-p="12"][data-s="2"]{display:block}
-#p12s2:checked~.wrap .stabs label[for="p12s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p12s2:checked~.wrap .stabs label[for="p12s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p12s3:checked~.wrap .spane[data-p="12"][data-s="3"]{display:block}
-#p12s3:checked~.wrap .stabs label[for="p12s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p12s3:checked~.wrap .stabs label[for="p12s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p13:checked~.wrap .pane[data-p="13"]{display:block}
 #p13:checked~.wrap .plist label[for="p13"]{background:var(--text);color:#fff;font-weight:700}
@@ -247,13 +253,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p13s0:checked~.wrap .stabs label[for="p13s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p13s1:checked~.wrap .spane[data-p="13"][data-s="1"]{display:block}
-#p13s1:checked~.wrap .stabs label[for="p13s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p13s1:checked~.wrap .stabs label[for="p13s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p13s2:checked~.wrap .spane[data-p="13"][data-s="2"]{display:block}
-#p13s2:checked~.wrap .stabs label[for="p13s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p13s2:checked~.wrap .stabs label[for="p13s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p13s3:checked~.wrap .spane[data-p="13"][data-s="3"]{display:block}
-#p13s3:checked~.wrap .stabs label[for="p13s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p13s3:checked~.wrap .stabs label[for="p13s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p14:checked~.wrap .pane[data-p="14"]{display:block}
 #p14:checked~.wrap .plist label[for="p14"]{background:var(--text);color:#fff;font-weight:700}
@@ -262,16 +268,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p14s0:checked~.wrap .stabs label[for="p14s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p14s1:checked~.wrap .spane[data-p="14"][data-s="1"]{display:block}
-#p14s1:checked~.wrap .stabs label[for="p14s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p14s1:checked~.wrap .stabs label[for="p14s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p14s2:checked~.wrap .spane[data-p="14"][data-s="2"]{display:block}
-#p14s2:checked~.wrap .stabs label[for="p14s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p14s2:checked~.wrap .stabs label[for="p14s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p14s3:checked~.wrap .spane[data-p="14"][data-s="3"]{display:block}
-#p14s3:checked~.wrap .stabs label[for="p14s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p14s3:checked~.wrap .stabs label[for="p14s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p14s4:checked~.wrap .spane[data-p="14"][data-s="4"]{display:block}
-#p14s4:checked~.wrap .stabs label[for="p14s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p14s4:checked~.wrap .stabs label[for="p14s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p15:checked~.wrap .pane[data-p="15"]{display:block}
 #p15:checked~.wrap .plist label[for="p15"]{background:var(--text);color:#fff;font-weight:700}
@@ -280,13 +286,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p15s0:checked~.wrap .stabs label[for="p15s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p15s1:checked~.wrap .spane[data-p="15"][data-s="1"]{display:block}
-#p15s1:checked~.wrap .stabs label[for="p15s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p15s1:checked~.wrap .stabs label[for="p15s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p15s2:checked~.wrap .spane[data-p="15"][data-s="2"]{display:block}
-#p15s2:checked~.wrap .stabs label[for="p15s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p15s2:checked~.wrap .stabs label[for="p15s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p15s3:checked~.wrap .spane[data-p="15"][data-s="3"]{display:block}
-#p15s3:checked~.wrap .stabs label[for="p15s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p15s3:checked~.wrap .stabs label[for="p15s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p16:checked~.wrap .pane[data-p="16"]{display:block}
 #p16:checked~.wrap .plist label[for="p16"]{background:var(--text);color:#fff;font-weight:700}
@@ -295,13 +301,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p16s0:checked~.wrap .stabs label[for="p16s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p16s1:checked~.wrap .spane[data-p="16"][data-s="1"]{display:block}
-#p16s1:checked~.wrap .stabs label[for="p16s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p16s1:checked~.wrap .stabs label[for="p16s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p16s2:checked~.wrap .spane[data-p="16"][data-s="2"]{display:block}
-#p16s2:checked~.wrap .stabs label[for="p16s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p16s2:checked~.wrap .stabs label[for="p16s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p16s3:checked~.wrap .spane[data-p="16"][data-s="3"]{display:block}
-#p16s3:checked~.wrap .stabs label[for="p16s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p16s3:checked~.wrap .stabs label[for="p16s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p17:checked~.wrap .pane[data-p="17"]{display:block}
 #p17:checked~.wrap .plist label[for="p17"]{background:var(--text);color:#fff;font-weight:700}
@@ -310,7 +316,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p17s0:checked~.wrap .stabs label[for="p17s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p17s1:checked~.wrap .spane[data-p="17"][data-s="1"]{display:block}
-#p17s1:checked~.wrap .stabs label[for="p17s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p17s1:checked~.wrap .stabs label[for="p17s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p18:checked~.wrap .pane[data-p="18"]{display:block}
 #p18:checked~.wrap .plist label[for="p18"]{background:var(--text);color:#fff;font-weight:700}
@@ -319,13 +325,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p18s0:checked~.wrap .stabs label[for="p18s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p18s1:checked~.wrap .spane[data-p="18"][data-s="1"]{display:block}
-#p18s1:checked~.wrap .stabs label[for="p18s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p18s1:checked~.wrap .stabs label[for="p18s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p18s2:checked~.wrap .spane[data-p="18"][data-s="2"]{display:block}
-#p18s2:checked~.wrap .stabs label[for="p18s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p18s2:checked~.wrap .stabs label[for="p18s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p18s3:checked~.wrap .spane[data-p="18"][data-s="3"]{display:block}
-#p18s3:checked~.wrap .stabs label[for="p18s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p18s3:checked~.wrap .stabs label[for="p18s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p19:checked~.wrap .pane[data-p="19"]{display:block}
 #p19:checked~.wrap .plist label[for="p19"]{background:var(--text);color:#fff;font-weight:700}
@@ -334,7 +340,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p19s0:checked~.wrap .stabs label[for="p19s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p19s1:checked~.wrap .spane[data-p="19"][data-s="1"]{display:block}
-#p19s1:checked~.wrap .stabs label[for="p19s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p19s1:checked~.wrap .stabs label[for="p19s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p20:checked~.wrap .pane[data-p="20"]{display:block}
 #p20:checked~.wrap .plist label[for="p20"]{background:var(--text);color:#fff;font-weight:700}
@@ -343,7 +349,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p20s0:checked~.wrap .stabs label[for="p20s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p20s1:checked~.wrap .spane[data-p="20"][data-s="1"]{display:block}
-#p20s1:checked~.wrap .stabs label[for="p20s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p20s1:checked~.wrap .stabs label[for="p20s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p21:checked~.wrap .pane[data-p="21"]{display:block}
 #p21:checked~.wrap .plist label[for="p21"]{background:var(--text);color:#fff;font-weight:700}
@@ -352,13 +358,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p21s0:checked~.wrap .stabs label[for="p21s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p21s1:checked~.wrap .spane[data-p="21"][data-s="1"]{display:block}
-#p21s1:checked~.wrap .stabs label[for="p21s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p21s1:checked~.wrap .stabs label[for="p21s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p21s2:checked~.wrap .spane[data-p="21"][data-s="2"]{display:block}
-#p21s2:checked~.wrap .stabs label[for="p21s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p21s2:checked~.wrap .stabs label[for="p21s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p21s3:checked~.wrap .spane[data-p="21"][data-s="3"]{display:block}
-#p21s3:checked~.wrap .stabs label[for="p21s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p21s3:checked~.wrap .stabs label[for="p21s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p22:checked~.wrap .pane[data-p="22"]{display:block}
 #p22:checked~.wrap .plist label[for="p22"]{background:var(--text);color:#fff;font-weight:700}
@@ -367,13 +373,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p22s0:checked~.wrap .stabs label[for="p22s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p22s1:checked~.wrap .spane[data-p="22"][data-s="1"]{display:block}
-#p22s1:checked~.wrap .stabs label[for="p22s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p22s1:checked~.wrap .stabs label[for="p22s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p22s2:checked~.wrap .spane[data-p="22"][data-s="2"]{display:block}
-#p22s2:checked~.wrap .stabs label[for="p22s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p22s2:checked~.wrap .stabs label[for="p22s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p22s3:checked~.wrap .spane[data-p="22"][data-s="3"]{display:block}
-#p22s3:checked~.wrap .stabs label[for="p22s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p22s3:checked~.wrap .stabs label[for="p22s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p23:checked~.wrap .pane[data-p="23"]{display:block}
 #p23:checked~.wrap .plist label[for="p23"]{background:var(--text);color:#fff;font-weight:700}
@@ -382,16 +388,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p23s0:checked~.wrap .stabs label[for="p23s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p23s1:checked~.wrap .spane[data-p="23"][data-s="1"]{display:block}
-#p23s1:checked~.wrap .stabs label[for="p23s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p23s1:checked~.wrap .stabs label[for="p23s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p23s2:checked~.wrap .spane[data-p="23"][data-s="2"]{display:block}
-#p23s2:checked~.wrap .stabs label[for="p23s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p23s2:checked~.wrap .stabs label[for="p23s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p23s3:checked~.wrap .spane[data-p="23"][data-s="3"]{display:block}
-#p23s3:checked~.wrap .stabs label[for="p23s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p23s3:checked~.wrap .stabs label[for="p23s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p23s4:checked~.wrap .spane[data-p="23"][data-s="4"]{display:block}
-#p23s4:checked~.wrap .stabs label[for="p23s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p23s4:checked~.wrap .stabs label[for="p23s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p24:checked~.wrap .pane[data-p="24"]{display:block}
 #p24:checked~.wrap .plist label[for="p24"]{background:var(--text);color:#fff;font-weight:700}
@@ -400,13 +406,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p24s0:checked~.wrap .stabs label[for="p24s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p24s1:checked~.wrap .spane[data-p="24"][data-s="1"]{display:block}
-#p24s1:checked~.wrap .stabs label[for="p24s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p24s1:checked~.wrap .stabs label[for="p24s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p24s2:checked~.wrap .spane[data-p="24"][data-s="2"]{display:block}
-#p24s2:checked~.wrap .stabs label[for="p24s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p24s2:checked~.wrap .stabs label[for="p24s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p24s3:checked~.wrap .spane[data-p="24"][data-s="3"]{display:block}
-#p24s3:checked~.wrap .stabs label[for="p24s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p24s3:checked~.wrap .stabs label[for="p24s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p25:checked~.wrap .pane[data-p="25"]{display:block}
 #p25:checked~.wrap .plist label[for="p25"]{background:var(--text);color:#fff;font-weight:700}
@@ -415,13 +421,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p25s0:checked~.wrap .stabs label[for="p25s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p25s1:checked~.wrap .spane[data-p="25"][data-s="1"]{display:block}
-#p25s1:checked~.wrap .stabs label[for="p25s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p25s1:checked~.wrap .stabs label[for="p25s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p25s2:checked~.wrap .spane[data-p="25"][data-s="2"]{display:block}
-#p25s2:checked~.wrap .stabs label[for="p25s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p25s2:checked~.wrap .stabs label[for="p25s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p25s3:checked~.wrap .spane[data-p="25"][data-s="3"]{display:block}
-#p25s3:checked~.wrap .stabs label[for="p25s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p25s3:checked~.wrap .stabs label[for="p25s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p26:checked~.wrap .pane[data-p="26"]{display:block}
 #p26:checked~.wrap .plist label[for="p26"]{background:var(--text);color:#fff;font-weight:700}
@@ -430,13 +436,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p26s0:checked~.wrap .stabs label[for="p26s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p26s1:checked~.wrap .spane[data-p="26"][data-s="1"]{display:block}
-#p26s1:checked~.wrap .stabs label[for="p26s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p26s1:checked~.wrap .stabs label[for="p26s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p26s2:checked~.wrap .spane[data-p="26"][data-s="2"]{display:block}
-#p26s2:checked~.wrap .stabs label[for="p26s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p26s2:checked~.wrap .stabs label[for="p26s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p26s3:checked~.wrap .spane[data-p="26"][data-s="3"]{display:block}
-#p26s3:checked~.wrap .stabs label[for="p26s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p26s3:checked~.wrap .stabs label[for="p26s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p27:checked~.wrap .pane[data-p="27"]{display:block}
 #p27:checked~.wrap .plist label[for="p27"]{background:var(--text);color:#fff;font-weight:700}
@@ -445,16 +451,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p27s0:checked~.wrap .stabs label[for="p27s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p27s1:checked~.wrap .spane[data-p="27"][data-s="1"]{display:block}
-#p27s1:checked~.wrap .stabs label[for="p27s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p27s1:checked~.wrap .stabs label[for="p27s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p27s2:checked~.wrap .spane[data-p="27"][data-s="2"]{display:block}
-#p27s2:checked~.wrap .stabs label[for="p27s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p27s2:checked~.wrap .stabs label[for="p27s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p27s3:checked~.wrap .spane[data-p="27"][data-s="3"]{display:block}
-#p27s3:checked~.wrap .stabs label[for="p27s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p27s3:checked~.wrap .stabs label[for="p27s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p27s4:checked~.wrap .spane[data-p="27"][data-s="4"]{display:block}
-#p27s4:checked~.wrap .stabs label[for="p27s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p27s4:checked~.wrap .stabs label[for="p27s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p28:checked~.wrap .pane[data-p="28"]{display:block}
 #p28:checked~.wrap .plist label[for="p28"]{background:var(--text);color:#fff;font-weight:700}
@@ -463,13 +469,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p28s0:checked~.wrap .stabs label[for="p28s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p28s1:checked~.wrap .spane[data-p="28"][data-s="1"]{display:block}
-#p28s1:checked~.wrap .stabs label[for="p28s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p28s1:checked~.wrap .stabs label[for="p28s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p28s2:checked~.wrap .spane[data-p="28"][data-s="2"]{display:block}
-#p28s2:checked~.wrap .stabs label[for="p28s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p28s2:checked~.wrap .stabs label[for="p28s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p28s3:checked~.wrap .spane[data-p="28"][data-s="3"]{display:block}
-#p28s3:checked~.wrap .stabs label[for="p28s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p28s3:checked~.wrap .stabs label[for="p28s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p29:checked~.wrap .pane[data-p="29"]{display:block}
 #p29:checked~.wrap .plist label[for="p29"]{background:var(--text);color:#fff;font-weight:700}
@@ -478,13 +484,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p29s0:checked~.wrap .stabs label[for="p29s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p29s1:checked~.wrap .spane[data-p="29"][data-s="1"]{display:block}
-#p29s1:checked~.wrap .stabs label[for="p29s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p29s1:checked~.wrap .stabs label[for="p29s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p29s2:checked~.wrap .spane[data-p="29"][data-s="2"]{display:block}
-#p29s2:checked~.wrap .stabs label[for="p29s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p29s2:checked~.wrap .stabs label[for="p29s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p29s3:checked~.wrap .spane[data-p="29"][data-s="3"]{display:block}
-#p29s3:checked~.wrap .stabs label[for="p29s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p29s3:checked~.wrap .stabs label[for="p29s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p30:checked~.wrap .pane[data-p="30"]{display:block}
 #p30:checked~.wrap .plist label[for="p30"]{background:var(--text);color:#fff;font-weight:700}
@@ -493,13 +499,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p30s0:checked~.wrap .stabs label[for="p30s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p30s1:checked~.wrap .spane[data-p="30"][data-s="1"]{display:block}
-#p30s1:checked~.wrap .stabs label[for="p30s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p30s1:checked~.wrap .stabs label[for="p30s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p30s2:checked~.wrap .spane[data-p="30"][data-s="2"]{display:block}
-#p30s2:checked~.wrap .stabs label[for="p30s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p30s2:checked~.wrap .stabs label[for="p30s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p30s3:checked~.wrap .spane[data-p="30"][data-s="3"]{display:block}
-#p30s3:checked~.wrap .stabs label[for="p30s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p30s3:checked~.wrap .stabs label[for="p30s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p31:checked~.wrap .pane[data-p="31"]{display:block}
 #p31:checked~.wrap .plist label[for="p31"]{background:var(--text);color:#fff;font-weight:700}
@@ -508,16 +514,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p31s0:checked~.wrap .stabs label[for="p31s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p31s1:checked~.wrap .spane[data-p="31"][data-s="1"]{display:block}
-#p31s1:checked~.wrap .stabs label[for="p31s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p31s1:checked~.wrap .stabs label[for="p31s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p31s2:checked~.wrap .spane[data-p="31"][data-s="2"]{display:block}
-#p31s2:checked~.wrap .stabs label[for="p31s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p31s2:checked~.wrap .stabs label[for="p31s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p31s3:checked~.wrap .spane[data-p="31"][data-s="3"]{display:block}
-#p31s3:checked~.wrap .stabs label[for="p31s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p31s3:checked~.wrap .stabs label[for="p31s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p31s4:checked~.wrap .spane[data-p="31"][data-s="4"]{display:block}
-#p31s4:checked~.wrap .stabs label[for="p31s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p31s4:checked~.wrap .stabs label[for="p31s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p32:checked~.wrap .pane[data-p="32"]{display:block}
 #p32:checked~.wrap .plist label[for="p32"]{background:var(--text);color:#fff;font-weight:700}
@@ -526,13 +532,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p32s0:checked~.wrap .stabs label[for="p32s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p32s1:checked~.wrap .spane[data-p="32"][data-s="1"]{display:block}
-#p32s1:checked~.wrap .stabs label[for="p32s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p32s1:checked~.wrap .stabs label[for="p32s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p32s2:checked~.wrap .spane[data-p="32"][data-s="2"]{display:block}
-#p32s2:checked~.wrap .stabs label[for="p32s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p32s2:checked~.wrap .stabs label[for="p32s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p32s3:checked~.wrap .spane[data-p="32"][data-s="3"]{display:block}
-#p32s3:checked~.wrap .stabs label[for="p32s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p32s3:checked~.wrap .stabs label[for="p32s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p33:checked~.wrap .pane[data-p="33"]{display:block}
 #p33:checked~.wrap .plist label[for="p33"]{background:var(--text);color:#fff;font-weight:700}
@@ -541,13 +547,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p33s0:checked~.wrap .stabs label[for="p33s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p33s1:checked~.wrap .spane[data-p="33"][data-s="1"]{display:block}
-#p33s1:checked~.wrap .stabs label[for="p33s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p33s1:checked~.wrap .stabs label[for="p33s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p33s2:checked~.wrap .spane[data-p="33"][data-s="2"]{display:block}
-#p33s2:checked~.wrap .stabs label[for="p33s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p33s2:checked~.wrap .stabs label[for="p33s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p33s3:checked~.wrap .spane[data-p="33"][data-s="3"]{display:block}
-#p33s3:checked~.wrap .stabs label[for="p33s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p33s3:checked~.wrap .stabs label[for="p33s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p34:checked~.wrap .pane[data-p="34"]{display:block}
 #p34:checked~.wrap .plist label[for="p34"]{background:var(--text);color:#fff;font-weight:700}
@@ -556,13 +562,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p34s0:checked~.wrap .stabs label[for="p34s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p34s1:checked~.wrap .spane[data-p="34"][data-s="1"]{display:block}
-#p34s1:checked~.wrap .stabs label[for="p34s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p34s1:checked~.wrap .stabs label[for="p34s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p34s2:checked~.wrap .spane[data-p="34"][data-s="2"]{display:block}
-#p34s2:checked~.wrap .stabs label[for="p34s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p34s2:checked~.wrap .stabs label[for="p34s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p34s3:checked~.wrap .spane[data-p="34"][data-s="3"]{display:block}
-#p34s3:checked~.wrap .stabs label[for="p34s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p34s3:checked~.wrap .stabs label[for="p34s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p35:checked~.wrap .pane[data-p="35"]{display:block}
 #p35:checked~.wrap .plist label[for="p35"]{background:var(--text);color:#fff;font-weight:700}
@@ -571,13 +577,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p35s0:checked~.wrap .stabs label[for="p35s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p35s1:checked~.wrap .spane[data-p="35"][data-s="1"]{display:block}
-#p35s1:checked~.wrap .stabs label[for="p35s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p35s1:checked~.wrap .stabs label[for="p35s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p35s2:checked~.wrap .spane[data-p="35"][data-s="2"]{display:block}
-#p35s2:checked~.wrap .stabs label[for="p35s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p35s2:checked~.wrap .stabs label[for="p35s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p35s3:checked~.wrap .spane[data-p="35"][data-s="3"]{display:block}
-#p35s3:checked~.wrap .stabs label[for="p35s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p35s3:checked~.wrap .stabs label[for="p35s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p36:checked~.wrap .pane[data-p="36"]{display:block}
 #p36:checked~.wrap .plist label[for="p36"]{background:var(--text);color:#fff;font-weight:700}
@@ -586,7 +592,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p36s0:checked~.wrap .stabs label[for="p36s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p36s1:checked~.wrap .spane[data-p="36"][data-s="1"]{display:block}
-#p36s1:checked~.wrap .stabs label[for="p36s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p36s1:checked~.wrap .stabs label[for="p36s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p37:checked~.wrap .pane[data-p="37"]{display:block}
 #p37:checked~.wrap .plist label[for="p37"]{background:var(--text);color:#fff;font-weight:700}
@@ -595,7 +601,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p37s0:checked~.wrap .stabs label[for="p37s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p37s1:checked~.wrap .spane[data-p="37"][data-s="1"]{display:block}
-#p37s1:checked~.wrap .stabs label[for="p37s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p37s1:checked~.wrap .stabs label[for="p37s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p38:checked~.wrap .pane[data-p="38"]{display:block}
 #p38:checked~.wrap .plist label[for="p38"]{background:var(--text);color:#fff;font-weight:700}
@@ -604,16 +610,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p38s0:checked~.wrap .stabs label[for="p38s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p38s1:checked~.wrap .spane[data-p="38"][data-s="1"]{display:block}
-#p38s1:checked~.wrap .stabs label[for="p38s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p38s1:checked~.wrap .stabs label[for="p38s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p38s2:checked~.wrap .spane[data-p="38"][data-s="2"]{display:block}
-#p38s2:checked~.wrap .stabs label[for="p38s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p38s2:checked~.wrap .stabs label[for="p38s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p38s3:checked~.wrap .spane[data-p="38"][data-s="3"]{display:block}
-#p38s3:checked~.wrap .stabs label[for="p38s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p38s3:checked~.wrap .stabs label[for="p38s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p38s4:checked~.wrap .spane[data-p="38"][data-s="4"]{display:block}
-#p38s4:checked~.wrap .stabs label[for="p38s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p38s4:checked~.wrap .stabs label[for="p38s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p39:checked~.wrap .pane[data-p="39"]{display:block}
 #p39:checked~.wrap .plist label[for="p39"]{background:var(--text);color:#fff;font-weight:700}
@@ -622,13 +628,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p39s0:checked~.wrap .stabs label[for="p39s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p39s1:checked~.wrap .spane[data-p="39"][data-s="1"]{display:block}
-#p39s1:checked~.wrap .stabs label[for="p39s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p39s1:checked~.wrap .stabs label[for="p39s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p39s2:checked~.wrap .spane[data-p="39"][data-s="2"]{display:block}
-#p39s2:checked~.wrap .stabs label[for="p39s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p39s2:checked~.wrap .stabs label[for="p39s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p39s3:checked~.wrap .spane[data-p="39"][data-s="3"]{display:block}
-#p39s3:checked~.wrap .stabs label[for="p39s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p39s3:checked~.wrap .stabs label[for="p39s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p40:checked~.wrap .pane[data-p="40"]{display:block}
 #p40:checked~.wrap .plist label[for="p40"]{background:var(--text);color:#fff;font-weight:700}
@@ -637,16 +643,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p40s0:checked~.wrap .stabs label[for="p40s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p40s1:checked~.wrap .spane[data-p="40"][data-s="1"]{display:block}
-#p40s1:checked~.wrap .stabs label[for="p40s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p40s1:checked~.wrap .stabs label[for="p40s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p40s2:checked~.wrap .spane[data-p="40"][data-s="2"]{display:block}
-#p40s2:checked~.wrap .stabs label[for="p40s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p40s2:checked~.wrap .stabs label[for="p40s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p40s3:checked~.wrap .spane[data-p="40"][data-s="3"]{display:block}
-#p40s3:checked~.wrap .stabs label[for="p40s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p40s3:checked~.wrap .stabs label[for="p40s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p40s4:checked~.wrap .spane[data-p="40"][data-s="4"]{display:block}
-#p40s4:checked~.wrap .stabs label[for="p40s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p40s4:checked~.wrap .stabs label[for="p40s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p41:checked~.wrap .pane[data-p="41"]{display:block}
 #p41:checked~.wrap .plist label[for="p41"]{background:var(--text);color:#fff;font-weight:700}
@@ -655,13 +661,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p41s0:checked~.wrap .stabs label[for="p41s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p41s1:checked~.wrap .spane[data-p="41"][data-s="1"]{display:block}
-#p41s1:checked~.wrap .stabs label[for="p41s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p41s1:checked~.wrap .stabs label[for="p41s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p41s2:checked~.wrap .spane[data-p="41"][data-s="2"]{display:block}
-#p41s2:checked~.wrap .stabs label[for="p41s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p41s2:checked~.wrap .stabs label[for="p41s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p41s3:checked~.wrap .spane[data-p="41"][data-s="3"]{display:block}
-#p41s3:checked~.wrap .stabs label[for="p41s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p41s3:checked~.wrap .stabs label[for="p41s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p42:checked~.wrap .pane[data-p="42"]{display:block}
 #p42:checked~.wrap .plist label[for="p42"]{background:var(--text);color:#fff;font-weight:700}
@@ -670,7 +676,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p42s0:checked~.wrap .stabs label[for="p42s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p42s1:checked~.wrap .spane[data-p="42"][data-s="1"]{display:block}
-#p42s1:checked~.wrap .stabs label[for="p42s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p42s1:checked~.wrap .stabs label[for="p42s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p43:checked~.wrap .pane[data-p="43"]{display:block}
 #p43:checked~.wrap .plist label[for="p43"]{background:var(--text);color:#fff;font-weight:700}
@@ -679,13 +685,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p43s0:checked~.wrap .stabs label[for="p43s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p43s1:checked~.wrap .spane[data-p="43"][data-s="1"]{display:block}
-#p43s1:checked~.wrap .stabs label[for="p43s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p43s1:checked~.wrap .stabs label[for="p43s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p43s2:checked~.wrap .spane[data-p="43"][data-s="2"]{display:block}
-#p43s2:checked~.wrap .stabs label[for="p43s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p43s2:checked~.wrap .stabs label[for="p43s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p43s3:checked~.wrap .spane[data-p="43"][data-s="3"]{display:block}
-#p43s3:checked~.wrap .stabs label[for="p43s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p43s3:checked~.wrap .stabs label[for="p43s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p44:checked~.wrap .pane[data-p="44"]{display:block}
 #p44:checked~.wrap .plist label[for="p44"]{background:var(--text);color:#fff;font-weight:700}
@@ -694,7 +700,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p44s0:checked~.wrap .stabs label[for="p44s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p44s1:checked~.wrap .spane[data-p="44"][data-s="1"]{display:block}
-#p44s1:checked~.wrap .stabs label[for="p44s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p44s1:checked~.wrap .stabs label[for="p44s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p45:checked~.wrap .pane[data-p="45"]{display:block}
 #p45:checked~.wrap .plist label[for="p45"]{background:var(--text);color:#fff;font-weight:700}
@@ -703,7 +709,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p45s0:checked~.wrap .stabs label[for="p45s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p45s1:checked~.wrap .spane[data-p="45"][data-s="1"]{display:block}
-#p45s1:checked~.wrap .stabs label[for="p45s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p45s1:checked~.wrap .stabs label[for="p45s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p46:checked~.wrap .pane[data-p="46"]{display:block}
 #p46:checked~.wrap .plist label[for="p46"]{background:var(--text);color:#fff;font-weight:700}
@@ -712,13 +718,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p46s0:checked~.wrap .stabs label[for="p46s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p46s1:checked~.wrap .spane[data-p="46"][data-s="1"]{display:block}
-#p46s1:checked~.wrap .stabs label[for="p46s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p46s1:checked~.wrap .stabs label[for="p46s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p46s2:checked~.wrap .spane[data-p="46"][data-s="2"]{display:block}
-#p46s2:checked~.wrap .stabs label[for="p46s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p46s2:checked~.wrap .stabs label[for="p46s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p46s3:checked~.wrap .spane[data-p="46"][data-s="3"]{display:block}
-#p46s3:checked~.wrap .stabs label[for="p46s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p46s3:checked~.wrap .stabs label[for="p46s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p47:checked~.wrap .pane[data-p="47"]{display:block}
 #p47:checked~.wrap .plist label[for="p47"]{background:var(--text);color:#fff;font-weight:700}
@@ -727,16 +733,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p47s0:checked~.wrap .stabs label[for="p47s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p47s1:checked~.wrap .spane[data-p="47"][data-s="1"]{display:block}
-#p47s1:checked~.wrap .stabs label[for="p47s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p47s1:checked~.wrap .stabs label[for="p47s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p47s2:checked~.wrap .spane[data-p="47"][data-s="2"]{display:block}
-#p47s2:checked~.wrap .stabs label[for="p47s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p47s2:checked~.wrap .stabs label[for="p47s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p47s3:checked~.wrap .spane[data-p="47"][data-s="3"]{display:block}
-#p47s3:checked~.wrap .stabs label[for="p47s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p47s3:checked~.wrap .stabs label[for="p47s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p47s4:checked~.wrap .spane[data-p="47"][data-s="4"]{display:block}
-#p47s4:checked~.wrap .stabs label[for="p47s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p47s4:checked~.wrap .stabs label[for="p47s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p48:checked~.wrap .pane[data-p="48"]{display:block}
 #p48:checked~.wrap .plist label[for="p48"]{background:var(--text);color:#fff;font-weight:700}
@@ -745,13 +751,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p48s0:checked~.wrap .stabs label[for="p48s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p48s1:checked~.wrap .spane[data-p="48"][data-s="1"]{display:block}
-#p48s1:checked~.wrap .stabs label[for="p48s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p48s1:checked~.wrap .stabs label[for="p48s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p48s2:checked~.wrap .spane[data-p="48"][data-s="2"]{display:block}
-#p48s2:checked~.wrap .stabs label[for="p48s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p48s2:checked~.wrap .stabs label[for="p48s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p48s3:checked~.wrap .spane[data-p="48"][data-s="3"]{display:block}
-#p48s3:checked~.wrap .stabs label[for="p48s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p48s3:checked~.wrap .stabs label[for="p48s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p49:checked~.wrap .pane[data-p="49"]{display:block}
 #p49:checked~.wrap .plist label[for="p49"]{background:var(--text);color:#fff;font-weight:700}
@@ -760,13 +766,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p49s0:checked~.wrap .stabs label[for="p49s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p49s1:checked~.wrap .spane[data-p="49"][data-s="1"]{display:block}
-#p49s1:checked~.wrap .stabs label[for="p49s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p49s1:checked~.wrap .stabs label[for="p49s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p49s2:checked~.wrap .spane[data-p="49"][data-s="2"]{display:block}
-#p49s2:checked~.wrap .stabs label[for="p49s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p49s2:checked~.wrap .stabs label[for="p49s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p49s3:checked~.wrap .spane[data-p="49"][data-s="3"]{display:block}
-#p49s3:checked~.wrap .stabs label[for="p49s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p49s3:checked~.wrap .stabs label[for="p49s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p50:checked~.wrap .pane[data-p="50"]{display:block}
 #p50:checked~.wrap .plist label[for="p50"]{background:var(--text);color:#fff;font-weight:700}
@@ -775,16 +781,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p50s0:checked~.wrap .stabs label[for="p50s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p50s1:checked~.wrap .spane[data-p="50"][data-s="1"]{display:block}
-#p50s1:checked~.wrap .stabs label[for="p50s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p50s1:checked~.wrap .stabs label[for="p50s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p50s2:checked~.wrap .spane[data-p="50"][data-s="2"]{display:block}
-#p50s2:checked~.wrap .stabs label[for="p50s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p50s2:checked~.wrap .stabs label[for="p50s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p50s3:checked~.wrap .spane[data-p="50"][data-s="3"]{display:block}
-#p50s3:checked~.wrap .stabs label[for="p50s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p50s3:checked~.wrap .stabs label[for="p50s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p50s4:checked~.wrap .spane[data-p="50"][data-s="4"]{display:block}
-#p50s4:checked~.wrap .stabs label[for="p50s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p50s4:checked~.wrap .stabs label[for="p50s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p51:checked~.wrap .pane[data-p="51"]{display:block}
 #p51:checked~.wrap .plist label[for="p51"]{background:var(--text);color:#fff;font-weight:700}
@@ -793,16 +799,16 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p51s0:checked~.wrap .stabs label[for="p51s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p51s1:checked~.wrap .spane[data-p="51"][data-s="1"]{display:block}
-#p51s1:checked~.wrap .stabs label[for="p51s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p51s1:checked~.wrap .stabs label[for="p51s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p51s2:checked~.wrap .spane[data-p="51"][data-s="2"]{display:block}
-#p51s2:checked~.wrap .stabs label[for="p51s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p51s2:checked~.wrap .stabs label[for="p51s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p51s3:checked~.wrap .spane[data-p="51"][data-s="3"]{display:block}
-#p51s3:checked~.wrap .stabs label[for="p51s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p51s3:checked~.wrap .stabs label[for="p51s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p51s4:checked~.wrap .spane[data-p="51"][data-s="4"]{display:block}
-#p51s4:checked~.wrap .stabs label[for="p51s4"]{background:var(--text);border-color:var(--text);color:#fff}
+#p51s4:checked~.wrap .stabs label[for="p51s4"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p52:checked~.wrap .pane[data-p="52"]{display:block}
 #p52:checked~.wrap .plist label[for="p52"]{background:var(--text);color:#fff;font-weight:700}
@@ -811,7 +817,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p52s0:checked~.wrap .stabs label[for="p52s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p52s1:checked~.wrap .spane[data-p="52"][data-s="1"]{display:block}
-#p52s1:checked~.wrap .stabs label[for="p52s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p52s1:checked~.wrap .stabs label[for="p52s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p53:checked~.wrap .pane[data-p="53"]{display:block}
 #p53:checked~.wrap .plist label[for="p53"]{background:var(--text);color:#fff;font-weight:700}
@@ -820,7 +826,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p53s0:checked~.wrap .stabs label[for="p53s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p53s1:checked~.wrap .spane[data-p="53"][data-s="1"]{display:block}
-#p53s1:checked~.wrap .stabs label[for="p53s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p53s1:checked~.wrap .stabs label[for="p53s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p54:checked~.wrap .pane[data-p="54"]{display:block}
 #p54:checked~.wrap .plist label[for="p54"]{background:var(--text);color:#fff;font-weight:700}
@@ -829,13 +835,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p54s0:checked~.wrap .stabs label[for="p54s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p54s1:checked~.wrap .spane[data-p="54"][data-s="1"]{display:block}
-#p54s1:checked~.wrap .stabs label[for="p54s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p54s1:checked~.wrap .stabs label[for="p54s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p54s2:checked~.wrap .spane[data-p="54"][data-s="2"]{display:block}
-#p54s2:checked~.wrap .stabs label[for="p54s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p54s2:checked~.wrap .stabs label[for="p54s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p54s3:checked~.wrap .spane[data-p="54"][data-s="3"]{display:block}
-#p54s3:checked~.wrap .stabs label[for="p54s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p54s3:checked~.wrap .stabs label[for="p54s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p55:checked~.wrap .pane[data-p="55"]{display:block}
 #p55:checked~.wrap .plist label[for="p55"]{background:var(--text);color:#fff;font-weight:700}
@@ -844,13 +850,13 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 #p55s0:checked~.wrap .stabs label[for="p55s0"]{background:var(--text);border-color:var(--text);color:#fff}
 
 #p55s1:checked~.wrap .spane[data-p="55"][data-s="1"]{display:block}
-#p55s1:checked~.wrap .stabs label[for="p55s1"]{background:var(--text);border-color:var(--text);color:#fff}
+#p55s1:checked~.wrap .stabs label[for="p55s1"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p55s2:checked~.wrap .spane[data-p="55"][data-s="2"]{display:block}
-#p55s2:checked~.wrap .stabs label[for="p55s2"]{background:var(--text);border-color:var(--text);color:#fff}
+#p55s2:checked~.wrap .stabs label[for="p55s2"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
 #p55s3:checked~.wrap .spane[data-p="55"][data-s="3"]{display:block}
-#p55s3:checked~.wrap .stabs label[for="p55s3"]{background:var(--text);border-color:var(--text);color:#fff}
+#p55s3:checked~.wrap .stabs label[for="p55s3"]{background:#6b4ea8;border-color:#6b4ea8;color:#fff}
 
   </style>
   <header>
@@ -863,7 +869,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
     <nav class="plist"><label for="p0">금이 <span style="opacity:.6">10182</span></label><label for="p1">슈슈 <span style="opacity:.6">10713</span></label><label for="p2">벤지 (보스턴 테리어) <span style="opacity:.6">10989</span></label><label for="p3">하루 <span style="opacity:.6">1901</span></label><label for="p4">솜 <span style="opacity:.6">2866</span></label><label for="p5">행복이 <span style="opacity:.6">3359</span></label><label for="p6">귀남 <span style="opacity:.6">3781</span></label><label for="p7">콜라 <span style="opacity:.6">3853</span></label><label for="p8">먼지 <span style="opacity:.6">399</span></label><label for="p9">몽실이 <span style="opacity:.6">4128</span></label><label for="p10">랑지 <span style="opacity:.6">4223</span></label><label for="p11">호두 <span style="opacity:.6">4333</span></label><label for="p12">까마쿤 <span style="opacity:.6">4496</span></label><label for="p13">밤 <span style="opacity:.6">4673</span></label><label for="p14">쪼랭이 <span style="opacity:.6">4877</span></label><label for="p15">핑핑이 <span style="opacity:.6">4914</span></label><label for="p16">라떼 <span style="opacity:.6">4932</span></label><label for="p17">롸키 <span style="opacity:.6">5022</span></label><label for="p18">고향 <span style="opacity:.6">5296</span></label><label for="p19">야무 <span style="opacity:.6">5374</span></label><label for="p20">라쉬 <span style="opacity:.6">5499</span></label><label for="p21">두부 <span style="opacity:.6">5596</span></label><label for="p22">타니 <span style="opacity:.6">5686</span></label><label for="p23">싸이먼 <span style="opacity:.6">5756</span></label><label for="p24">장군 <span style="opacity:.6">5955</span></label><label for="p25">뭉치 <span style="opacity:.6">5970</span></label><label for="p26">깜지 <span style="opacity:.6">5988</span></label><label for="p27">코코 (잭러셀) <span style="opacity:.6">6087</span></label><label for="p28">방울 <span style="opacity:.6">6092</span></label><label for="p29">마루 <span style="opacity:.6">6303</span></label><label for="p30">장몽이 <span style="opacity:.6">6379</span></label><label for="p31">망고 <span style="opacity:.6">6388</span></label><label for="p32">철수 <span style="opacity:.6">6391</span></label><label for="p33">꼬미 <span style="opacity:.6">66</span></label><label for="p34">콩 <span style="opacity:.6">6856</span></label><label for="p35">쭈쭈 <span style="opacity:.6">6858</span></label><label for="p36">똘이 <span style="opacity:.6">6917</span></label><label for="p37">호피 <span style="opacity:.6">6931</span></label><label for="p38">앙이 <span style="opacity:.6">7094</span></label><label for="p39">토리 <span style="opacity:.6">7184</span></label><label for="p40">고구마 <span style="opacity:.6">7369</span></label><label for="p41">도토리 <span style="opacity:.6">7591</span></label><label for="p42">호야 <span style="opacity:.6">7868</span></label><label for="p43">심바 <span style="opacity:.6">7933</span></label><label for="p44">진솜 <span style="opacity:.6">8000</span></label><label for="p45">만두 <span style="opacity:.6">8129</span></label><label for="p46">달이 <span style="opacity:.6">8208</span></label><label for="p47">코코 (푸들) <span style="opacity:.6">8252</span></label><label for="p48">시루 <span style="opacity:.6">842</span></label><label for="p49">미고 <span style="opacity:.6">8523</span></label><label for="p50">루이 <span style="opacity:.6">8607</span></label><label for="p51">미남 <span style="opacity:.6">8884</span></label><label for="p52">벤지 <span style="opacity:.6">9662</span></label><label for="p53">죠스 <span style="opacity:.6">9921</span></label><label for="p54">루이스 <span style="opacity:.6">9923</span></label><label for="p55">나비 <span style="opacity:.6">D-2002</span></label></nav>
     <main><section class="pane" data-p="0">
       <h2>금이 <small>10182 · 고양이 노르웨이전 포레스트</small></h2>
-      <nav class="stabs"><label for="p0s0">📋 진료 기록</label><label for="p0s1">입원 전날</label><label for="p0s2">입원 중</label><label for="p0s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p0s0" class="t-rec">📋 진료 기록</label><label for="p0s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p0s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p0s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="0" data-s="0">
       <div class="rec-head">
         고양이 · 노르웨이전 포레스트 · 중성화 Female · 2023-10-31 생
@@ -915,8 +921,10 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="0" data-s="1">
-        <div class="asof">기준일 2026-03-05 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="0" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-03-05 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">장난감에 달린 끈을 삼킨 것 같아요</div>
@@ -963,8 +971,10 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 지금 전화 주세요. 02-2039-0303입니다.</div>
       
     </div>
-      </div><div class="spane" data-p="0" data-s="2">
-        <div class="asof">기준일 2026-03-06 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="0" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-03-06 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">내시경에서 아무것도 안 나왔다고 들었어요</div>
@@ -1027,8 +1037,10 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="0" data-s="3">
-        <div class="asof">기준일 2026-03-10 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="0" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-03-10 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">아무것도 안 나왔다니 이제 안심해도 되는 거죠?</div>
@@ -1079,7 +1091,7 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
       </div>
     </section><section class="pane" data-p="1">
       <h2>슈슈 <small>10713 · 고양이 러시안블루</small></h2>
-      <nav class="stabs"><label for="p1s0">📋 진료 기록</label><label for="p1s1">입원 전날</label><label for="p1s2">입원 중</label><label for="p1s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p1s0" class="t-rec">📋 진료 기록</label><label for="p1s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p1s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p1s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="1" data-s="0">
       <div class="rec-head">
         고양이 · 러시안블루 · 중성화 암컷 · 2012-01-01 생
@@ -1322,8 +1334,10 @@ P&gt; 투약 후 2주 경과 관찰</pre>
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="1" data-s="1">
-        <div class="asof">기준일 2026-05-29 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="1" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-05-29 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">지금 다른 병원에 입원해 있는데 숨쉬는 게 힘들어 보여요</div>
@@ -1386,8 +1400,10 @@ P&gt; 투약 후 2주 경과 관찰</pre>
 지금은 무섭다는 그 말씀을 담아 두시고, 오시면 선생님께 그대로 하셔도 됩니다. 무엇을 어디까지 할지 정하는 데 그 이야기가 필요합니다.</div>
       
     </div>
-      </div><div class="spane" data-p="1" data-s="2">
-        <div class="asof">기준일 2026-05-31 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="1" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-05-31 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -1484,8 +1500,10 @@ P&gt; 투약 후 2주 경과 관찰</pre>
 지금까지 어떤 처치가 들어갔는지 보고 알려 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="1" data-s="3">
-        <div class="asof">기준일 2026-06-04 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="1" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-06-04 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">집에 와서 잘 안 먹어요</div>
@@ -1570,7 +1588,7 @@ P&gt; 투약 후 2주 경과 관찰</pre>
       </div>
     </section><section class="pane" data-p="2">
       <h2>벤지 (보스턴 테리어) <small>10989 · 개 보스턴 테리어</small></h2>
-      <nav class="stabs"><label for="p2s0">📋 진료 기록</label><label for="p2s1">지금</label></nav>
+      <nav class="stabs"><label for="p2s0" class="t-rec">📋 진료 기록</label><label for="p2s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="2" data-s="0">
       <div class="rec-head">
         개 · 보스턴 테리어 · 중성화 Male · 2014-06-14 생
@@ -1634,8 +1652,10 @@ A)
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="2" data-s="1">
-        <div class="asof">기준일 2026-07-12 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="2" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-07-12 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">심장은 괜찮다고 하셨는데 그럼 왜 헥헥거리는 걸까요?</div>
@@ -1739,7 +1759,7 @@ A)
       </div>
     </section><section class="pane" data-p="3">
       <h2>하루 <small>1901 · 고양이 코리안 숏헤어</small></h2>
-      <nav class="stabs"><label for="p3s0">📋 진료 기록</label><label for="p3s1">입원 전날</label><label for="p3s2">입원 중</label><label for="p3s3">퇴원 3일째</label><label for="p3s4">지금</label></nav>
+      <nav class="stabs"><label for="p3s0" class="t-rec">📋 진료 기록</label><label for="p3s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p3s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p3s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p3s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="3" data-s="0">
       <div class="rec-head">
         고양이 · 코리안 숏헤어 · 중성화 Male · 2019-01-01 생
@@ -2001,8 +2021,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="3" data-s="1">
-        <div class="asof">기준일 2022-09-18 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="3" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2022-09-18 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">다리가 덜렁거리는데 잡을 수가 없어요. 지하실에 숨어서 안 나와요</div>
@@ -2066,8 +2088,10 @@ P.
 오시기 전에 02-2039-0303으로 먼저 전화 주시고 오시면 됩니다.</div>
       
     </div>
-      </div><div class="spane" data-p="3" data-s="2">
-        <div class="asof">기준일 2022-09-22 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="3" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2022-09-22 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -2169,8 +2193,10 @@ P.
       <div class="a">입원비는 02-2039-0303으로 전화 주시면 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="3" data-s="3">
-        <div class="asof">기준일 2022-09-28 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="3" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2022-09-28 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">수술한 발이 부어 보이고 고름이 나와요</div>
@@ -2250,8 +2276,10 @@ P.
       <div class="a">다음 진료 날짜는 02-2039-0303으로 전화 주시면 잡아 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="3" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="3" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">귀지가 많이 나와요</div>
@@ -2312,7 +2340,7 @@ P.
       </div>
     </section><section class="pane" data-p="4">
       <h2>솜 <small>2866 · 개 포메라니안</small></h2>
-      <nav class="stabs"><label for="p4s0">📋 진료 기록</label><label for="p4s1">입원 전날</label><label for="p4s2">입원 중</label><label for="p4s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p4s0" class="t-rec">📋 진료 기록</label><label for="p4s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p4s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p4s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="4" data-s="0">
       <div class="rec-head">
         개 · 포메라니안 · 중성화 Female · 2021-06-01 생
@@ -2549,8 +2577,10 @@ C/E
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="4" data-s="1">
-        <div class="asof">기준일 2024-10-06 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="4" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-10-06 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제 낮부터 세 번 토했어요. 토한 데서 나뭇가지 같은 게 나왔고요</div>
@@ -2607,8 +2637,10 @@ C/E
 받는 선생님이 지금 오시는 게 나은지, 어떻게 할지 정해 드릴 거예요.</div>
       
     </div>
-      </div><div class="spane" data-p="4" data-s="2">
-        <div class="asof">기준일 2024-10-09 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="4" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-10-09 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -2686,8 +2718,10 @@ C/E
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="4" data-s="3">
-        <div class="asof">기준일 2024-10-14 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="4" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-10-14 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">집에 와서 밥을 평소보다 조금 먹어요</div>
@@ -2763,7 +2797,7 @@ C/E
       </div>
     </section><section class="pane" data-p="5">
       <h2>행복이 <small>3359 · 개 푸들 · <b class="gone">떠난 아이</b></small></h2>
-      <nav class="stabs"><label for="p5s0">📋 진료 기록</label><label for="p5s1">지금</label></nav>
+      <nav class="stabs"><label for="p5s0" class="t-rec">📋 진료 기록</label><label for="p5s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="5" data-s="0">
       <div class="rec-head">
         개 · 푸들 · 중성화 Male · 2015-03-05 생
@@ -2932,8 +2966,10 @@ P. 염습 후 사체 인계</pre>
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="5" data-s="1">
-        <div class="asof">기준일  — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="5" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을  로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">행복이 보내고 나서 아직도 집이 이상해요</div>
@@ -3180,7 +3216,7 @@ P. 염습 후 사체 인계</pre>
       </div>
     </section><section class="pane" data-p="6">
       <h2>귀남 <small>3781 · 개 웰쉬 코르기</small></h2>
-      <nav class="stabs"><label for="p6s0">📋 진료 기록</label><label for="p6s1">지금</label></nav>
+      <nav class="stabs"><label for="p6s0" class="t-rec">📋 진료 기록</label><label for="p6s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="6" data-s="0">
       <div class="rec-head">
         개 · 웰쉬 코르기 · 중성화 Male · 2013-07-15 생
@@ -3447,8 +3483,10 @@ comment)
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="6" data-s="1">
-        <div class="asof">기준일 2023-11-28 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="6" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-11-28 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">재활을 열여섯 번 했는데 왜 안 나아지죠?</div>
@@ -3707,7 +3745,7 @@ comment)
       </div>
     </section><section class="pane" data-p="7">
       <h2>콜라 <small>3853 · 개 믹스</small></h2>
-      <nav class="stabs"><label for="p7s0">📋 진료 기록</label><label for="p7s1">입원 전날</label><label for="p7s2">입원 중</label><label for="p7s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p7s0" class="t-rec">📋 진료 기록</label><label for="p7s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p7s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p7s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="7" data-s="0">
       <div class="rec-head">
         개 · 믹스 · 중성화 Male · 2015-01-11 생
@@ -3889,8 +3927,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="7" data-s="1">
-        <div class="asof">기준일 2023-07-20 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="7" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-07-20 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">일주일 지나니까 조금씩 딛기 시작했는데 그래도 수술해야 하나요?</div>
@@ -3973,8 +4013,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="7" data-s="2">
-        <div class="asof">기준일 2023-07-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="7" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-07-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">밥을 잘 안 먹는다는데 괜찮은 건가요?</div>
@@ -4068,8 +4110,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="7" data-s="3">
-        <div class="asof">기준일 2023-07-30 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="7" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-07-30 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">잘 걷는데 이제 산책 나가도 되나요?</div>
@@ -4146,7 +4190,7 @@ P.
       </div>
     </section><section class="pane" data-p="8">
       <h2>먼지 <small>399 · 개 포메라니안</small></h2>
-      <nav class="stabs"><label for="p8s0">📋 진료 기록</label><label for="p8s1">입원 전날</label><label for="p8s2">입원 중</label><label for="p8s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p8s0" class="t-rec">📋 진료 기록</label><label for="p8s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p8s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p8s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="8" data-s="0">
       <div class="rec-head">
         개 · 포메라니안 · 중성화 Male · 2021-03-27 생
@@ -4356,8 +4400,10 @@ C/E, Plan
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="8" data-s="1">
-        <div class="asof">기준일 2024-05-21 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="8" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-05-21 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제부터 밥도 안 먹고 물도 안 마셔요</div>
@@ -4414,8 +4460,10 @@ C/E, Plan
 왜 그런지는 지금 상태를 보고 검사를 해봐야 알 수 있는 일이라, 여기서 짚어 말씀드리지 않겠습니다.</div>
       
     </div>
-      </div><div class="spane" data-p="8" data-s="2">
-        <div class="asof">기준일 2024-05-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="8" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-05-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 밥 먹었나요?</div>
@@ -4488,8 +4536,10 @@ C/E, Plan
 입원을 며칠 더 할지는 수치를 보고 정하는 일이라, 하루라도 줄일 수 있는 상태인지는 담당 선생님이 매일 보고 판단하고 계세요.</div>
       
     </div>
-      </div><div class="spane" data-p="8" data-s="3">
-        <div class="asof">기준일 2024-05-30 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="8" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-05-30 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 재검 받고 왔는데 이제 끝난 건가요?</div>
@@ -4565,7 +4615,7 @@ C/E, Plan
       </div>
     </section><section class="pane" data-p="9">
       <h2>몽실이 <small>4128 · 개 닥스훈트</small></h2>
-      <nav class="stabs"><label for="p9s0">📋 진료 기록</label><label for="p9s1">입원 전날</label><label for="p9s2">입원 중</label><label for="p9s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p9s0" class="t-rec">📋 진료 기록</label><label for="p9s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p9s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p9s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="9" data-s="0">
       <div class="rec-head">
         개 · 닥스훈트 · 중성화 Female · 2016-04-14 생
@@ -4765,8 +4815,10 @@ A)
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="9" data-s="1">
-        <div class="asof">기준일 2023-08-25 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="9" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-08-25 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">집에서는 뒷다리를 어기적거리는데 병원만 오면 멀쩡해요</div>
@@ -4824,8 +4876,10 @@ A)
 지금은 이번 증상이 무엇 때문인지를 먼저 보는 게 순서예요. 침 치료를 다니고 계신 것도 다음 진료 때 말씀하시면 같이 감안해서 봐 주실 겁니다.</div>
       
     </div>
-      </div><div class="spane" data-p="9" data-s="2">
-        <div class="asof">기준일 2023-08-26 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="9" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-08-26 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어때요?</div>
@@ -4915,8 +4969,10 @@ A)
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="9" data-s="3">
-        <div class="asof">기준일 2023-08-29 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="9" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-08-29 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">많이 좋아졌는데 약을 끊어도 될까요?</div>
@@ -4998,7 +5054,7 @@ A)
       </div>
     </section><section class="pane" data-p="10">
       <h2>랑지 <small>4223 · 고양이 코리안 숏헤어</small></h2>
-      <nav class="stabs"><label for="p10s0">📋 진료 기록</label><label for="p10s1">입원 전날</label><label for="p10s2">입원 중</label><label for="p10s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p10s0" class="t-rec">📋 진료 기록</label><label for="p10s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p10s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p10s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="10" data-s="0">
       <div class="rec-head">
         고양이 · 코리안 숏헤어 · 중성화 Male · 2018-03-08 생
@@ -5095,8 +5151,10 @@ C 2023-09-22 타원 약 처방 ₩138,600
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="10" data-s="1">
-        <div class="asof">기준일 2023-09-07 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="10" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-09-07 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">밥 주던 길고양이인데 고개가 계속 왼쪽으로 돌아가 있어요</div>
@@ -5161,8 +5219,10 @@ C 2023-09-22 타원 약 처방 ₩138,600
 무엇을 어디까지 할지는 오셔서 아이 상태를 보고 정하게 되니, 지금 걱정되시는 부분을 그때 그대로 말씀하시면 됩니다.</div>
       
     </div>
-      </div><div class="spane" data-p="10" data-s="2">
-        <div class="asof">기준일 2023-09-12 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="10" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-09-12 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어때요?</div>
@@ -5252,8 +5312,10 @@ C 2023-09-22 타원 약 처방 ₩138,600
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="10" data-s="3">
-        <div class="asof">기준일 2023-09-19 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="10" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-09-19 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">아직도 고개가 조금 기울어 있어요</div>
@@ -5337,7 +5399,7 @@ C 2023-09-22 타원 약 처방 ₩138,600
       </div>
     </section><section class="pane" data-p="11">
       <h2>호두 <small>4333 · 개 스피츠 믹스</small></h2>
-      <nav class="stabs"><label for="p11s0">📋 진료 기록</label><label for="p11s1">입원 전날</label><label for="p11s2">입원 중</label><label for="p11s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p11s0" class="t-rec">📋 진료 기록</label><label for="p11s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p11s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p11s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="11" data-s="0">
       <div class="rec-head">
         개 · 스피츠 믹스 · 중성화 Male · 2014-10-18 생
@@ -5486,8 +5548,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="11" data-s="1">
-        <div class="asof">기준일 2023-09-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="11" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-09-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">다른 병원에서 담낭이 터진 것 같다고 바로 가라고 했어요</div>
@@ -5540,8 +5604,10 @@ P.
 마지막으로 먹은 시각만 기억해 두셨다가 말씀해 주세요. 지금은 오시는 게 먼저입니다. 02-2039-0303입니다.</div>
       
     </div>
-      </div><div class="spane" data-p="11" data-s="2">
-        <div class="asof">기준일 2023-09-25 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="11" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-09-25 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">밥을 아직 안 먹는다는데 괜찮은 건가요?</div>
@@ -5615,8 +5681,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="11" data-s="3">
-        <div class="asof">기준일 2023-10-05 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="11" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-10-05 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">이제 다니던 병원으로 가라고 하셨는데 저희는 여기가 더 안심돼요</div>
@@ -5680,7 +5748,7 @@ P.
       </div>
     </section><section class="pane" data-p="12">
       <h2>까마쿤 <small>4496 · 개 보스턴 테리어</small></h2>
-      <nav class="stabs"><label for="p12s0">📋 진료 기록</label><label for="p12s1">입원 전날</label><label for="p12s2">입원 중</label><label for="p12s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p12s0" class="t-rec">📋 진료 기록</label><label for="p12s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p12s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p12s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="12" data-s="0">
       <div class="rec-head">
         개 · 보스턴 테리어 · 중성화 Female · 2016-07-03 생
@@ -5961,8 +6029,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="12" data-s="1">
-        <div class="asof">기준일 2023-10-13 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="12" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-10-13 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">내일 수술인데 오늘 밤부터 굶기면 되나요?</div>
@@ -6058,8 +6128,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="12" data-s="2">
-        <div class="asof">기준일 2023-10-16 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="12" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-10-16 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었어요?</div>
@@ -6135,8 +6207,10 @@ P.
 바닥이 미끄러우면 러그도 깔아 주시고요. 언제부터 풀어도 되는지는 재진 때 보고 정해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="12" data-s="3">
-        <div class="asof">기준일 2023-10-31 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="12" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-10-31 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">아직도 그 다리로 체중을 잘 안 실어요</div>
@@ -6218,7 +6292,7 @@ P.
       </div>
     </section><section class="pane" data-p="13">
       <h2>밤 <small>4673 · 개 말티푸</small></h2>
-      <nav class="stabs"><label for="p13s0">📋 진료 기록</label><label for="p13s1">입원 전날</label><label for="p13s2">입원 중</label><label for="p13s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p13s0" class="t-rec">📋 진료 기록</label><label for="p13s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p13s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p13s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="13" data-s="0">
       <div class="rec-head">
         개 · 말티푸 · 중성화 Male · 2021-11-09 생
@@ -6276,8 +6350,10 @@ Comment
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="13" data-s="1">
-        <div class="asof">기준일 2023-11-09 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="13" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-11-09 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">하루견과 한 봉을 통째로 먹었어요</div>
@@ -6325,8 +6401,10 @@ Comment
 비용은 02-2039-0303로 전화 주시면 정확하게 안내해 드리고, 지금은 오시는 게 먼저입니다.</div>
       
     </div>
-      </div><div class="spane" data-p="13" data-s="2">
-        <div class="asof">기준일 2023-11-11 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="13" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-11-11 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">신장 수치는 어때요?</div>
@@ -6391,8 +6469,10 @@ Comment
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="13" data-s="3">
-        <div class="asof">기준일 2023-11-15 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="13" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-11-15 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">이제 괜찮은 거죠?</div>
@@ -6450,7 +6530,7 @@ Comment
       </div>
     </section><section class="pane" data-p="14">
       <h2>쪼랭이 <small>4877 · 고양이 코리안 숏헤어</small></h2>
-      <nav class="stabs"><label for="p14s0">📋 진료 기록</label><label for="p14s1">입원 전날</label><label for="p14s2">입원 중</label><label for="p14s3">퇴원 3일째</label><label for="p14s4">지금</label></nav>
+      <nav class="stabs"><label for="p14s0" class="t-rec">📋 진료 기록</label><label for="p14s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p14s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p14s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p14s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="14" data-s="0">
       <div class="rec-head">
         고양이 · 코리안 숏헤어 · 중성화 Female · 2021-04-10 생
@@ -6732,8 +6812,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="14" data-s="1">
-        <div class="asof">기준일 2023-12-24 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="14" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-12-24 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">또 수술을 해야 한다니 믿기지가 않아요</div>
@@ -6808,8 +6890,10 @@ P.
 오시기 전에 02-2039-0303으로 먼저 전화 주시고 오시면 됩니다.</div>
       
     </div>
-      </div><div class="spane" data-p="14" data-s="2">
-        <div class="asof">기준일 2023-12-26 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="14" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-12-26 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -6917,8 +7001,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="14" data-s="3">
-        <div class="asof">기준일 2023-12-30 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="14" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-12-30 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">수술 부위가 이상한 것 같아요</div>
@@ -6991,8 +7077,10 @@ P.
       <div class="a">다음 진료 날짜는 02-2039-0303으로 전화 주시면 잡아 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="14" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="14" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">발톱이 갈라졌어요</div>
@@ -7046,7 +7134,7 @@ P.
       </div>
     </section><section class="pane" data-p="15">
       <h2>핑핑이 <small>4914 · 고양이 스핑크스+데본</small></h2>
-      <nav class="stabs"><label for="p15s0">📋 진료 기록</label><label for="p15s1">입원 전날</label><label for="p15s2">입원 중</label><label for="p15s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p15s0" class="t-rec">📋 진료 기록</label><label for="p15s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p15s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p15s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="15" data-s="0">
       <div class="rec-head">
         고양이 · 스핑크스+데본 · 중성화 Male · 2021-07-01 생
@@ -7188,8 +7276,10 @@ PDS 감량 다음 양호 시 타원에서 관리</pre>
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="15" data-s="1">
-        <div class="asof">기준일 2023-12-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="15" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-12-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">다른 병원에서 폐에 물이 찼다고 이뇨제를 맞았어요</div>
@@ -7228,8 +7318,10 @@ PDS 감량 다음 양호 시 타원에서 관리</pre>
 숨 쉬는 것과 이어진 문제인지는 저희가 보고 판단하게 됩니다.</div>
       
     </div>
-      </div><div class="spane" data-p="15" data-s="2">
-        <div class="asof">기준일 2023-12-18 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="15" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-12-18 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">검사 결과가 나왔나요?</div>
@@ -7292,8 +7384,10 @@ PDS 감량 다음 양호 시 타원에서 관리</pre>
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="15" data-s="3">
-        <div class="asof">기준일 2025-05-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="15" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-05-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">거위 소리 같은 기침을 하다가 마지막에 토하듯이 해요</div>
@@ -7351,7 +7445,7 @@ PDS 감량 다음 양호 시 타원에서 관리</pre>
       </div>
     </section><section class="pane" data-p="16">
       <h2>라떼 <small>4932 · 개 말티즈</small></h2>
-      <nav class="stabs"><label for="p16s0">📋 진료 기록</label><label for="p16s1">입원 전날</label><label for="p16s2">입원 중</label><label for="p16s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p16s0" class="t-rec">📋 진료 기록</label><label for="p16s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p16s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p16s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="16" data-s="0">
       <div class="rec-head">
         개 · 말티즈 · 중성화 Male · 2015-06-26 생
@@ -7491,8 +7585,10 @@ C/E&gt;
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="16" data-s="1">
-        <div class="asof">기준일 2023-12-20 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="16" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-12-20 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제부터 이상한 소리를 내면서 숨을 쉬고 불안해해요</div>
@@ -7554,8 +7650,10 @@ C/E&gt;
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="16" data-s="2">
-        <div class="asof">기준일 2023-12-22 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="16" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-12-22 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">숨은 좀 나아졌나요?</div>
@@ -7626,8 +7724,10 @@ C/E&gt;
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="16" data-s="3">
-        <div class="asof">기준일 2023-12-28 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="16" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-12-28 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">자는 동안 숨 쉬는 걸 세라고 하셨는데 몇 번이면 위험한가요?</div>
@@ -7699,7 +7799,7 @@ C/E&gt;
       </div>
     </section><section class="pane" data-p="17">
       <h2>롸키 <small>5022 · 개 복서</small></h2>
-      <nav class="stabs"><label for="p17s0">📋 진료 기록</label><label for="p17s1">지금</label></nav>
+      <nav class="stabs"><label for="p17s0" class="t-rec">📋 진료 기록</label><label for="p17s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="17" data-s="0">
       <div class="rec-head">
         개 · 복서 · 중성화 Male · 2012-10-11 생
@@ -7818,8 +7918,10 @@ TENS+laser</pre>
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="17" data-s="1">
-        <div class="asof">기준일 2024-01-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="17" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-01-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">재활을 세 번 했는데 보행이 좀 나아진 것 같아요</div>
@@ -7964,7 +8066,7 @@ TENS+laser</pre>
       </div>
     </section><section class="pane" data-p="18">
       <h2>고향 <small>5296 · 고양이 네바마스커레이드</small></h2>
-      <nav class="stabs"><label for="p18s0">📋 진료 기록</label><label for="p18s1">입원 전날</label><label for="p18s2">입원 중</label><label for="p18s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p18s0" class="t-rec">📋 진료 기록</label><label for="p18s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p18s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p18s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="18" data-s="0">
       <div class="rec-head">
         고양이 · 네바마스커레이드 · 중성화 Female · 2023-02-12 생
@@ -8089,8 +8191,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="18" data-s="1">
-        <div class="asof">기준일 2024-02-11 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="18" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-02-11 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">약을 먹이고 나서 목에 뭐가 걸린 것처럼 숨을 못 쉬어요</div>
@@ -8138,8 +8242,10 @@ P.
 02-2039-0303로 전화 주시면 저희가 지금 상태를 듣고 어디로 가시는 게 나은지 말씀드리겠습니다.</div>
       
     </div>
-      </div><div class="spane" data-p="18" data-s="2">
-        <div class="asof">기준일 2024-02-13 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="18" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-02-13 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">숨은 괜찮아졌나요?</div>
@@ -8217,8 +8323,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="18" data-s="3">
-        <div class="asof">기준일 2024-02-16 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="18" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-02-16 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">목소리가 이상해졌어요. 원래 소리가 안 나요</div>
@@ -8276,7 +8384,7 @@ P.
       </div>
     </section><section class="pane" data-p="19">
       <h2>야무 <small>5374 · 고양이 페르시안 · <b class="gone">떠난 아이</b></small></h2>
-      <nav class="stabs"><label for="p19s0">📋 진료 기록</label><label for="p19s1">떠난 뒤</label></nav>
+      <nav class="stabs"><label for="p19s0" class="t-rec">📋 진료 기록</label><label for="p19s1" class="t-sim">🤖 시뮬레이션 · 떠난 뒤</label></nav>
       <div class="spane" data-p="19" data-s="0">
       <div class="rec-head">
         고양이 · 페르시안 · 중성화 Male · 2008-02-24 생
@@ -8372,8 +8480,10 @@ PM 9:01 아이 호흡 이상하다고 수의사 연락 원하심
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="19" data-s="1">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="19" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 떠난 뒤</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">우리 애 그때 왜 그렇게 된 건지 다시 한번 알려주실 수 있을까요?</div>
@@ -8596,7 +8706,7 @@ PM 9:01 아이 호흡 이상하다고 수의사 연락 원하심
       </div>
     </section><section class="pane" data-p="20">
       <h2>라쉬 <small>5499 · 개 시추 · <b class="gone">떠난 아이</b></small></h2>
-      <nav class="stabs"><label for="p20s0">📋 진료 기록</label><label for="p20s1">지금</label></nav>
+      <nav class="stabs"><label for="p20s0" class="t-rec">📋 진료 기록</label><label for="p20s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="20" data-s="0">
       <div class="rec-head">
         개 · 시추 · 중성화 Female · 2009-11-11 생
@@ -8713,8 +8823,10 @@ Comment
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="20" data-s="1">
-        <div class="asof">기준일  — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="20" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을  로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">라쉬 보낸 지 일 년이 넘었는데 아직도 그날이 계속 떠올라요</div>
@@ -8868,7 +8980,7 @@ Comment
       </div>
     </section><section class="pane" data-p="21">
       <h2>두부 <small>5596 · 개 비숑 프리제</small></h2>
-      <nav class="stabs"><label for="p21s0">📋 진료 기록</label><label for="p21s1">입원 전날</label><label for="p21s2">입원 중</label><label for="p21s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p21s0" class="t-rec">📋 진료 기록</label><label for="p21s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p21s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p21s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="21" data-s="0">
       <div class="rec-head">
         개 · 비숑 프리제 · 중성화 Female · 2013-05-22 생
@@ -9040,8 +9152,10 @@ P
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="21" data-s="1">
-        <div class="asof">기준일 2024-04-03 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="21" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-04-03 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">약 먹고 나서 밥도 잘 먹고 기운이 좋아졌어요. 수술 꼭 해야 할까요?</div>
@@ -9131,8 +9245,10 @@ P
 그때 뗀 것과 이번 것이 이어진 문제인지는 검사 결과를 봐야 알 수 있어서 제가 짚어 말씀드리기 어렵습니다. 수술 뒤에 결과가 나오면 선생님이 그 부분까지 같이 설명드릴 거예요.</div>
       
     </div>
-      </div><div class="spane" data-p="21" data-s="2">
-        <div class="asof">기준일 2024-04-06 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="21" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-04-06 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">밥을 안 먹는다는데 괜찮은 건가요?</div>
@@ -9221,8 +9337,10 @@ P
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="21" data-s="3">
-        <div class="asof">기준일 2024-04-15 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="21" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-04-15 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">퇴원하고 이틀 만에 다시 입원했었잖아요. 또 그럴까요?</div>
@@ -9318,7 +9436,7 @@ P
       </div>
     </section><section class="pane" data-p="22">
       <h2>타니 <small>5686 · 개 푸들</small></h2>
-      <nav class="stabs"><label for="p22s0">📋 진료 기록</label><label for="p22s1">입원 전날</label><label for="p22s2">입원 중</label><label for="p22s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p22s0" class="t-rec">📋 진료 기록</label><label for="p22s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p22s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p22s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="22" data-s="0">
       <div class="rec-head">
         개 · 푸들 · 중성화 Male · 2018-11-21 생
@@ -9396,8 +9514,10 @@ P&gt;
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="22" data-s="1">
-        <div class="asof">기준일 2024-04-09 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="22" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-04-09 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제부터 여러 번 토하고 지금은 물만 먹어도 토해요</div>
@@ -9444,8 +9564,10 @@ P&gt;
 지금 전화 주세요. 02-2039-0303입니다. 물도 억지로 먹이지 마세요.</div>
       
     </div>
-      </div><div class="spane" data-p="22" data-s="2">
-        <div class="asof">기준일 2024-04-12 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="22" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-04-12 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -9515,8 +9637,10 @@ P&gt;
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="22" data-s="3">
-        <div class="asof">기준일 2024-04-20 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="22" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-04-20 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">집에 와서도 잘 안 먹어요</div>
@@ -9575,7 +9699,7 @@ P&gt;
       </div>
     </section><section class="pane" data-p="23">
       <h2>싸이먼 <small>5756 · 개 비숑 프리제</small></h2>
-      <nav class="stabs"><label for="p23s0">📋 진료 기록</label><label for="p23s1">입원 전날</label><label for="p23s2">입원 중</label><label for="p23s3">퇴원 3일째</label><label for="p23s4">지금</label></nav>
+      <nav class="stabs"><label for="p23s0" class="t-rec">📋 진료 기록</label><label for="p23s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p23s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p23s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p23s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="23" data-s="0">
       <div class="rec-head">
         개 · 비숑 프리제 · 중성화 Male · 2014-05-27 생
@@ -9748,8 +9872,10 @@ P&gt;
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="23" data-s="1">
-        <div class="asof">기준일 2026-06-15 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="23" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-06-15 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">아침부터 밥을 안 먹고 물도 안 마셔요</div>
@@ -9830,8 +9956,10 @@ P&gt;
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="23" data-s="2">
-        <div class="asof">기준일 2026-06-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="23" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-06-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -9933,8 +10061,10 @@ P&gt;
       <div class="a">비용은 02-2039-0303으로 전화 주시면 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="23" data-s="3">
-        <div class="asof">기준일 2026-06-21 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="23" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-06-21 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">퇴원하고 나서 밥을 통 안 먹어요</div>
@@ -10016,8 +10146,10 @@ P&gt;
       <div class="a">다음 진료 날짜는 02-2039-0303으로 전화 주시면 잡아 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="23" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="23" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">눈꼽이 좀 많이 끼는데 안약 사서 넣어도 될까요?</div>
@@ -10076,7 +10208,7 @@ P&gt;
       </div>
     </section><section class="pane" data-p="24">
       <h2>장군 <small>5955 · 개 프렌치 불도그</small></h2>
-      <nav class="stabs"><label for="p24s0">📋 진료 기록</label><label for="p24s1">입원 전날</label><label for="p24s2">입원 중</label><label for="p24s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p24s0" class="t-rec">📋 진료 기록</label><label for="p24s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p24s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p24s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="24" data-s="0">
       <div class="rec-head">
         개 · 프렌치 불도그 · 중성화 Male · 2015-03-01 생
@@ -10249,8 +10381,10 @@ rx. 맥시트롤 qid 추가 처방: 기존 안약 과 같이 사용 (5-10분 간
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="24" data-s="1">
-        <div class="asof">기준일 2024-05-19 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="24" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-05-19 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">저녁부터 헉헉거리고 켁켁대면서 안절부절못해요</div>
@@ -10298,8 +10432,10 @@ rx. 맥시트롤 qid 추가 처방: 기존 안약 과 같이 사용 (5-10분 간
 지금 전화 주세요. 02-2039-0303입니다.</div>
       
     </div>
-      </div><div class="spane" data-p="24" data-s="2">
-        <div class="asof">기준일 2024-05-21 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="24" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-05-21 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -10365,8 +10501,10 @@ rx. 맥시트롤 qid 추가 처방: 기존 안약 과 같이 사용 (5-10분 간
 자세한 건 퇴원할 때 선생님이 장군이 상태에 맞춰 알려 드릴 거예요.</div>
       
     </div>
-      </div><div class="spane" data-p="24" data-s="3">
-        <div class="asof">기준일 2024-05-24 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="24" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-05-24 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 무른 변을 봤어요</div>
@@ -10425,7 +10563,7 @@ rx. 맥시트롤 qid 추가 처방: 기존 안약 과 같이 사용 (5-10분 간
       </div>
     </section><section class="pane" data-p="25">
       <h2>뭉치 <small>5970 · 개 믹스</small></h2>
-      <nav class="stabs"><label for="p25s0">📋 진료 기록</label><label for="p25s1">입원 전날</label><label for="p25s2">입원 중</label><label for="p25s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p25s0" class="t-rec">📋 진료 기록</label><label for="p25s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p25s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p25s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="25" data-s="0">
       <div class="rec-head">
         개 · 믹스 · 중성화 Male · 2015-07-17 생
@@ -10613,8 +10751,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="25" data-s="1">
-        <div class="asof">기준일 2024-06-05 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="25" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-06-05 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">내일 수술인데 저번처럼 약 먹고 또 탈이 날까 봐 걱정돼요</div>
@@ -10703,8 +10843,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="25" data-s="2">
-        <div class="asof">기준일 2024-06-08 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="25" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-06-08 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -10793,8 +10935,10 @@ P.
 방을 나누기 어려우시면 뭉치를 울타리나 켄넬 안에 두시고 그 안에서 지내게 하시면 됩니다.</div>
       
     </div>
-      </div><div class="spane" data-p="25" data-s="3">
-        <div class="asof">기준일 2024-06-12 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="25" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-06-12 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">약 먹이고 나서 토했어요</div>
@@ -10871,7 +11015,7 @@ P.
       </div>
     </section><section class="pane" data-p="26">
       <h2>깜지 <small>5988 · 개 푸들</small></h2>
-      <nav class="stabs"><label for="p26s0">📋 진료 기록</label><label for="p26s1">입원 전날</label><label for="p26s2">입원 중</label><label for="p26s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p26s0" class="t-rec">📋 진료 기록</label><label for="p26s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p26s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p26s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="26" data-s="0">
       <div class="rec-head">
         개 · 푸들 · Male(수) · 2012-12-03 생
@@ -11046,8 +11190,10 @@ CE/P)
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="26" data-s="1">
-        <div class="asof">기준일 2024-05-26 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="26" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-05-26 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">잠깐 목줄을 안 했는데 그 사이에 차에 치였어요</div>
@@ -11117,8 +11263,10 @@ CE/P)
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="26" data-s="2">
-        <div class="asof">기준일 2024-05-30 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="26" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-05-30 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -11174,8 +11322,10 @@ CE/P)
 나오실 때 붕대 관리와 다음 재진 이야기도 같이 들으시면 좋겠습니다.</div>
       
     </div>
-      </div><div class="spane" data-p="26" data-s="3">
-        <div class="asof">기준일 2024-06-09 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="26" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-06-09 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">소변을 방울방울 흘려요</div>
@@ -11243,7 +11393,7 @@ CE/P)
       </div>
     </section><section class="pane" data-p="27">
       <h2>코코 (잭러셀) <small>6087 · 개 잭 러셀 테리어</small></h2>
-      <nav class="stabs"><label for="p27s0">📋 진료 기록</label><label for="p27s1">입원 전날</label><label for="p27s2">입원 중</label><label for="p27s3">퇴원 3일째</label><label for="p27s4">지금</label></nav>
+      <nav class="stabs"><label for="p27s0" class="t-rec">📋 진료 기록</label><label for="p27s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p27s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p27s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p27s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="27" data-s="0">
       <div class="rec-head">
         개 · 잭 러셀 테리어 · 중성화 Male · 2011-06-12 생
@@ -11459,8 +11609,10 @@ A) 지사제 먹고 개선 없거나 증상 악화 시 내원 필요 안내</pre
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="27" data-s="1">
-        <div class="asof">기준일 2025-10-11 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="27" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-10-11 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">나이가 많아서 마취가 부담스럽다고 하던데 괜찮을까요?</div>
@@ -11536,8 +11688,10 @@ A) 지사제 먹고 개선 없거나 증상 악화 시 내원 필요 안내</pre
       <div class="a">비용은 02-2039-0303으로 전화 주시면 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="27" data-s="2">
-        <div class="asof">기준일 2025-10-12 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="27" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-10-12 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -11638,8 +11792,10 @@ A) 지사제 먹고 개선 없거나 증상 악화 시 내원 필요 안내</pre
       <div class="a">입원비는 02-2039-0303으로 전화 주시면 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="27" data-s="3">
-        <div class="asof">기준일 2025-10-16 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="27" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-10-16 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">기침을 자꾸 해요</div>
@@ -11712,8 +11868,10 @@ A) 지사제 먹고 개선 없거나 증상 악화 시 내원 필요 안내</pre
       <div class="a">다음 진료 날짜는 02-2039-0303으로 전화 주시면 잡아 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="27" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="27" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">발톱이 갈라졌어요</div>
@@ -11766,7 +11924,7 @@ A) 지사제 먹고 개선 없거나 증상 악화 시 내원 필요 안내</pre
       </div>
     </section><section class="pane" data-p="28">
       <h2>방울 <small>6092 · 고양이 코리안 숏헤어</small></h2>
-      <nav class="stabs"><label for="p28s0">📋 진료 기록</label><label for="p28s1">입원 전날</label><label for="p28s2">입원 중</label><label for="p28s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p28s0" class="t-rec">📋 진료 기록</label><label for="p28s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p28s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p28s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="28" data-s="0">
       <div class="rec-head">
         고양이 · 코리안 숏헤어 · 중성화 Female · 2021-01-31 생
@@ -11921,8 +12079,10 @@ C.E/P
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="28" data-s="1">
-        <div class="asof">기준일 2024-06-11 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="28" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-06-11 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">이틀째 밥을 안 먹고 하얀 거품을 토해요</div>
@@ -11978,8 +12138,10 @@ C.E/P
 지금은 전화 주시는 게 먼저입니다. 02-2039-0303입니다.</div>
       
     </div>
-      </div><div class="spane" data-p="28" data-s="2">
-        <div class="asof">기준일 2024-06-14 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="28" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-06-14 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -12068,8 +12230,10 @@ C.E/P
 그리고 화장실을 따로 두시면 방울이 변을 보는지 확인하기도 쉬워집니다. 퇴원 뒤 한동안은 그걸 봐야 해서요.</div>
       
     </div>
-      </div><div class="spane" data-p="28" data-s="3">
-        <div class="asof">기준일 2024-06-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="28" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-06-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">사가신 처방식을 안 먹어서 원래 사료로 주고 있어요</div>
@@ -12141,7 +12305,7 @@ C.E/P
       </div>
     </section><section class="pane" data-p="29">
       <h2>마루 <small>6303 · 개 말티즈</small></h2>
-      <nav class="stabs"><label for="p29s0">📋 진료 기록</label><label for="p29s1">입원 전날</label><label for="p29s2">입원 중</label><label for="p29s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p29s0" class="t-rec">📋 진료 기록</label><label for="p29s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p29s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p29s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="29" data-s="0">
       <div class="rec-head">
         개 · 말티즈 · 중성화 Male · 2015-07-14 생
@@ -12279,8 +12443,10 @@ Tx)
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="29" data-s="1">
-        <div class="asof">기준일 2024-07-13 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="29" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-07-13 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">다른 병원에서 췌장염으로 입원했다 왔는데 여전히 안 먹어요</div>
@@ -12344,8 +12510,10 @@ Tx)
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="29" data-s="2">
-        <div class="asof">기준일 2024-07-16 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="29" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-07-16 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 먹었나요?</div>
@@ -12446,8 +12614,10 @@ Tx)
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="29" data-s="3">
-        <div class="asof">기준일 2024-07-22 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="29" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-07-22 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">집에 와서는 잘 먹어요</div>
@@ -12538,7 +12708,7 @@ Tx)
       </div>
     </section><section class="pane" data-p="30">
       <h2>장몽이 <small>6379 · 개 말티푸</small></h2>
-      <nav class="stabs"><label for="p30s0">📋 진료 기록</label><label for="p30s1">입원 전날</label><label for="p30s2">입원 중</label><label for="p30s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p30s0" class="t-rec">📋 진료 기록</label><label for="p30s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p30s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p30s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="30" data-s="0">
       <div class="rec-head">
         개 · 말티푸 · 중성화 Male · 2019-04-28 생
@@ -12809,8 +12979,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="30" data-s="1">
-        <div class="asof">기준일 2024-09-03 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="30" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-09-03 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">내일 수술인데 오늘 밤부터 굶겨야 하나요?</div>
@@ -12894,8 +13066,10 @@ P.
 내일 오시면 수술 전에 선생님이 이번에 어떻게 할지 설명해 주실 거예요. 그때 걱정되시는 걸 그대로 말씀하셔도 됩니다.</div>
       
     </div>
-      </div><div class="spane" data-p="30" data-s="2">
-        <div class="asof">기준일 2024-09-06 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="30" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-09-06 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -12972,8 +13146,10 @@ P.
 그 외에 이번 수술에 맞춰 더 필요한 게 있는지는 퇴원할 때 선생님이 알려 드릴 거예요.</div>
       
     </div>
-      </div><div class="spane" data-p="30" data-s="3">
-        <div class="asof">기준일 2024-09-12 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="30" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-09-12 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">다리를 절어요</div>
@@ -13054,7 +13230,7 @@ P.
       </div>
     </section><section class="pane" data-p="31">
       <h2>망고 <small>6388 · 개 포메라니안</small></h2>
-      <nav class="stabs"><label for="p31s0">📋 진료 기록</label><label for="p31s1">입원 전날</label><label for="p31s2">입원 중</label><label for="p31s3">퇴원 3일째</label><label for="p31s4">지금</label></nav>
+      <nav class="stabs"><label for="p31s0" class="t-rec">📋 진료 기록</label><label for="p31s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p31s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p31s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p31s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="31" data-s="0">
       <div class="rec-head">
         개 · 포메라니안 · 중성화 Male · 2016-10-01 생
@@ -13233,8 +13409,10 @@ P&gt;
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="31" data-s="1">
-        <div class="asof">기준일 2024-07-27 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="31" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-07-27 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">밤 12시부터 기침과 켁켁거림이 심하고 숨쉬기 힘들어해요</div>
@@ -13290,8 +13468,10 @@ P&gt;
       <div class="a">비용은 02-2039-0303으로 전화 주시면 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="31" data-s="2">
-        <div class="asof">기준일 2024-07-29 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="31" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-07-29 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -13399,8 +13579,10 @@ P&gt;
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="31" data-s="3">
-        <div class="asof">기준일 2024-08-02 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="31" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-08-02 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">헥헥거려요</div>
@@ -13472,8 +13654,10 @@ P&gt;
       <div class="a">다음 진료 날짜는 02-2039-0303으로 전화 주시면 잡아 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="31" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="31" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">발톱이 갈라졌어요</div>
@@ -13533,7 +13717,7 @@ P&gt;
       </div>
     </section><section class="pane" data-p="32">
       <h2>철수 <small>6391 · 개 믹스</small></h2>
-      <nav class="stabs"><label for="p32s0">📋 진료 기록</label><label for="p32s1">입원 전날</label><label for="p32s2">입원 중</label><label for="p32s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p32s0" class="t-rec">📋 진료 기록</label><label for="p32s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p32s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p32s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="32" data-s="0">
       <div class="rec-head">
         개 · 믹스 · 중성화 Male · 2015-07-28 생
@@ -13717,8 +13901,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="32" data-s="1">
-        <div class="asof">기준일 2024-07-29 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="32" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-07-29 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">일주일 전에는 단열까지는 아니라고 들었는데 왜 갑자기 수술이래요?</div>
@@ -13801,8 +13987,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="32" data-s="2">
-        <div class="asof">기준일 2024-08-01 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="32" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-08-01 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -13891,8 +14079,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="32" data-s="3">
-        <div class="asof">기준일 2024-08-11 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="32" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-08-11 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">아직도 절뚝거려요. 이게 맞는 건가요?</div>
@@ -13974,7 +14164,7 @@ P.
       </div>
     </section><section class="pane" data-p="33">
       <h2>꼬미 <small>66 · 개 닥스훈트</small></h2>
-      <nav class="stabs"><label for="p33s0">📋 진료 기록</label><label for="p33s1">입원 전날</label><label for="p33s2">입원 중</label><label for="p33s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p33s0" class="t-rec">📋 진료 기록</label><label for="p33s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p33s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p33s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="33" data-s="0">
       <div class="rec-head">
         개 · 닥스훈트 · 중성화 Female · 2015-12-22 생
@@ -14301,8 +14491,10 @@ Rx) For a week
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="33" data-s="1">
-        <div class="asof">기준일 2021-12-21 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="33" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2021-12-21 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제 오후부터 갑자기 뒷다리를 못 써요</div>
@@ -14358,8 +14550,10 @@ Rx) For a week
 지금 꼬미가 어떤 자세인지 듣고 받는 선생님이 알려 드릴 거예요. 제가 여기서 안는 법을 말씀드리면 오히려 위험할 수 있습니다.</div>
       
     </div>
-      </div><div class="spane" data-p="33" data-s="2">
-        <div class="asof">기준일 2022-01-04 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="33" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2022-01-04 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어때요?</div>
@@ -14438,8 +14632,10 @@ Rx) For a week
 집에서 할 수 있는 찜질이나 마사지도 있는데, 그건 퇴원할 때 선생님이 꼬미 상태에 맞춰 알려 드릴 거예요.</div>
       
     </div>
-      </div><div class="spane" data-p="33" data-s="3">
-        <div class="asof">기준일 2022-01-20 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="33" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2022-01-20 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">집에 온 지 일주일인데 아직 못 걸어요</div>
@@ -14528,7 +14724,7 @@ Rx) For a week
       </div>
     </section><section class="pane" data-p="34">
       <h2>콩 <small>6856 · 개 폼피츠</small></h2>
-      <nav class="stabs"><label for="p34s0">📋 진료 기록</label><label for="p34s1">입원 전날</label><label for="p34s2">입원 중</label><label for="p34s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p34s0" class="t-rec">📋 진료 기록</label><label for="p34s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p34s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p34s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="34" data-s="0">
       <div class="rec-head">
         개 · 폼피츠 · 중성화 Male · 2015-04-09 생
@@ -14681,8 +14877,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="34" data-s="1">
-        <div class="asof">기준일 2024-09-29 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="34" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-09-29 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">놀다가 헛디뎌서 깨갱하더니 뒷다리를 들고 있어요</div>
@@ -14765,8 +14963,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="34" data-s="2">
-        <div class="asof">기준일 2024-10-03 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="34" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-10-03 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -14848,8 +15048,10 @@ P.
 콩이는 밖에서 배변하는 아이라 짧게 나갔다 오는 것은 하시게 되는데, 그때 뛰지 않도록 목줄을 짧게 잡아 주세요.</div>
       
     </div>
-      </div><div class="spane" data-p="34" data-s="3">
-        <div class="asof">기준일 2024-10-13 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="34" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-10-13 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">아직 깨금발을 많이 뛰어요</div>
@@ -14932,7 +15134,7 @@ P.
       </div>
     </section><section class="pane" data-p="35">
       <h2>쭈쭈 <small>6858 · 개 푸들</small></h2>
-      <nav class="stabs"><label for="p35s0">📋 진료 기록</label><label for="p35s1">입원 전날</label><label for="p35s2">입원 중</label><label for="p35s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p35s0" class="t-rec">📋 진료 기록</label><label for="p35s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p35s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p35s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="35" data-s="0">
       <div class="rec-head">
         개 · 푸들 · 중성화 Male · 2015-09-30 생
@@ -15067,8 +15269,10 @@ O&gt;
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="35" data-s="1">
-        <div class="asof">기준일 2024-09-29 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="35" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-09-29 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">내일 수술인데 오늘 아침에 주황색 혈변을 봤어요</div>
@@ -15128,8 +15332,10 @@ O&gt;
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="35" data-s="2">
-        <div class="asof">기준일 2024-10-02 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="35" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-10-02 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -15187,8 +15393,10 @@ O&gt;
 데리러 오실 때 앉아서 낮게 맞아 주시고, 바로 안아 올리시는 게 좋습니다. 바닥에 내려놓고 걷게 하지 마세요.</div>
       
     </div>
-      </div><div class="spane" data-p="35" data-s="3">
-        <div class="asof">기준일 2024-10-11 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="35" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-10-11 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">퇴원하는 날 반갑다고 서다가 주저앉은 뒤로 다리를 아예 못 딛어요</div>
@@ -15252,7 +15460,7 @@ O&gt;
       </div>
     </section><section class="pane" data-p="36">
       <h2>똘이 <small>6917 · 고양이 코리안 숏헤어 · <b class="gone">떠난 아이</b></small></h2>
-      <nav class="stabs"><label for="p36s0">📋 진료 기록</label><label for="p36s1">지금</label></nav>
+      <nav class="stabs"><label for="p36s0" class="t-rec">📋 진료 기록</label><label for="p36s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="36" data-s="0">
       <div class="rec-head">
         고양이 · 코리안 숏헤어 · 중성화 Male · 2014-10-06 생
@@ -15327,8 +15535,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="36" data-s="1">
-        <div class="asof">기준일  — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="36" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을  로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">똘이 이야기를 이제야 하네요. 그때 검사받고 바로 다음날 갔어요</div>
@@ -15453,7 +15663,7 @@ P.
       </div>
     </section><section class="pane" data-p="37">
       <h2>호피 <small>6931 · 개 말티즈</small></h2>
-      <nav class="stabs"><label for="p37s0">📋 진료 기록</label><label for="p37s1">지금</label></nav>
+      <nav class="stabs"><label for="p37s0" class="t-rec">📋 진료 기록</label><label for="p37s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="37" data-s="0">
       <div class="rec-head">
         개 · 말티즈 · 중성화 Female · 2012-04-15 생
@@ -15493,8 +15703,10 @@ C.E/P
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="37" data-s="1">
-        <div class="asof">기준일 2024-10-09 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="37" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-10-09 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제 밤에 다녀왔는데 오늘도 설사에 피가 섞여 나와요</div>
@@ -15601,7 +15813,7 @@ C.E/P
       </div>
     </section><section class="pane" data-p="38">
       <h2>앙이 <small>7094 · 개 포메라니안</small></h2>
-      <nav class="stabs"><label for="p38s0">📋 진료 기록</label><label for="p38s1">입원 전날</label><label for="p38s2">입원 중</label><label for="p38s3">퇴원 3일째</label><label for="p38s4">지금</label></nav>
+      <nav class="stabs"><label for="p38s0" class="t-rec">📋 진료 기록</label><label for="p38s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p38s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p38s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p38s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="38" data-s="0">
       <div class="rec-head">
         개 · 포메라니안 · 중성화 Female · 2021-11-07 생
@@ -15734,8 +15946,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="38" data-s="1">
-        <div class="asof">기준일 2024-11-06 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="38" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-11-06 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">배가 많이 불렀는데 언제쯤 낳을까요?</div>
@@ -15804,8 +16018,10 @@ P.
       <div class="a">비용은 02-2039-0303으로 전화 주시면 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="38" data-s="2">
-        <div class="asof">기준일 2024-11-08 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="38" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-11-08 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -15913,8 +16129,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="38" data-s="3">
-        <div class="asof">기준일 2024-11-13 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="38" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-11-13 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">집에서 호흡수가 1분에 60번이 넘고 이상한 소리를 내요</div>
@@ -16002,8 +16220,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="38" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="38" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">발톱이 갈라졌어요</div>
@@ -16061,7 +16281,7 @@ P.
       </div>
     </section><section class="pane" data-p="39">
       <h2>토리 <small>7184 · 고양이 코리안 숏헤어</small></h2>
-      <nav class="stabs"><label for="p39s0">📋 진료 기록</label><label for="p39s1">입원 전날</label><label for="p39s2">입원 중</label><label for="p39s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p39s0" class="t-rec">📋 진료 기록</label><label for="p39s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p39s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p39s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="39" data-s="0">
       <div class="rec-head">
         고양이 · 코리안 숏헤어 · 중성화 Female · 2020-07-21 생
@@ -16244,8 +16464,10 @@ P&gt;
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="39" data-s="1">
-        <div class="asof">기준일 2024-11-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="39" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-11-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">자꾸 입맛을 다시고 침 같은 걸 토해요</div>
@@ -16301,8 +16523,10 @@ P&gt;
 지금 상황을 들으면 받는 선생님이 어떻게 하는 게 나은지 알려 드릴 겁니다. 시간이 중요한 상황일 수 있어서 통화가 먼저입니다.</div>
       
     </div>
-      </div><div class="spane" data-p="39" data-s="2">
-        <div class="asof">기준일 2024-11-26 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="39" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-11-26 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -16406,8 +16630,10 @@ P&gt;
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="39" data-s="3">
-        <div class="asof">기준일 2024-11-30 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="39" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2024-11-30 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제 오후에 물설사를 하고 구토도 한 번 했어요</div>
@@ -16491,7 +16717,7 @@ P&gt;
       </div>
     </section><section class="pane" data-p="40">
       <h2>고구마 <small>7369 · 개 믹스</small></h2>
-      <nav class="stabs"><label for="p40s0">📋 진료 기록</label><label for="p40s1">입원 전날</label><label for="p40s2">입원 중</label><label for="p40s3">퇴원 3일째</label><label for="p40s4">지금</label></nav>
+      <nav class="stabs"><label for="p40s0" class="t-rec">📋 진료 기록</label><label for="p40s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p40s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p40s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p40s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="40" data-s="0">
       <div class="rec-head">
         개 · 믹스 · 중성화 Male · 2016-12-23 생
@@ -16660,8 +16886,10 @@ Rx) #7
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="40" data-s="1">
-        <div class="asof">기준일 2026-08-04 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="40" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-04 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">내일 입원인데 오늘 밤부터 굶겨야 하나요?</div>
@@ -16738,8 +16966,10 @@ Rx) #7
 오시기 전에 02-2039-0303으로 먼저 전화 주시고 오시면 됩니다. 응급이나 중환자 처치가 겹치면 대기가 길어질 수 있는 점은 미리 말씀드릴게요.</div>
       
     </div>
-      </div><div class="spane" data-p="40" data-s="2">
-        <div class="asof">기준일 2026-08-05 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="40" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-05 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -16840,8 +17070,10 @@ Rx) #7
 전화로 상태를 듣고 어떻게 할지 저희가 정해 드리겠습니다.</div>
       
     </div>
-      </div><div class="spane" data-p="40" data-s="3">
-        <div class="asof">기준일 2026-08-09 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="40" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-09 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">수술한 데가 좀 빨갛고 부은 것 같아요</div>
@@ -16934,8 +17166,10 @@ Rx) #7
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="40" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="40" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">며칠 전부터 귀를 자꾸 긁고 냄새가 나요. 이건 어디로 가야 하나요?</div>
@@ -16989,7 +17223,7 @@ Rx) #7
       </div>
     </section><section class="pane" data-p="41">
       <h2>도토리 <small>7591 · 개 치와와</small></h2>
-      <nav class="stabs"><label for="p41s0">📋 진료 기록</label><label for="p41s1">입원 전날</label><label for="p41s2">입원 중</label><label for="p41s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p41s0" class="t-rec">📋 진료 기록</label><label for="p41s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p41s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p41s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="41" data-s="0">
       <div class="rec-head">
         개 · 치와와 · 중성화 Female · 2022-02-04 생
@@ -17204,8 +17438,10 @@ P&gt; 내복약 복용 이후 CRP 점진적으로 하락하여 5일치 추가 �
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="41" data-s="1">
-        <div class="asof">기준일 2025-06-01 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="41" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-06-01 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">저녁을 아예 안 먹어요. 원래 식탐이 엄청 많은 앤데</div>
@@ -17262,8 +17498,10 @@ P&gt; 내복약 복용 이후 CRP 점진적으로 하락하여 5일치 추가 �
 지금은 전화 주시는 게 먼저입니다. 02-2039-0303입니다.</div>
       
     </div>
-      </div><div class="spane" data-p="41" data-s="2">
-        <div class="asof">기준일 2025-06-04 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="41" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-06-04 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -17334,8 +17572,10 @@ P&gt; 내복약 복용 이후 CRP 점진적으로 하락하여 5일치 추가 �
 지금 쓰는 약들은 그 이력을 감안해서 담당 선생님이 정하고 있습니다.</div>
       
     </div>
-      </div><div class="spane" data-p="41" data-s="3">
-        <div class="asof">기준일 2025-06-11 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="41" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-06-11 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 재검 왔는데 잘 나왔다고 하셨어요. 이제 괜찮은 거죠?</div>
@@ -17425,7 +17665,7 @@ P&gt; 내복약 복용 이후 CRP 점진적으로 하락하여 5일치 추가 �
       </div>
     </section><section class="pane" data-p="42">
       <h2>호야 <small>7868 · 개 포메라니안 · <b class="gone">떠난 아이</b></small></h2>
-      <nav class="stabs"><label for="p42s0">📋 진료 기록</label><label for="p42s1">지금</label></nav>
+      <nav class="stabs"><label for="p42s0" class="t-rec">📋 진료 기록</label><label for="p42s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="42" data-s="0">
       <div class="rec-head">
         개 · 포메라니안 · 중성화 Male · 2019-07-21 생
@@ -17587,8 +17827,10 @@ am 04:14 아이 사체인계</pre>
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="42" data-s="1">
-        <div class="asof">기준일  — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="42" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을  로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">호야 간 지 벌써 세 달이네요</div>
@@ -17843,7 +18085,7 @@ am 04:14 아이 사체인계</pre>
       </div>
     </section><section class="pane" data-p="43">
       <h2>심바 <small>7933 · 고양이 브리티쉬 쇼트헤어</small></h2>
-      <nav class="stabs"><label for="p43s0">📋 진료 기록</label><label for="p43s1">입원 전날</label><label for="p43s2">입원 중</label><label for="p43s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p43s0" class="t-rec">📋 진료 기록</label><label for="p43s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p43s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p43s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="43" data-s="0">
       <div class="rec-head">
         고양이 · 브리티쉬 쇼트헤어 · 중성화 Male · 2022-03-18 생
@@ -18028,8 +18270,10 @@ A)
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="43" data-s="1">
-        <div class="asof">기준일 2025-03-31 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="43" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-03-31 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제부터 갑자기 아무것도 안 먹어요</div>
@@ -18077,8 +18321,10 @@ A)
 지금 전화 주세요. 02-2039-0303입니다.</div>
       
     </div>
-      </div><div class="spane" data-p="43" data-s="2">
-        <div class="asof">기준일 2025-04-01 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="43" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-04-01 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 좀 먹었나요?</div>
@@ -18149,8 +18395,10 @@ A)
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="43" data-s="3">
-        <div class="asof">기준일 2025-04-12 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="43" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-04-12 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제 구토를 다섯 번쯤 했어요. 털이 엄청 나왔고요</div>
@@ -18215,7 +18463,7 @@ A)
       </div>
     </section><section class="pane" data-p="44">
       <h2>진솜 <small>8000 · 개 비숑 프리제</small></h2>
-      <nav class="stabs"><label for="p44s0">📋 진료 기록</label><label for="p44s1">지금</label></nav>
+      <nav class="stabs"><label for="p44s0" class="t-rec">📋 진료 기록</label><label for="p44s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="44" data-s="0">
       <div class="rec-head">
         개 · 비숑 프리제 · 중성화 Female · 2016-05-01 생
@@ -18453,8 +18701,10 @@ P)
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="44" data-s="1">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="44" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">며칠 전부터 귀를 자꾸 긁고 냄새가 나요. 이건 어디로 가야 하나요?</div>
@@ -18665,7 +18915,7 @@ P)
       </div>
     </section><section class="pane" data-p="45">
       <h2>만두 <small>8129 · 개 믹스</small></h2>
-      <nav class="stabs"><label for="p45s0">📋 진료 기록</label><label for="p45s1">지금</label></nav>
+      <nav class="stabs"><label for="p45s0" class="t-rec">📋 진료 기록</label><label for="p45s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="45" data-s="0">
       <div class="rec-head">
         개 · 믹스 · 중성화 Female · 2010-04-30 생
@@ -18732,8 +18982,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="45" data-s="1">
-        <div class="asof">기준일 2025-05-01 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="45" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-05-01 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제 전기면도기 날을 삼켰는데 아홉 번을 토하게 해도 안 나왔어요</div>
@@ -18882,7 +19134,7 @@ P.
       </div>
     </section><section class="pane" data-p="46">
       <h2>달이 <small>8208 · 개 치와와</small></h2>
-      <nav class="stabs"><label for="p46s0">📋 진료 기록</label><label for="p46s1">입원 전날</label><label for="p46s2">입원 중</label><label for="p46s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p46s0" class="t-rec">📋 진료 기록</label><label for="p46s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p46s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p46s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="46" data-s="0">
       <div class="rec-head">
         개 · 치와와 · 중성화 Female · 2015-11-20 생
@@ -19006,8 +19258,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="46" data-s="1">
-        <div class="asof">기준일 2025-05-14 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="46" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-05-14 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">한두 달 절뚝거린 걸 나이 때문인 줄 알았어요</div>
@@ -19081,8 +19335,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="46" data-s="2">
-        <div class="asof">기준일 2025-05-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="46" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-05-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -19170,8 +19426,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="46" data-s="3">
-        <div class="asof">기준일 2025-05-28 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="46" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-05-28 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">퇴원하고 일주일 동안 밥을 안 먹고 블루베리랑 캔만 먹었어요</div>
@@ -19241,7 +19499,7 @@ P.
       </div>
     </section><section class="pane" data-p="47">
       <h2>코코 (푸들) <small>8252 · 개 푸들</small></h2>
-      <nav class="stabs"><label for="p47s0">📋 진료 기록</label><label for="p47s1">입원 전날</label><label for="p47s2">입원 중</label><label for="p47s3">퇴원 3일째</label><label for="p47s4">지금</label></nav>
+      <nav class="stabs"><label for="p47s0" class="t-rec">📋 진료 기록</label><label for="p47s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p47s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p47s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p47s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="47" data-s="0">
       <div class="rec-head">
         개 · 푸들 · 중성화 Male · 2011-05-20 생
@@ -19426,8 +19684,10 @@ C/E
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="47" data-s="1">
-        <div class="asof">기준일 2025-05-19 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="47" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-05-19 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오전에 토했는데 지켜봐도 될까요?</div>
@@ -19490,8 +19750,10 @@ C/E
       <div class="a">비용은 02-2039-0303으로 전화 주시면 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="47" data-s="2">
-        <div class="asof">기준일 2025-05-22 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="47" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-05-22 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -19599,8 +19861,10 @@ C/E
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="47" data-s="3">
-        <div class="asof">기준일 2025-05-28 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="47" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-05-28 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">불러도 대답을 안 해요</div>
@@ -19682,8 +19946,10 @@ C/E
 날짜나 준비할 것이 궁금하시면 02-2039-0303으로 전화 주시면 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="47" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="47" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">발톱이 갈라졌어요</div>
@@ -19736,7 +20002,7 @@ C/E
       </div>
     </section><section class="pane" data-p="48">
       <h2>시루 <small>842 · 고양이 코리안 숏헤어</small></h2>
-      <nav class="stabs"><label for="p48s0">📋 진료 기록</label><label for="p48s1">입원 전날</label><label for="p48s2">입원 중</label><label for="p48s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p48s0" class="t-rec">📋 진료 기록</label><label for="p48s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p48s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p48s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="48" data-s="0">
       <div class="rec-head">
         고양이 · 코리안 숏헤어 · 중성화 Male · 2019-01-01 생
@@ -19917,8 +20183,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="48" data-s="1">
-        <div class="asof">기준일 2022-05-01 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="48" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2022-05-01 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">보름 넘게 다리를 못 쓰는 걸 봤는데 이제야 잡았어요. 너무 늦은 걸까요?</div>
@@ -19987,8 +20255,10 @@ P.
 미리 알고 정하고 싶으시다고 말씀해 주시면 진행 전에 알려 드리도록 담당자에게 전해 두겠습니다.</div>
       
     </div>
-      </div><div class="spane" data-p="48" data-s="2">
-        <div class="asof">기준일 2022-05-04 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="48" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2022-05-04 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -20077,8 +20347,10 @@ P.
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="48" data-s="3">
-        <div class="asof">기준일 2022-05-08 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="48" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2022-05-08 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">계속 숨어만 있어요. 나오질 않아요</div>
@@ -20161,7 +20433,7 @@ P.
       </div>
     </section><section class="pane" data-p="49">
       <h2>미고 <small>8523 · 고양이 브리티쉬 쇼트헤어</small></h2>
-      <nav class="stabs"><label for="p49s0">📋 진료 기록</label><label for="p49s1">입원 전날</label><label for="p49s2">입원 중</label><label for="p49s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p49s0" class="t-rec">📋 진료 기록</label><label for="p49s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p49s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p49s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="49" data-s="0">
       <div class="rec-head">
         고양이 · 브리티쉬 쇼트헤어 · 중성화 Male · 2022-02-28 생
@@ -20337,8 +20609,10 @@ P)
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="49" data-s="1">
-        <div class="asof">기준일 2025-06-30 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="49" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-06-30 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오줌을 누려고 자세는 잡는데 몇 방울밖에 안 나와요</div>
@@ -20414,8 +20688,10 @@ P)
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="49" data-s="2">
-        <div class="asof">기준일 2025-07-04 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="49" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-07-04 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -20505,8 +20781,10 @@ P)
 방을 나누시고 화장실과 물그릇을 그 방 안에 두세요. 나중에 다시 합칠 때는 천천히 하시면 됩니다.</div>
       
     </div>
-      </div><div class="spane" data-p="49" data-s="3">
-        <div class="asof">기준일 2025-07-14 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="49" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-07-14 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">소변은 잘 보는데 화장실이 아니라 이불에 봐요</div>
@@ -20584,7 +20862,7 @@ P)
       </div>
     </section><section class="pane" data-p="50">
       <h2>루이 <small>8607 · 개 푸들</small></h2>
-      <nav class="stabs"><label for="p50s0">📋 진료 기록</label><label for="p50s1">입원 전날</label><label for="p50s2">입원 중</label><label for="p50s3">퇴원 3일째</label><label for="p50s4">지금</label></nav>
+      <nav class="stabs"><label for="p50s0" class="t-rec">📋 진료 기록</label><label for="p50s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p50s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p50s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p50s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="50" data-s="0">
       <div class="rec-head">
         개 · 푸들 · 중성화 Male · 2014-07-14 생
@@ -20795,8 +21073,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="50" data-s="1">
-        <div class="asof">기준일 2025-10-04 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="50" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-10-04 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">내일 수술인데 오늘 밤부터 굶겨야 하나요?</div>
@@ -20872,8 +21152,10 @@ P.
 다만 물어뜯어 삼킬 수 있는 것은 병동에서 두기 어려워서, 어떤 물건인지 알려주시면 가능한지 확인해 드릴게요.</div>
       
     </div>
-      </div><div class="spane" data-p="50" data-s="2">
-        <div class="asof">기준일 2025-10-06 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="50" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-10-06 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -20977,8 +21259,10 @@ P.
       <div class="a">입원비는 02-2039-0303으로 전화 주시면 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="50" data-s="3">
-        <div class="asof">기준일 2025-10-11 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="50" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-10-11 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">수술한 데가 좀 빨갛고 부은 것 같아요</div>
@@ -21070,8 +21354,10 @@ P.
       <div class="a">보험 서류는 02-2039-0303으로 전화 주시면 필요한 것을 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="50" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="50" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">발톱이 갈라졌어요</div>
@@ -21125,7 +21411,7 @@ P.
       </div>
     </section><section class="pane" data-p="51">
       <h2>미남 <small>8884 · 개 말티즈</small></h2>
-      <nav class="stabs"><label for="p51s0">📋 진료 기록</label><label for="p51s1">입원 전날</label><label for="p51s2">입원 중</label><label for="p51s3">퇴원 3일째</label><label for="p51s4">지금</label></nav>
+      <nav class="stabs"><label for="p51s0" class="t-rec">📋 진료 기록</label><label for="p51s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p51s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p51s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label><label for="p51s4" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="51" data-s="0">
       <div class="rec-head">
         개 · 말티즈 · 중성화 Male · 2014-08-20 생
@@ -21358,8 +21644,10 @@ P. 소화제, 위장관운동촉진제 처방 후 증상 지속 시 검사 고�
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="51" data-s="1">
-        <div class="asof">기준일 2025-09-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="51" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-09-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">내일 수술인데 오늘 밤부터 굶겨야 하나요?</div>
@@ -21435,8 +21723,10 @@ P. 소화제, 위장관운동촉진제 처방 후 증상 지속 시 검사 고�
       <div class="a">비용은 02-2039-0303으로 전화 주시면 확인해서 안내해 드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="51" data-s="2">
-        <div class="asof">기준일 2025-09-25 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="51" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-09-25 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘은 좀 어떤가요? 밥은 먹었을까요?</div>
@@ -21544,8 +21834,10 @@ P. 소화제, 위장관운동촉진제 처방 후 증상 지속 시 검사 고�
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="51" data-s="3">
-        <div class="asof">기준일 2025-09-30 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="51" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-09-30 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">침을 계속 흘려요</div>
@@ -21619,8 +21911,10 @@ P. 소화제, 위장관운동촉진제 처방 후 증상 지속 시 검사 고�
 처방 습식이나 사료를 물에 불려 주시는 쪽이 낫습니다. 지금 뭘 주고 계신지 알려주시면 그에 맞게 말씀드릴게요.</div>
       
     </div>
-      </div><div class="spane" data-p="51" data-s="4">
-        <div class="asof">기준일 2026-08-17 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="51" data-s="4">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-08-17 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">귀를 자꾸 긁어요</div>
@@ -21673,7 +21967,7 @@ P. 소화제, 위장관운동촉진제 처방 후 증상 지속 시 검사 고�
       </div>
     </section><section class="pane" data-p="52">
       <h2>벤지 <small>9662 · 개 말티푸</small></h2>
-      <nav class="stabs"><label for="p52s0">📋 진료 기록</label><label for="p52s1">지금</label></nav>
+      <nav class="stabs"><label for="p52s0" class="t-rec">📋 진료 기록</label><label for="p52s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="52" data-s="0">
       <div class="rec-head">
         개 · 말티푸 · 중성화 Female · 2021-07-25 생
@@ -21777,8 +22071,10 @@ A)
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="52" data-s="1">
-        <div class="asof">기준일 2025-12-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="52" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2025-12-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">또 그러면 어떡하죠? 원인을 못 찾았다고 하시니 더 불안해요</div>
@@ -21925,7 +22221,7 @@ A)
       </div>
     </section><section class="pane" data-p="53">
       <h2>죠스 <small>9921 · 개 말티즈 · <b class="gone">떠난 아이</b></small></h2>
-      <nav class="stabs"><label for="p53s0">📋 진료 기록</label><label for="p53s1">지금</label></nav>
+      <nav class="stabs"><label for="p53s0" class="t-rec">📋 진료 기록</label><label for="p53s1" class="t-sim">🤖 시뮬레이션 · 지금</label></nav>
       <div class="spane" data-p="53" data-s="0">
       <div class="rec-head">
         개 · 말티즈 · 중성화 Male · 2017-01-15 생
@@ -22107,8 +22403,10 @@ CPR 했으나 사망</pre>
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="53" data-s="1">
-        <div class="asof">기준일  — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="53" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 지금</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을  로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">죠스 간 지 반년이 지났는데 아직도 실감이 안 나요</div>
@@ -22380,7 +22678,7 @@ CPR 했으나 사망</pre>
       </div>
     </section><section class="pane" data-p="54">
       <h2>루이스 <small>9923 · 개 비숑 프리제</small></h2>
-      <nav class="stabs"><label for="p54s0">📋 진료 기록</label><label for="p54s1">입원 전날</label><label for="p54s2">입원 중</label><label for="p54s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p54s0" class="t-rec">📋 진료 기록</label><label for="p54s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p54s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p54s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="54" data-s="0">
       <div class="rec-head">
         개 · 비숑 프리제 · 중성화 Male · 2019-01-31 생
@@ -22536,8 +22834,10 @@ P.
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="54" data-s="1">
-        <div class="asof">기준일 2026-02-08 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="54" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-02-08 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제 많이 움직였더니 아파하면서 소리를 질러요</div>
@@ -22607,8 +22907,10 @@ P.
 방을 나누시거나, 어려우면 루이스를 울타리 안에 두시고 그 안에서 지내게 해주세요. 특히 서로 흥분해서 뛰는 상황을 만들지 않으시는 게 중요합니다.</div>
       
     </div>
-      </div><div class="spane" data-p="54" data-s="2">
-        <div class="asof">기준일 2026-02-10 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="54" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-02-10 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -22691,8 +22993,10 @@ P.
 다음에 오실 때 보고 싶다고 말씀하시면 그렇게 해드립니다.</div>
       
     </div>
-      </div><div class="spane" data-p="54" data-s="3">
-        <div class="asof">기준일 2026-02-13 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="54" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2026-02-13 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">퇴원하고 나서 대변에 피가 섞여 나와요</div>
@@ -22776,7 +23080,7 @@ P.
       </div>
     </section><section class="pane" data-p="55">
       <h2>나비 <small>D-2002 · 고양이 코리안숏헤어</small></h2>
-      <nav class="stabs"><label for="p55s0">📋 진료 기록</label><label for="p55s1">입원 전날</label><label for="p55s2">입원 중</label><label for="p55s3">퇴원 3일째</label></nav>
+      <nav class="stabs"><label for="p55s0" class="t-rec">📋 진료 기록</label><label for="p55s1" class="t-sim">🤖 시뮬레이션 · 입원 전날</label><label for="p55s2" class="t-sim">🤖 시뮬레이션 · 입원 중</label><label for="p55s3" class="t-sim">🤖 시뮬레이션 · 퇴원 3일째</label></nav>
       <div class="spane" data-p="55" data-s="0">
       <div class="rec-head">
         고양이 · 코리안숏헤어 · 중성화 암컷 · 2015-09-21 생
@@ -22913,8 +23217,10 @@ P&gt; 현행 유지, 6개월 뒤 정기 재검</pre>
       <p class="rec-foot">⚠️ 여기 실린 것은 <b>직원용 원문 그대로</b>입니다. 보호자 화면에는 이렇게 나가지 않습니다 —
       원문에 다른 병원 이름·비용·원내 표기가 섞여 있고, <b>채팅은 이걸 읽되 인용하지 않습니다.</b>
       채팅이 무엇을 보고 그렇게 답했는지를 이 자리에서 맞춰 보시면 됩니다.</p></div>
-      <div class="spane" data-p="55" data-s="1">
-        <div class="asof">기준일 2023-11-23 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      <div class="spane sim" data-p="55" data-s="1">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 전날</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-11-23 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">어제부터 토해요. 밥은 조금 먹어요</div>
@@ -22982,8 +23288,10 @@ P&gt; 현행 유지, 6개월 뒤 정기 재검</pre>
 그 외에 토하는 횟수가 늘어나도 알려 주세요.</div>
       
     </div>
-      </div><div class="spane" data-p="55" data-s="2">
-        <div class="asof">기준일 2023-11-25 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="55" data-s="2">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 입원 중</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-11-25 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">오늘 밥은 먹었나요?</div>
@@ -23062,8 +23370,10 @@ P&gt; 현행 유지, 6개월 뒤 정기 재검</pre>
         </div>
       </div>
     </div>
-      </div><div class="spane" data-p="55" data-s="3">
-        <div class="asof">기준일 2023-11-30 — 이 날짜를 「오늘」로 놓고 물었다</div>
+      </div><div class="spane sim" data-p="55" data-s="3">
+        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — 퇴원 3일째</b>
+          실제로 오간 대화가 아닙니다. <b>「오늘」을 2023-11-30 로 옮겨 놓고</b>
+          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
         
     <div class="qa">
       <div class="q">집에 와서는 잘 먹어요</div>

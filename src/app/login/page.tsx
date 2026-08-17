@@ -84,6 +84,12 @@ export default async function LoginPage({
                 <a href="/deck/sd-chat-analysis.html" target="_blank" rel="noopener">
                   카톡 상담 재분석 <span>108채널 6,632건 · 퇴원 후 이탈</span>
                 </a>
+                {/* ⚠️⚠️ **이 하나만 성격이 다르다.** 위 넷은 사업 문서지만 이건
+                    **실제 환자 56명의 진료 원문**이 그대로 들어 있다. 여기는 로그인 전 화면이다.
+                    ⚠️ **보호자에게 앱을 줄 때 이 줄을 뗀다** — 파일명의 난수는 자물쇠가 아니다. */}
+                <a href="/deck/sd-chat-eval-4b1e7d.html" target="_blank" rel="noopener">
+                  AI 채팅 문답 전수 <span>56마리 1,050문답 · 진료 원문 포함</span>
+                </a>
               </div>
             </details>
           </div>

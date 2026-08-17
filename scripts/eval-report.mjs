@@ -18,8 +18,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { loadEnv, loadPrompts, signIn, signInStaff, buildContext, askOnce, GONE, PHONE } from "./lib/chat-eval.mjs";
 
-// ⚠️ **원장님 자료실에 떨어뜨린다.** 루트에 두면 다음 사람이 못 찾고, 두 벌이 생긴다.
+// ⚠️ **두 자리에 같이 쓴다.** `docs/review` 는 원본이고 `public/deck` 은 **앱의 자료실이 여는 사본**이다
+// (`/login` 우측 위 드롭다운). 한쪽만 갱신하면 원장님이 여는 건 낡은 쪽이 된다 — 그래서 손으로 복사하지 않는다.
+//
+// ⚠️⚠️ **자료실은 로그인 전 화면이다. 주소를 아는 사람은 누구나 연다.**
+// 옆에 있는 넷은 사업 문서지만 이건 **실제 환자 56명의 진료 원문**이다.
+// 파일명의 난수는 자물쇠가 아니라 **주소가 새지 않기만 바라는 것**이다 —
+// 보호자에게 앱을 줄 때는 이 링크를 떼거나 로그인 뒤로 옮겨야 한다.
 const REPORT_PATH = "docs/review/2026-08-17-chat-eval-report.html";
+const DECK_PATH = "public/deck/sd-chat-eval-4b1e7d.html";
 
 loadEnv();
 
@@ -392,7 +399,10 @@ function renderHtml(results, OUT, history = {}) {
         // 진료 내용이 청구 내역에 묻힌다. 채팅이 읽는 것도 약 이름 쪽이다.
         const rx = (v.prescription ?? [])
           .map((r) => [r.drug?.name, r.dose, r.frequency, r.duration && `${r.duration}일`].filter(Boolean).join(" "))
-          .filter((t) => t && !/^(진료비|검사|마취|처치|수술|입원|주사|수액|방사선|초음파|혈액검사|외부검사|안약|물약|내복약조제|넥칼라|진단서|CT|MRI|특수주사|혈압측정|입원중검사|침치료|안구|귀-|피부소독제|프리폴|프로바이브|미다컴|유한케타민|부토판)/.test(t));
+          // ⚠️ 청구 줄이 절반이 넘는다. 그리고 **마취약·소독제는 처방이 아니다** —
+          // 그걸 「처방」이라고 붙여 놓으면 보는 사람이 집에서 먹이는 약으로 읽는다.
+          .filter((t) => t && !/^(진료비|검사|마취|처치|수술|입원|주사|수액|방사선|초음파|혈액검사|외부검사|안약|물약|내복약조제|넥칼라|진단서|CT|MRI|특수주사|혈압측정|입원중검사|침치료|안과|안구|귀-|내시경|예치금|자료|피부소독제)/.test(t))
+          .filter((t) => !/프로포폴|프리폴|프로바이브|리푸로|미다졸람|미다컴|케타민|부토르파놀|부토판|이소플루란|알파간|프로포폴/.test(t));
         return `<article class="rec-v${adm.has(v.visit_date) ? " in" : ""}">
           <div class="rec-d">${esc(v.visit_date)}${adm.has(v.visit_date) ? ' <b class="badge">입원</b>' : ""}
             <span>${esc(v.chief_complaint ?? "(주 증상 미기재)")}</span></div>
@@ -430,8 +440,7 @@ function renderHtml(results, OUT, history = {}) {
   const tally = {};
   for (const r of results) tally[r.triage ?? "실패"] = (tally[r.triage ?? "실패"] ?? 0) + 1;
 
-  fs.mkdirSync(path.dirname(OUT) || ".", { recursive: true });
-  fs.writeFileSync(OUT, `<!doctype html><html lang="ko"><meta charset="utf-8">
+  const html = `<!doctype html><html lang="ko"><meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AI 채팅 시나리오 테스트 — 환자 ${charts.length}명</title>
   <style>
@@ -512,7 +521,14 @@ ${charts.map((c, i) => `
       `<label for="p${i}">${esc(byPatient.get(c)[0].name)} <span style="opacity:.6">${esc(c)}</span></label>`).join("")}</nav>
     <main>${patientPanes}</main>
   </div>
-    </html>`, "utf8");
+    </html>`;
+
+  // OUT 을 따로 주면 그 자리에만 쓴다(임시본). 기본으로 돌리면 원본과 자료실 사본이 같이 간다.
+  const targets = OUT === REPORT_PATH ? [REPORT_PATH, DECK_PATH] : [OUT];
+  for (const t of targets) {
+    fs.mkdirSync(path.dirname(t) || ".", { recursive: true });
+    fs.writeFileSync(t, html, "utf8");
+  }
 
   console.log(`\n환자 ${charts.length}명 · 문답 ${results.length}건`);
   console.log(Object.entries(tally).map(([k, v]) => `  ${(TRIAGE_KO[k] ?? k).padEnd(14)} ${v}`).join("\n"));

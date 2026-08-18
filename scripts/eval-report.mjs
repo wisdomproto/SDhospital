@@ -33,7 +33,7 @@ loadEnv();
 const TODAY = process.env.TODAY || new Date().toISOString().slice(0, 10);
 const LABEL = {
   before: "입원 전날", during: "입원 중", after: "퇴원 3일째",
-  now: "지금", emergency: "응급", gone: "떠난 뒤",
+  now: "지금", emergency: "응급", gone: "떠난 뒤", regular: "단골이라서",
 };
 const TRIAGE_KO = {
   now: "지금 전화", tomorrow: "내일 예약", primary: "1차 병원",
@@ -498,7 +498,8 @@ function renderHtml(results, OUT, history = {}) {
   // CSS 만으로 도니 어디서 열어도 눌린다.
   // ⚠️ **시간순으로 세운다.** 손으로 쓴 쪽은 쓴 순서가 곧 시간순이었지만 API 쪽은 가나다순이라
   //    「퇴원 3일째」가 「입원 전날」보다 앞에 섰다. 원장님은 이 탭을 왼쪽부터 시간으로 읽으신다.
-  const KEY_ORDER = ["before", "during", "after", "now", "emergency", "gone"];
+  // ⚠️ 「단골이라서」는 시점이 아니라 갈래라 맨 뒤에 둔다 — 앞에 두면 시간 순서가 깨진다.
+  const KEY_ORDER = ["before", "during", "after", "now", "emergency", "gone", "regular"];
   const keysOf = (c) => [...new Set((byPatient.get(c) ?? []).map((r) => r.key))]
     .sort((a, b) => KEY_ORDER.indexOf(a) - KEY_ORDER.indexOf(b));
   /** ⚠️ 생사 미확정(`confirm`)이면 앱에서 그 아이가 통째로 잠긴다 — 문답이 있어도 일어날 수 없는 대화다 */

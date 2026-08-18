@@ -23,7 +23,15 @@ import { loadEnv, loadPrompts, signIn, signInStaff, buildContext, askOnce, PHONE
 loadEnv();
 const { SYSTEM, ADMISSION_TAB } = loadPrompts();
 const anthropic = new Anthropic();
-const sb = await signIn();
+/**
+ * ⚠️ `INCLUDE_LOCKED=1` 이면 **직원 세션**으로 읽는다.
+ * 잠긴 아이(`patient_caution.kind='confirm'`)는 보호자 세션에서 `0038` 이 `patient` 행 자체를
+ * 감추고, 정책들이 patient 을 EXISTS 로 보기 때문에 회차·리포트·사진까지 통째로 사라진다 —
+ * 목록에서부터 0명이라 애초에 돌릴 수가 없다.
+ * **그래서 이 모드는 「앱이 보는 것」이 아니라 「잠금이 없었다면」을 보는 것이다.** 섞지 말 것.
+ */
+const LOOSE = process.env.INCLUDE_LOCKED === "1";
+const sb = LOOSE ? await signInStaff() : await signIn();
 
 const TODAY = process.env.TODAY || new Date().toISOString().slice(0, 10);
 const CONCURRENCY = Number(process.env.CONCURRENCY || 8);
@@ -239,7 +247,8 @@ const LOCKED = new Set((locked ?? []).map((c) => c.patient_id));
 
 // `CHARTS=8409,7730` — 새로 넣은 아이들만 다시 볼 때
 const only = (process.env.CHARTS || "").split(/[,\s]+/).filter(Boolean);
-let targets = pets.filter((p) => !LOCKED.has(p.id) && (!only.length || only.includes(p.chart_no)));
+// `INCLUDE_LOCKED=1` — 잠긴 아이도 돌린다(위 `LOOSE`). `confirm` 은 그래도 컨텍스트에 안 들어간다.
+let targets = pets.filter((p) => (LOOSE || !LOCKED.has(p.id)) && (!only.length || only.includes(p.chart_no)));
 if (process.env.LIMIT) targets = targets.slice(0, Number(process.env.LIMIT));
 console.log(`환자 ${targets.length}명 (잠김 ${LOCKED.size}명 제외) · 기준일 ${TODAY} · 동시 ${CONCURRENCY}\n`);
 

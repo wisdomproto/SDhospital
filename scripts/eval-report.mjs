@@ -62,7 +62,9 @@ if (process.env.HAND) {
    */
   if (process.env.AUTO) {
     const hand = new Set(rows.map((r) => r.chart));
-    const auto = JSON.parse(fs.readFileSync(process.env.AUTO, "utf8")).filter((r) => !hand.has(r.chart));
+    // 쉼표로 여러 개 — 잠긴 아이를 따로 돌린 결과를 같이 싣는다
+    const auto = process.env.AUTO.split(",").flatMap((f) =>
+      JSON.parse(fs.readFileSync(f.trim(), "utf8"))).filter((r) => !hand.has(r.chart));
     for (const r of auto) {
       rows.push({
         chart: r.chart, name: r.name, gone: r.gone, key: r.key, asOf: r.asOf,
@@ -86,7 +88,7 @@ if (process.env.HAND) {
     ...(cauPats ?? []).map((c) => c.patient?.chart_no).filter(Boolean),
   ])];
   const { data: pats } = await sb0.from("patient")
-    .select("id, chart_no, name, species, breed, sex, birth_date, note")
+    .select("id, chart_no, name, species, breed, sex, birth_date, note, origin")
     .in("chart_no", charts);
   const history = {};
   for (const p of pats ?? []) {
@@ -499,6 +501,8 @@ function renderHtml(results, OUT, history = {}) {
   const KEY_ORDER = ["before", "during", "after", "now", "emergency", "gone"];
   const keysOf = (c) => [...new Set((byPatient.get(c) ?? []).map((r) => r.key))]
     .sort((a, b) => KEY_ORDER.indexOf(a) - KEY_ORDER.indexOf(b));
+  /** ⚠️ 생사 미확정(`confirm`)이면 앱에서 그 아이가 통째로 잠긴다 — 문답이 있어도 일어날 수 없는 대화다 */
+  const lockedOf = (c) => (history[c]?.cautions ?? []).some((x) => x.kind === "confirm" && !x.resolved_at);
   /** 문답이 없는 아이는 이름·종을 DB 쪽에서 가져온다 */
   const headOf = (c) => byPatient.get(c)?.[0] ?? {
     name: history[c]?.patient?.name ?? c, species: history[c]?.patient?.species,
@@ -514,6 +518,10 @@ function renderHtml(results, OUT, history = {}) {
     // 라벨에 「시뮬레이션」을 박고 **색을 가른다** — 회색(사실) 대 보라(가정).
     return `<section class="pane" data-p="${pi}">
       <h2>${esc(p0.name)} <small>${esc(c)} · ${esc(p0.species ?? "")} ${esc(p0.breed ?? "")}${p0.gone ? ' · <b class="gone">떠난 아이</b>' : ""}</small></h2>
+      ${lockedOf(c) ? `<div class="lockbar">🔒 <b>이 아이는 보호자 앱에서 통째로 잠겨 있습니다</b> — 생사 미확정이라
+        살아 있는 것처럼도 떠난 것처럼도 답하면 안 되는 자리입니다. <b>아래 문답은 실제로는 일어날 수 없습니다</b> —
+        「잠금이 없었다면 무슨 말이 나갔을까」를 보시려고 시험 삼아 돌린 것입니다.
+        원장님이 <b>확인 표시(<code>resolved_at</code>)</b>를 채우시면 그날로 잠금이 풀립니다.</div>` : ""}
       <nav class="stabs">${["record", ...keys].map((k, si) =>
         k === "record"
           ? `<label for="p${pi}s${si}" class="t-rec">📋 진료 기록</label>`
@@ -637,6 +645,27 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 .simbar.auto{background:#f2fbfa;border-color:#bfe0dd;color:#1f5f59}
 .simbar.auto b{color:#134b46}
 .trap.flagged{color:#8a1f1f;font-weight:700}
+/* 의뢰받은 아이(파랑) 대 우리 단골(초록) — 답이 갈리는 지점이라 목록에서부터 갈라 놓는다 */
+.plist label .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.plist label.o-ref .dot{background:#6b8fd0}
+.plist label.o-reg .dot{background:#2f9e8a}
+.plist label.o-lock::after{content:"🔒";float:right;font-size:.78rem;opacity:.8}
+.pfilter{display:flex;gap:4px;margin:2px 2px 8px;position:sticky;top:0;background:var(--bg);padding-bottom:4px}
+.pfilter label{flex:1;text-align:center;padding:5px 2px;border:1px solid var(--line);border-radius:8px;
+ font-size:.74rem;color:var(--muted);cursor:pointer;background:#fff}
+.pfilter label b{display:block;font-size:.82rem;color:var(--text)}
+#fa:checked~.wrap .pfilter label[for="fa"],
+#fr:checked~.wrap .pfilter label[for="fr"],
+#fg:checked~.wrap .pfilter label[for="fg"]{background:var(--text);color:#fff;border-color:var(--text)}
+#fa:checked~.wrap .pfilter label[for="fa"] b,
+#fr:checked~.wrap .pfilter label[for="fr"] b,
+#fg:checked~.wrap .pfilter label[for="fg"] b{color:#fff}
+#fr:checked~.wrap .plist label.o-reg{display:none}
+#fg:checked~.wrap .plist label.o-ref{display:none}
+.lockbar{background:#fdf1f1;border:1px solid #e7c4c4;border-left:4px solid #b03a3a;border-radius:10px;
+ padding:9px 12px;margin-bottom:12px;font-size:.82rem;color:#7a2626;line-height:1.55}
+.lockbar b{color:#5d1a1a}
+.lockbar code{background:#f6e3e3;padding:1px 4px;border-radius:4px}
 ${charts.map((c, i) => `
 #p${i}:checked~.wrap .pane[data-p="${i}"]{display:block}
 #p${i}:checked~.wrap .plist label[for="p${i}"]{background:var(--text);color:#fff;font-weight:700}
@@ -662,9 +691,22 @@ ${charts.map((c, i) => `
   </header>
   ${charts.map((c, i) => `<input type="radio" name="pt" id="p${i}"${i ? "" : " checked"}>` +
   ["record", ...keysOf(c)].map((k, si) => `<input type="radio" name="s${i}" id="p${i}s${si}"${si ? "" : " checked"}>`).join("")).join("")}
+<input type="radio" name="flt" id="fa" checked><input type="radio" name="flt" id="fr"><input type="radio" name="flt" id="fg">
 <div class="wrap">
-    <nav class="plist">${charts.map((c, i) =>
-      `<label for="p${i}"${byPatient.has(c) ? "" : ' class="rec-only"'}>${esc(headOf(c).name)} <span style="opacity:.6">${esc(c)}</span></label>`).join("")}</nav>
+    <nav class="plist">
+      <div class="pfilter">
+        <label for="fa">전체 <b>${charts.length}</b></label>
+        <label for="fr">의뢰 <b>${charts.filter((c) => history[c]?.patient?.origin !== "regular").length}</b></label>
+        <label for="fg">단골 <b>${charts.filter((c) => history[c]?.patient?.origin === "regular").length}</b></label>
+      </div>
+      ${charts.map((c, i) => {
+        const cls = [
+          byPatient.has(c) ? "" : "rec-only",
+          history[c]?.patient?.origin === "regular" ? "o-reg" : "o-ref",
+          lockedOf(c) ? "o-lock" : "",
+        ].filter(Boolean).join(" ");
+        return `<label for="p${i}" class="${cls}"><i class="dot"></i>${esc(headOf(c).name)} <span style="opacity:.6">${esc(c)}</span></label>`;
+      }).join("")}</nav>
     <main>${patientPanes}</main>
   </div>
   <div class="memobar none" id="memobar">

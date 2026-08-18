@@ -28,25 +28,29 @@ const { error: authErr } = await sb.auth.signInWithPassword({
 if (authErr) throw new Error("직원 로그인 실패: " + authErr.message);
 
 // 「사람이 확인해야 답할 수 있는 것」인지 「알고 있어야 하는 사정」인지
-const CONFIRM = /확인 필요|확인 없이|생존 여부|이후 회차가 없|사람 확인|임종|확정되지 않/;
+const CONFIRM = /확인 필요|확인 없이|생존 여부|이후 회차가 없|사람 확인|임종|확정되지 않|확인되지 않았다/;
+// 항목 끝의 `|| kind=confirm` 은 추출본이 직접 고른 것 — 정규식보다 먼저 본다.
+const KIND = /\s*\|\|\s*kind=(confirm|context)\s*$/;
 
 let nPat = 0, nRow = 0;
 for (const d of fs.readdirSync(ROOT)) {
   const file = path.join(ROOT, d, "환자.json");
   if (!fs.existsSync(file)) continue;
   const j = JSON.parse(fs.readFileSync(file, "utf8"));
-  const items = (j._pending ?? []).filter((p) => p.startsWith("⚠️"));
+  const items = (j._pending ?? []).filter((p) => p.startsWith("⚠️") || p.startsWith("🚨"));
   if (!items.length) continue;
 
   const { data: p } = await sb.from("patient").select("id").eq("chart_no", j.chart_no).maybeSingle();
   if (!p) { console.warn(`  [${j.chart_no} ${j.name}] DB 에 없다 — 건너뜀`); continue; }
 
   await sb.from("patient_caution").delete().eq("patient_id", p.id);
-  for (const body of items) {
+  for (const raw of items) {
+    const marked = raw.match(KIND);
+    const body = raw.replace(KIND, "");
     const { error } = await sb.from("patient_caution").insert({
       patient_id: p.id,
-      kind: CONFIRM.test(body) ? "confirm" : "context",
-      body: body.replace(/^⚠️\s*/, "").trim(),
+      kind: marked ? marked[1] : CONFIRM.test(body) ? "confirm" : "context",
+      body: body.replace(/^(⚠️|🚨)\s*/, "").trim(),
       source: `진료기록 추출 (${j.source_dir ?? j.chart_no})`,
     });
     if (!error) nRow++;

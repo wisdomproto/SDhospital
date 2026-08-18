@@ -90,6 +90,9 @@ async function load(dir) {
     sex: j.sex, birth_date: j.birth_date, chart_no: j.chart_no,
     // ⚠️ 떠난 아이는 여기 남긴다 — 채팅이 살아 있는 것처럼 말하면 안 된다
     note: j.deceased ? `사망: ${j.deceased_note ?? "기록에 사망 언급"}` : null,
+    // ⚠️ 의뢰받은 아이냐 우리 단골이냐(`0039`). 안 주면 의뢰로 본다 —
+    // 이 스크립트가 처음 쓰인 곳이 레퍼 환자였고, 기본값이 그쪽이라야 예전 추출본이 그대로 돈다.
+    origin: j.origin ?? "referral",
   };
   if (p0) {
     patientId = p0.id;
@@ -150,7 +153,13 @@ async function load(dir) {
   // ── 카톡 → 지난 대화 ────────────────────────────────────────────────────
   // 하루를 한 타래로 묶는다. 카톡은 스레드 개념이 없고, 실제로 하루 단위로 오간다.
   let chats = 0;
-  const srcDir = j.source_dir ? path.join(path.dirname(path.dirname(dir)), "AI학습용-이민수원장님-20260812T141155Z-1-001", j.source_dir) : null;
+  // 원본(카톡 CSV 가 있는) 폴더. 레퍼는 `_추출` 옆에 있었고, 단골은 다른 데 있다 —
+  // `환자.json` 의 `source_root` 가 있으면 그걸 쓰고, 없으면 예전 자리를 본다.
+  const srcDir = j.source_dir
+    ? (j.source_root
+        ? path.join(j.source_root, j.source_dir)
+        : path.join(path.dirname(path.dirname(dir)), "AI학습용-이민수원장님-20260812T141155Z-1-001", j.source_dir))
+    : null;
   const csvs = srcDir && fs.existsSync(srcDir)
     ? fs.readdirSync(srcDir).filter((f) => f.toLowerCase().endsWith(".csv")).map((f) => path.join(srcDir, f))
     : [];

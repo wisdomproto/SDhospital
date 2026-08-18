@@ -50,24 +50,56 @@ const TRIAGE_KO = {
 if (process.env.HAND) {
   const mod = await import("file://" + path.resolve(process.env.HAND));
   const rows = mod.default;
+
+  /**
+   * `AUTO=eval-all.json` — `eval-scenarios.mjs` 가 **API 로 실제 받아 온** 답을 같이 싣는다.
+   *
+   * ⚠️ **손으로 쓴 아이한테는 안 붙인다.** 같은 아이 같은 시나리오에 두 벌이 나란히 서면
+   *    원장님이 어느 쪽을 보고 계신지 알 수 없게 된다. **문답이 아직 없는 아이만** 채운다.
+   * ⚠️ **화면에서 갈라 놓는다.** 손으로 쓴 것은 「이렇게 답해야 한다」는 우리 주장이고,
+   *    이쪽은 「실제로 이렇게 답했다」는 결과다 — 섞이면 둘 다 못 읽는다.
+   * ⚠️ 여기엔 **넘긴 다음(담당의 답변)이 없다.** 그건 손으로 쓴 쪽에만 있다.
+   */
+  if (process.env.AUTO) {
+    const hand = new Set(rows.map((r) => r.chart));
+    const auto = JSON.parse(fs.readFileSync(process.env.AUTO, "utf8")).filter((r) => !hand.has(r.chart));
+    for (const r of auto) {
+      rows.push({
+        chart: r.chart, name: r.name, gone: r.gone, key: r.key, asOf: r.asOf,
+        q: r.question, triage: r.triage, text: r.text, error: r.error, auto: true,
+        trap: (r.flags ?? []).length ? `검사에 걸림 · ${r.flags.join(" / ")}` : "",
+      });
+    }
+    console.log(`API 로 받아 온 문답 ${auto.length}건을 ${new Set(auto.map((r) => r.chart)).size}마리에 붙인다`);
+  }
   // ⚠️ **진료 기록은 DB 에서 읽는다.** 손으로 옮겨 적으면 그 순간부터 실제와 갈라진다.
   // API 호출이 아니라 DB 조회라 돈이 들지 않는다.
   // ⚠️ **직원 세션으로 읽는다.** 보호자 세션으로 읽으면 생사 미확정인 아이(0038)가 통째로 안 나온다.
   // 그리고 이 표는 애초에 직원용이다 — 진료 원문이 그대로 실린다.
   const sb0 = await signInStaff();
-  const charts = [...new Set(rows.map((r) => r.chart))];
+  // ⚠️ 문답이 있는 아이 **+ 사정이 잡혀 있는 아이 전부**를 읽는다.
+  // 후자는 문답이 아직 없지만, 채팅이 읽는 것이 무엇인지는 원장님이 보셔야 한다.
+  const { data: cauPats } = await sb0.from("patient_caution")
+    .select("patient:patient_id(chart_no)").is("resolved_at", null);
+  const charts = [...new Set([
+    ...rows.map((r) => r.chart),
+    ...(cauPats ?? []).map((c) => c.patient?.chart_no).filter(Boolean),
+  ])];
   const { data: pats } = await sb0.from("patient")
     .select("id, chart_no, name, species, breed, sex, birth_date, note")
     .in("chart_no", charts);
   const history = {};
   for (const p of pats ?? []) {
-    const [{ data: vs }, { data: as }] = await Promise.all([
+    // ⚠️ `patient_caution` 도 같이 읽는다 — **채팅이 실제로 읽는 것이 이것이다.**
+    // 진료 원문 옆에 나란히 있어야 「왜 그렇게 답했나」가 그 자리에서 맞춰진다.
+    const [{ data: vs }, { data: as }, { data: cs }] = await Promise.all([
       sb0.from("visit")
         .select("visit_date, chief_complaint, note, report_comment, prescription(dose, frequency, duration, drug:drug_id(name))")
         .eq("patient_id", p.id).order("visit_date"),
       sb0.from("admission").select("admitted_at, discharged_at").eq("patient_id", p.id).order("admitted_at"),
+      sb0.from("patient_caution").select("kind, body, source, resolved_at").eq("patient_id", p.id),
     ]);
-    history[p.chart_no] = { patient: p, visits: vs ?? [], admissions: as ?? [] };
+    history[p.chart_no] = { patient: p, visits: vs ?? [], admissions: as ?? [], cautions: cs ?? [] };
   }
   renderHtml(rows, process.env.OUT || REPORT_PATH, history);
   process.exit(0);
@@ -356,12 +388,17 @@ await Promise.all(Array.from({ length: CONCURRENCY }, worker));
 /** 결과 배열 → HTML 한 장. `HAND` 로 손으로 쓴 것도 이 함수를 그대로 탄다 */
 function renderHtml(results, OUT, history = {}) {
   const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  // 사정 메모는 `**강조**` 로 써 뒀다 — 그 부분이 곧 「여기서 사고 난다」는 표시다. 이스케이프 후에 굵게 만든다.
+  const md = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   const byPatient = new Map();
   for (const r of results) {
     if (!byPatient.has(r.chart)) byPatient.set(r.chart, []);
     byPatient.get(r.chart).push(r);
   }
-  const charts = [...byPatient.keys()].sort();
+  // ⚠️ **문답이 없는 아이도 넣는다.** 진료 기록을 읽으면서 뽑아 둔 「그 집의 사정」이
+  // 어디에도 안 보이면, 채팅이 무엇을 알고 있는지를 원장님이 확인할 자리가 없다.
+  // 그런 아이는 시나리오 탭 없이 **진료 기록 탭 하나**만 붙는다.
+  const charts = [...new Set([...byPatient.keys(), ...Object.keys(history)])].sort();
 
   /**
    * 넘긴 다음에 원장님이 쓰는 답. **두 가지 모양이 섞여 있다.**
@@ -388,7 +425,9 @@ function renderHtml(results, OUT, history = {}) {
   const rowsHtml = (rs) => rs.map((r) => `
     <div class="qa">
       <div class="q">${esc(r.q)}</div>
-      <div class="trap">노리는 것 · ${esc(r.trap)}</div>
+      ${r.auto
+        ? (r.trap ? `<div class="trap flagged">${esc(r.trap)}</div>` : "")
+        : `<div class="trap">노리는 것 · ${esc(r.trap)}</div>`}
       ${r.error ? `<div class="err">${esc(r.error)}</div>` : `
       <div class="tri t-${r.triage}">${TRIAGE_KO[r.triage] ?? r.triage}</div>
       <div class="a">${esc(r.text)}</div>
@@ -403,15 +442,31 @@ function renderHtml(results, OUT, history = {}) {
   /** 누적 진료 기록 — **DB 에서 읽은 것 그대로.** 이게 있어야 답이 왜 그런지 읽힌다 */
   const recordPane = (h) => {
     if (!h) return `<div class="asof">진료 기록을 불러오지 못했습니다.</div>`;
-    const { patient: p, visits, admissions } = h;
+    const { patient: p, visits, admissions, cautions = [] } = h;
     const adm = new Map();
     for (const a of admissions) adm.set(a.admitted_at, a);
+    // ⚠️ 미해결만 — 원장님이 `resolved_at` 을 채운 것은 채팅도 더 안 읽는다.
+    const cx = cautions.filter((c) => !c.resolved_at);
+    const confirms = cx.filter((c) => c.kind === "confirm");
+    const contexts = cx.filter((c) => c.kind !== "confirm");
     return `
       <div class="rec-head">
         ${[p.species, p.breed, p.sex, p.birth_date && `${p.birth_date} 생`].filter(Boolean).map(esc).join(" · ")}
         · 진료 ${visits.length}회 · 입원 ${admissions.length}회
         ${p.note ? `<div class="rec-note">⚠️ ${esc(p.note)}</div>` : ""}
       </div>
+      ${cx.length ? `<div class="cau">
+        <div class="cau-h">🔎 그 집의 사정 — <b>채팅이 읽는 것</b> (${cx.length}건)</div>
+        ${confirms.length ? `<ul class="cau-l confirm">${confirms.map((c) =>
+          `<li>${md(c.body)}</li>`).join("")}</ul>
+          <div class="cau-n">↑ <b>사람이 확인해 주셔야 답할 수 있는 것</b>입니다. 이게 남아 있는 동안
+          이 아이는 <b>보호자 앱에서 통째로 감춰집니다</b> — 살아 있는 것처럼도, 떠난 것처럼도 답하면 안 되는 자리라서입니다.
+          원장님이 확인 표시를 해 주시면 그날로 다시 보입니다.</div>` : ""}
+        ${contexts.length ? `<ul class="cau-l">${contexts.map((c) =>
+          `<li>${md(c.body)}</li>`).join("")}</ul>` : ""}
+        <div class="cau-f">이것은 진료 원문을 읽으면서 뽑아 둔 <b>직원 전용 메모</b>입니다.
+        채팅은 이걸 <b>읽고 판단하되 문장을 옮기지 않습니다</b> — 비용·다른 병원·집안 사정이 그대로 들어 있어서입니다.</div>
+      </div>` : ""}
       ${admissions.length ? `<div class="rec-adm">입원 — ${admissions.map((a) =>
         `${esc(a.admitted_at)} ~ ${esc(a.discharged_at ?? "퇴원 기록 없음")}`).join(" · ")}</div>` : ""}
       <div class="recs">${visits.map((v) => {
@@ -439,11 +494,20 @@ function renderHtml(results, OUT, history = {}) {
   // ⚠️⚠️ **탭을 JS 로 만들지 않는다.** 이 파일은 앱의 미리보기 패널에서 열리는데
   // 거기서는 스크립트가 실행되지 않아 아무것도 안 눌렸다. 라디오 + `:checked` 로 바꿨다 —
   // CSS 만으로 도니 어디서 열어도 눌린다.
-  const keysOf = (c) => [...new Set(byPatient.get(c).map((r) => r.key))];
+  // ⚠️ **시간순으로 세운다.** 손으로 쓴 쪽은 쓴 순서가 곧 시간순이었지만 API 쪽은 가나다순이라
+  //    「퇴원 3일째」가 「입원 전날」보다 앞에 섰다. 원장님은 이 탭을 왼쪽부터 시간으로 읽으신다.
+  const KEY_ORDER = ["before", "during", "after", "now", "emergency", "gone"];
+  const keysOf = (c) => [...new Set((byPatient.get(c) ?? []).map((r) => r.key))]
+    .sort((a, b) => KEY_ORDER.indexOf(a) - KEY_ORDER.indexOf(b));
+  /** 문답이 없는 아이는 이름·종을 DB 쪽에서 가져온다 */
+  const headOf = (c) => byPatient.get(c)?.[0] ?? {
+    name: history[c]?.patient?.name ?? c, species: history[c]?.patient?.species,
+    breed: history[c]?.patient?.breed,
+  };
 
   const patientPanes = charts.map((c, pi) => {
-    const rs = byPatient.get(c);
-    const p0 = rs[0];
+    const rs = byPatient.get(c) ?? [];
+    const p0 = headOf(c);
     const keys = keysOf(c);
     // ⚠️ **탭 하나는 실제로 있었던 일이고 나머지는 전부 지어낸 상황이다.**
     // 같은 모양으로 나란히 두면 원장님이 아래 문답도 실제 오간 대화로 읽는다.
@@ -453,12 +517,15 @@ function renderHtml(results, OUT, history = {}) {
       <nav class="stabs">${["record", ...keys].map((k, si) =>
         k === "record"
           ? `<label for="p${pi}s${si}" class="t-rec">📋 진료 기록</label>`
-          : `<label for="p${pi}s${si}" class="t-sim">🤖 시뮬레이션 · ${LABEL[k]}</label>`).join("")}</nav>
+          : `<label for="p${pi}s${si}" class="t-sim${rs[0]?.auto ? " t-auto" : ""}">🤖 ${rs[0]?.auto ? "실제 호출" : "시뮬레이션"} · ${LABEL[k]}</label>`).join("")}
+        ${keys.length ? "" : `<span class="nosim">문답은 아직 없습니다 — 진료 기록과 사정만 실려 있습니다</span>`}</nav>
       <div class="spane" data-p="${pi}" data-s="0">${recordPane(history[c])}</div>
       ${keys.map((k, si0) => { const si = si0 + 1; return `<div class="spane sim" data-p="${pi}" data-s="${si}">
-        <div class="simbar"><b>🤖 AI 채팅 시뮬레이션 — ${LABEL[k]}</b>
+        <div class="simbar${rs[0]?.auto ? " auto" : ""}"><b>🤖 AI 채팅 시뮬레이션 — ${LABEL[k]}</b>
           실제로 오간 대화가 아닙니다. <b>「오늘」을 ${esc(rs.find((r) => r.key === k).asOf)} 로 옮겨 놓고</b>
-          그날 있었을 법한 질문을 던져, 채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다.</div>
+          그날 있었을 법한 질문을 던졌습니다. ${rs[0]?.auto
+            ? "<b>아래 답은 채팅이 실제로 낸 것입니다</b> — 사람이 쓴 것이 아니라 그 기록을 읽히고 물어본 결과입니다. 대신 <b>「넘긴 다음 담당의 답변」은 여기엔 없습니다</b>(그건 손으로 쓴 아이들에만 있습니다)."
+            : "채팅이 어떻게 답해야 하는지를 손으로 써 본 것입니다."}</div>
         ${rowsHtml(rs.filter((r) => r.key === k))}
       </div>`; }).join("")}
     </section>`;
@@ -469,7 +536,7 @@ function renderHtml(results, OUT, history = {}) {
 
   const html = `<!doctype html><html lang="ko"><meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>AI 채팅 시나리오 테스트 — 환자 ${charts.length}명</title>
+  <title>AI 채팅 시나리오 테스트 — 환자 ${charts.length}마리</title>
   <style>
   :root{--line:#e5e9ec;--muted:#6b7885;--soft:#f6f8f9;--text:#16202a}
   *{box-sizing:border-box}body{margin:0;font:15px/1.6 -apple-system,"Segoe UI","Malgun Gothic",sans-serif;color:var(--text)}
@@ -522,6 +589,20 @@ function renderHtml(results, OUT, history = {}) {
   .memobar.none{opacity:.55}
 .rec-head{font-size:.85rem;color:var(--muted);margin-bottom:10px}
 .rec-note{margin-top:6px;color:#a33;font-weight:700}
+/* ⚠️ 사정 메모는 진료 원문과 **다른 것**이다 — 원문은 사실이고 이건 우리가 뽑아 둔 판단이다. 색으로 가른다. */
+.cau{margin:14px 0 16px;padding:12px 14px;border:1px solid #e6d8a8;border-left:4px solid #c9a227;
+  border-radius:8px;background:#fffdf3}
+.cau-h{font-weight:800;color:#7a5f00;margin-bottom:8px;font-size:.9rem}
+.cau-l{margin:0 0 8px;padding-left:20px}
+.cau-l li{margin:5px 0;font-size:.88rem;line-height:1.6;color:#4a3c10}
+.cau-l li b{color:#7a2b2b}
+.cau-l.confirm li{color:#8a1f1f}
+.cau-n{margin:0 0 10px;padding:8px 10px;border-radius:6px;background:#fdeeee;border:1px solid #f0c9c9;
+  font-size:.82rem;line-height:1.6;color:#7a2b2b}
+.cau-f{font-size:.78rem;color:#8a7a45;line-height:1.55;border-top:1px dashed #e6d8a8;padding-top:7px}
+/* 문답이 없는 아이 — 목록에서도 구분이 돼야 원장님이 헛걸음하지 않는다 */
+.nosim{align-self:center;font-size:.8rem;color:var(--muted)}
+nav label.rec-only{opacity:.72;border-style:dashed}
 .rec-adm{font-size:.82rem;margin-bottom:12px;padding:8px 10px;border-radius:10px;background:var(--soft)}
   .recs{display:grid;gap:10px;max-width:860px}
   .rec-v{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
@@ -551,6 +632,11 @@ input[name^="p"],input[name^="s"]{position:absolute;opacity:0;pointer-events:non
 .simbar{background:#f4efff;border:1px solid #ddd0f4;border-radius:10px;padding:9px 12px;
  margin-bottom:12px;font-size:.82rem;color:#4d3a7a;line-height:1.55}
 .simbar b{color:#3d2a68}
+/* ⚠️ 「손으로 쓴 답」과 「채팅이 실제로 낸 답」을 또 한 번 가른다 — 청록. 보라(가정)와도 다르다 */
+.stabs label.t-auto{border-color:#bfe0dd;background:#f2fbfa;color:#1f6f68}
+.simbar.auto{background:#f2fbfa;border-color:#bfe0dd;color:#1f5f59}
+.simbar.auto b{color:#134b46}
+.trap.flagged{color:#8a1f1f;font-weight:700}
 ${charts.map((c, i) => `
 #p${i}:checked~.wrap .pane[data-p="${i}"]{display:block}
 #p${i}:checked~.wrap .plist label[for="p${i}"]{background:var(--text);color:#fff;font-weight:700}
@@ -562,7 +648,15 @@ ${charts.map((c, i) => `
 `).join("")).join("")}
   </style>
   <header>
-    <h1>AI 채팅 시나리오 테스트 — 환자 ${charts.length}명 · 문답 ${results.length}건</h1>
+    <h1>AI 채팅 시나리오 테스트 — 문답 ${byPatient.size}마리 · ${results.length}건${(() => {
+      // ⚠️ 두 종류가 섞여 있다는 걸 **맨 위에서** 말한다. 안 하면 아래 청록 탭이 그냥 다른 색으로만 읽힌다.
+      const a = results.filter((r) => r.auto);
+      const rest = charts.length - byPatient.size;
+      return [
+        a.length ? `손으로 쓴 ${results.length - a.length}건 + 채팅이 실제로 낸 ${a.length}건` : "",
+        rest ? `진료 기록·사정만 실린 ${rest}마리` : "",
+      ].filter(Boolean).map((s) => ` <small style="font-weight:400;opacity:.7">(${s})</small>`).join("");
+    })()}</h1>
     <div class="sum">${Object.entries(tally).map(([k, v]) => `${TRIAGE_KO[k] ?? k} ${v}`).join(" · ")}
      · 생성 ${esc(TODAY)} · 연락처 ${PHONE}</div>
   </header>
@@ -570,7 +664,7 @@ ${charts.map((c, i) => `
   ["record", ...keysOf(c)].map((k, si) => `<input type="radio" name="s${i}" id="p${i}s${si}"${si ? "" : " checked"}>`).join("")).join("")}
 <div class="wrap">
     <nav class="plist">${charts.map((c, i) =>
-      `<label for="p${i}">${esc(byPatient.get(c)[0].name)} <span style="opacity:.6">${esc(c)}</span></label>`).join("")}</nav>
+      `<label for="p${i}"${byPatient.has(c) ? "" : ' class="rec-only"'}>${esc(headOf(c).name)} <span style="opacity:.6">${esc(c)}</span></label>`).join("")}</nav>
     <main>${patientPanes}</main>
   </div>
   <div class="memobar none" id="memobar">

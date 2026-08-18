@@ -32,7 +32,10 @@ const { data: pets } = await sb.from("patient").select("*");
 let bad = 0;
 const { data: cs } = await (await import("./lib/chat-eval.mjs")).signInStaff()
   .then((st) => st.from("patient_caution").select("patient_id").eq("kind", "context").is("resolved_at", null));
-const targets = [...new Set(cs.map((c) => c.patient_id))];
+// `CHARTS=8823,7730` — 새로 넣은 사정만 다시 볼 때
+const only = (process.env.CHARTS || "").split(/[,\s]+/).filter(Boolean);
+const targets = [...new Set(cs.map((c) => c.patient_id))]
+  .filter((id) => !only.length || only.includes(pets.find((x) => x.id === id)?.chart_no));
 
 for (const pid of targets) {
   const p = pets.find((x) => x.id === pid);

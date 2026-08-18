@@ -148,6 +148,14 @@ export async function buildContext(sb, p, today) {
           FEEDING[r.feeding], ELIMINATION[r.elimination], r.special?.trim(), r.comment?.trim(),
         ].filter(Boolean).join(" / ")),
     ]),
+    // ⚠️ **앱(`context.ts` 227~232)과 같은 자리·같은 문구다** — 진료 기록 바로 앞.
+    //    읽어 오기만 하고 여기 안 넣어서, 전수 평가가 **사정 블록 없는 채팅**을 시험하고 있었다.
+    ...((cautions ?? []).length
+      ? ["\n## ⚠️ 이 집에 대해 알고 있어야 하는 것 (직원이 진료기록에서 옮긴 것)\n" +
+         "**진료 원문과 같은 규칙이다 — 읽고 판단하되 문장을 그대로 옮기지 않는다.**\n" +
+         "여기엔 보호자에게 말하면 안 되는 것(비용 협의·1차 병원과의 사정·지난 결정)이 섞여 있다.",
+         ...cautions.map((c) => `- ${c.body}`)]
+      : []),
     "\n## 진료 기록 (최근 순)",
     ...(visits ?? []).map((v) =>
       `\n### ${v.visit_date} — ${v.chief_complaint ?? "(주 증상 미기재)"}` +

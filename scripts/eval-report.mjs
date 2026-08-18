@@ -1,7 +1,7 @@
 /**
  * eval-report.mjs — **환자별·시나리오별 전수 테스트를 HTML 한 장으로.**
  *
- *   node scripts/eval-report.mjs                      # 전부 (환자 69명)
+ *   HAND=scripts/hand-eval/index.mjs AUTO=a.json,b.json node scripts/eval-report.mjs   # API 0회
  *   LIMIT=3 node scripts/eval-report.mjs              # 앞 3명만 (돌려보기)
  *   OUT=경로.html node scripts/eval-report.mjs
  *
@@ -22,7 +22,7 @@ import { loadEnv, loadPrompts, signIn, signInStaff, buildContext, askOnce, GONE,
 // (`/login` 우측 위 드롭다운). 한쪽만 갱신하면 원장님이 여는 건 낡은 쪽이 된다 — 그래서 손으로 복사하지 않는다.
 //
 // ⚠️⚠️ **자료실은 로그인 전 화면이다. 주소를 아는 사람은 누구나 연다.**
-// 옆에 있는 넷은 사업 문서지만 이건 **실제 환자 56명의 진료 원문**이다.
+// 옆에 있는 넷은 사업 문서지만 이건 **실제 환자 113명의 진료 원문**이다.
 // 파일명의 난수는 자물쇠가 아니라 **주소가 새지 않기만 바라는 것**이다 —
 // 보호자에게 앱을 줄 때는 이 링크를 떼거나 로그인 뒤로 옮겨야 한다.
 const REPORT_PATH = "docs/review/2026-08-17-chat-eval-report.html";

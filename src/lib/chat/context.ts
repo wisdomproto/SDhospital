@@ -42,7 +42,7 @@ export async function buildPatientContext(
 
   const { data: p } = await supabase
     .from("patient")
-    .select("id, name, species, breed, sex, birth_date, note")
+    .select("id, name, species, breed, sex, birth_date, note, origin")
     .eq("id", patientId)
     .single();
   if (!p) return null;
@@ -111,6 +111,19 @@ export async function buildPatientContext(
     [p.species, p.breed, p.sex, p.birth_date && `${p.birth_date} 생`].filter(Boolean).join(" · ")
   );
   lines.push(`오늘 날짜: ${today}`);
+  // ⚠️ **「1차 병원에 연락해 보세요」가 성립하지 않는 집이 있다.** 의뢰받은 아이가 아니라
+  // 우리가 1차인 단골이면, 그 말은 **있지도 않은 병원으로 보내는 것**이 된다.
+  // 실제로 그렇게 나갔다 — 리봉이한테 「의뢰해 주신 1차 병원에 연락하라」고 했다.
+  lines.push(
+    p.origin === "regular"
+      ? [
+          "⚠️ **이 아이는 의뢰받은 환자가 아니라 우리 단골이다 — 우리가 그 1차 병원이다.**",
+          "「1차 병원에 연락해 보세요」·「의뢰해 주신 병원」이라는 말을 쓰지 않는다. 갈 곳이 여기다.",
+          "경미한 것도 우리가 본다 — 다만 급하지 않으면 예약해서 오시게 하면 된다.",
+        ].join("\n")
+      : "이 아이는 1차 병원이 의뢰한 환자다 — 경미한 것은 그 병원에서 보는 것이 맞다."
+  );
+
 
   // ⚠️ **떠난 아이는 여기서 먼저 말한다.** 기록이 어느 시점에 멈춰 있는지 채팅은 알 수 없고,
   // 살아 있는 것처럼 답하는 순간 그 보호자에게는 그게 전부가 된다. 실제로 그런 기록이 있다.

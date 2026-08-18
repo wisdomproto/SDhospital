@@ -19,7 +19,7 @@ loadEnv();
 const { SYSTEM, ADMISSION_TAB } = loadPrompts();
 
 const sb = await signIn();
-const { data: pets } = await sb.from("patient").select("id,name,species,breed,sex,birth_date,note");
+const { data: pets } = await sb.from("patient").select("id,name,species,breed,sex,birth_date,note,origin");
 const p = pets.find((x) => x.name === (process.env.PET || "슈슈"));
 if (!p) throw new Error(`${process.env.PET} 를 못 찾았다`);
 

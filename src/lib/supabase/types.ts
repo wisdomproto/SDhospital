@@ -809,6 +809,7 @@ export type Database = {
       }
       patient: {
         Row: {
+          origin: "referral" | "regular"
           birth_date: string | null
           breed: string | null
           photo: string | null
@@ -823,6 +824,7 @@ export type Database = {
           species: string | null
         }
         Insert: {
+          origin?: "referral" | "regular" | null
           birth_date?: string | null
           breed?: string | null
           photo?: string | null
@@ -837,6 +839,7 @@ export type Database = {
           species?: string | null
         }
         Update: {
+          origin?: "referral" | "regular" | null
           birth_date?: string | null
           breed?: string | null
           photo?: string | null

@@ -40,6 +40,10 @@ const TRIAGE_KO = {
   ask_vet: "선생님께 넘김", asking: "되묻는 중", out_of_scope: "증상 문의 아님",
 };
 
+// ⚠️ HAND 블록에서도 `vetReply` 를 쓸 수 있어야 해서 위로 올렸다 (const 는 TDZ 가 있다).
+const { SYSTEM, ADMISSION_TAB, POLISH_SYSTEM } = loadPrompts();
+const anthropic = new Anthropic();
+
 /**
  * `HAND=파일.mjs` — **API 를 한 번도 안 부르고** 손으로 쓴 문답을 그대로 HTML 로 만든다.
  * 그 파일은 결과 배열 하나를 default 로 내보내면 된다(형식은 아래 `append` 가 넣는 것과 같다).
@@ -58,7 +62,7 @@ if (process.env.HAND) {
    *    원장님이 어느 쪽을 보고 계신지 알 수 없게 된다. **문답이 아직 없는 아이만** 채운다.
    * ⚠️ **화면에서 갈라 놓는다.** 손으로 쓴 것은 「이렇게 답해야 한다」는 우리 주장이고,
    *    이쪽은 「실제로 이렇게 답했다」는 결과다 — 섞이면 둘 다 못 읽는다.
-   * ⚠️ 여기엔 **넘긴 다음(담당의 답변)이 없다.** 그건 손으로 쓴 쪽에만 있다.
+   * ⚠️ **넘긴 다음(담당의 답변)은 `vet-fill.mjs` 로 따로 채운다** — 없으면 그 칸만 빈다.
    */
   if (process.env.AUTO) {
     const hand = new Set(rows.map((r) => r.chart));
@@ -68,7 +72,7 @@ if (process.env.HAND) {
     for (const r of auto) {
       rows.push({
         chart: r.chart, name: r.name, gone: r.gone, key: r.key, asOf: r.asOf,
-        q: r.question, triage: r.triage, text: r.text, error: r.error, auto: true,
+        q: r.question, triage: r.triage, text: r.text, error: r.error, auto: true, vet: r.vet,
         trap: (r.flags ?? []).length ? `검사에 걸림 · ${r.flags.join(" / ")}` : "",
       });
     }
@@ -107,8 +111,6 @@ if (process.env.HAND) {
   process.exit(0);
 }
 
-const { SYSTEM, ADMISSION_TAB, POLISH_SYSTEM } = loadPrompts();
-const anthropic = new Anthropic();
 const sb = await signIn();
 
 const CONCURRENCY = Number(process.env.CONCURRENCY || 6);

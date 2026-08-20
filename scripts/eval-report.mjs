@@ -713,10 +713,18 @@ ${charts.map((c, i) => `
     <main>${patientPanes}</main>
   </div>
   <div class="memobar none" id="memobar">
-    <span>✍️ 코멘트 <b id="memon">0</b>개</span>
+    <span>✍️ 코멘트 <b id="memon">0</b>개
+      <span style="opacity:.65;font-weight:400">· 아직 이 브라우저에만 있습니다</span></span>
     <button type="button" id="memocopy">복사</button>
     <button type="button" id="memosave">파일로 저장</button>
+    <button type="button" id="memosend" style="border-color:#1d6b45;color:#1d6b45">DB로 보내기</button>
   </div>
+  <script>
+  /* ⚠️ 공개용 anon 키다 — 앱이 브라우저에 내려 주는 것과 같은 값이라 여기 있어도 새는 게 아니다.
+     쓰기는 submit_chat_review DEFINER 하나로만 열려 있고, 읽기는 RLS 가 직원만 통과시킨다. */
+  var SB_URL = ${JSON.stringify(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "")};
+  var SB_KEY = ${JSON.stringify(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "")};
+  </script>
   <script>
   /* ⚠️ **탭은 이 스크립트 없이도 돈다**(라디오+CSS). 여기서 얹는 건 메모장뿐이라,
      스크립트가 막힌 데서 열어도 보고서는 그대로 읽힌다.
@@ -757,10 +765,59 @@ ${charts.map((c, i) => `
       return "# 채팅 검토 코멘트 (" + new Date().toISOString().slice(0, 10) + ")\\n"
         + "총 " + boxes.filter(function (b) { return b.value.trim(); }).length + "건" + out.join("");
     }
+    /* ⚠️⚠️ **꺼내지 않으면 날아간다.** localStorage 는 이 브라우저·이 주소에만 있고,
+       로컬 파일과 배포본은 **주소가 달라 서로 안 따라온다.** 방문기록을 지워도 사라진다.
+       그래서 쓴 게 있는 채로 창을 닫으려 하면 붙잡는다 — 저장 버튼을 누르시게. */
+    var sentAll = false;
+    window.addEventListener("beforeunload", function (e) {
+      if (sentAll) return;
+      if (!boxes.some(function (b) { return b.value.trim(); })) return;
+      e.preventDefault(); e.returnValue = "";
+    });
     document.getElementById("memocopy").onclick = function () {
       var t = dump();
       navigator.clipboard.writeText(t).then(function () { alert("코멘트를 복사했습니다. 붙여넣어 보내 주세요."); },
         function () { window.prompt("아래를 복사해 주세요", t); });
+    };
+    /** 로컬에 쌓인 것을 **한 번에** DB 로. 같은 문답은 덮어쓰므로 여러 번 눌러도 안 쌓인다. */
+    var send = document.getElementById("memosend");
+    if (!SB_URL || !SB_KEY) { send.disabled = true; send.title = "키가 없어 이 사본에서는 못 보냅니다"; }
+    send.onclick = function () {
+      var items = [];
+      boxes.forEach(function (b) {
+        if (!b.value.trim()) return;
+        var qa = b.closest(".qa"), pane = b.closest(".pane"), k = b.dataset.k.split("|");
+        items.push({
+          k: b.dataset.k, chart: k[0], scenario: b.dataset.when || k[1],
+          question: qa.querySelector(".q").textContent.trim(),
+          answer: qa.querySelector(".a") ? qa.querySelector(".a").textContent.trim().replace(/\\s+/g, " ") : "",
+          comment: b.value.trim(),
+        });
+      });
+      if (!items.length) { alert("보낼 코멘트가 없습니다."); return; }
+      send.disabled = true; send.textContent = "보내는 중…";
+      /* 함수가 한 번에 500건까지만 받는다 — 끊어서 보낸다 */
+      var chunks = [], i;
+      for (i = 0; i < items.length; i += 400) chunks.push(items.slice(i, i + 400));
+      var sent = 0;
+      chunks.reduce(function (chain, part) {
+        return chain.then(function () {
+          return fetch(SB_URL + "/rest/v1/rpc/submit_chat_review", {
+            method: "POST",
+            headers: { apikey: SB_KEY, "Content-Type": "application/json" },
+            body: JSON.stringify({ p_items: part }),
+          }).then(function (r) {
+            if (!r.ok) return r.text().then(function (t) { throw new Error(r.status + " " + t); });
+            return r.json().then(function (n) { sent += Number(n) || 0; });
+          });
+        });
+      }, Promise.resolve()).then(function () {
+        send.textContent = "DB로 보내기";
+        alert(sent + "건을 저장했습니다. 이제 창을 닫으셔도 됩니다.");
+        sentAll = true;
+      }).catch(function (e) {
+        alert("보내지 못했습니다 — " + e.message + "\\n\\n「파일로 저장」으로 꺼내 두세요.");
+      }).then(function () { send.disabled = false; });
     };
     document.getElementById("memosave").onclick = function () {
       var a = document.createElement("a");

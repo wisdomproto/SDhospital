@@ -74,3 +74,21 @@ grant execute on function submit_chat_review(jsonb) to anon, authenticated;
 
 comment on table chat_review_comment is
   '원장님 채팅 검토 코멘트. 공개 검토본에서 DEFINER(submit_chat_review)로만 들어온다.';
+
+-- ── 읽어 오기 (0041 로 따로 올렸다가 여기 합침) ──────────────────────────────
+-- 검토본을 **다른 컴퓨터에서 열어도** 앞서 쓴 코멘트가 보이게 한다.
+-- ⚠️ 표의 select 는 직원만이라 익명 세션은 못 읽는다. 쓰기와 같은 방식으로 — DEFINER 하나.
+-- ⚠️ 돌려주는 건 `item_key` 와 코멘트뿐이다. 질문·채팅 답은 페이지가 이미 갖고 있다.
+-- ⚠️ 읽기를 여는 것이 새 노출은 아니다 — **그 페이지엔 이미 환자 113명의 진료 원문이 있다.**
+--    진짜 해결은 이 화면을 로그인 뒤로 옮기는 것이고, 그건 따로 남아 있다.
+create or replace function get_chat_review()
+returns table (item_key text, comment text)
+language sql
+security definer
+set search_path = public
+as $fn$
+  select c.item_key, c.comment from chat_review_comment c order by c.submitted_at;
+$fn$;
+
+revoke all on function get_chat_review() from public;
+grant execute on function get_chat_review() to anon, authenticated;

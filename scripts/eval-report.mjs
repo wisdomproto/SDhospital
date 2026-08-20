@@ -714,7 +714,7 @@ ${charts.map((c, i) => `
   </div>
   <div class="memobar none" id="memobar">
     <span>✍️ 코멘트 <b id="memon">0</b>개
-      <span style="opacity:.65;font-weight:400">· 아직 이 브라우저에만 있습니다</span></span>
+      <span style="opacity:.65;font-weight:400" id="memofrom">· 아직 안 보낸 초안입니다</span></span>
     <button type="button" id="memocopy">복사</button>
     <button type="button" id="memosave">파일로 저장</button>
     <button type="button" id="memosend" style="border-color:#1d6b45;color:#1d6b45">DB로 보내기</button>
@@ -732,6 +732,7 @@ ${charts.map((c, i) => `
      주소가 달라지면(로컬 vs 배포본) 안 따라오고, 방문기록을 지우면 사라진다.
      그래서 다 쓰고 나면 **아래 막대에서 반드시 꺼내야 한다.** */
   (function () {
+    var sentAll = false;
     var KEY = "sdchat-memo:", bar = document.getElementById("memobar"), n = document.getElementById("memon");
     var boxes = [].slice.call(document.querySelectorAll(".memo textarea"));
     function count() {
@@ -749,6 +750,34 @@ ${charts.map((c, i) => `
       });
     });
     count();
+
+    /**
+     * ⚠️ **DB 에 있는 것을 먼저 불러온다** — 안 하면 다른 컴퓨터에서 열었을 때
+     * 이미 보내 둔 코멘트가 하나도 안 보인다.
+     * 보내고 나면 로컬에서 지우기 때문에 **localStorage 에 남는 건 「아직 안 보낸 초안」뿐**이다.
+     * 그래서 규칙이 단순하다 — **비어 있는 칸만 DB 것으로 채운다.** 겹칠 일이 없다.
+     */
+    if (SB_URL && SB_KEY) {
+      fetch(SB_URL + "/rest/v1/rpc/get_chat_review", {
+        method: "POST", headers: { apikey: SB_KEY, "Content-Type": "application/json" }, body: "{}",
+      }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+        var by = {}, got = 0;
+        (rows || []).forEach(function (x) { by[x.item_key] = x.comment; });
+        boxes.forEach(function (b) {
+          if (b.value.trim() || !by[b.dataset.k]) return;
+          b.value = by[b.dataset.k];
+          b.classList.add("filled");
+          try { localStorage.setItem(KEY + b.dataset.k, b.value); } catch (e) {}
+          got++;
+        });
+        if (got) {
+          sentAll = true;   // 방금 DB 에서 온 것이라 창 닫을 때 붙잡을 이유가 없다
+          document.getElementById("memofrom").textContent = " · DB에서 " + got + "건 불러옴";
+        }
+        count();
+      }).catch(function () { /* 못 불러와도 화면은 그대로 쓸 수 있어야 한다 */ });
+    }
+
     /** 쓴 것만 모아 환자별로 묶는다. 질문과 채팅 답까지 같이 담아야 나중에 짝이 맞는다. */
     function dump() {
       var out = [], last = "";
@@ -768,7 +797,6 @@ ${charts.map((c, i) => `
     /* ⚠️⚠️ **꺼내지 않으면 날아간다.** localStorage 는 이 브라우저·이 주소에만 있고,
        로컬 파일과 배포본은 **주소가 달라 서로 안 따라온다.** 방문기록을 지워도 사라진다.
        그래서 쓴 게 있는 채로 창을 닫으려 하면 붙잡는다 — 저장 버튼을 누르시게. */
-    var sentAll = false;
     window.addEventListener("beforeunload", function (e) {
       if (sentAll) return;
       if (!boxes.some(function (b) { return b.value.trim(); })) return;
@@ -812,9 +840,14 @@ ${charts.map((c, i) => `
           });
         });
       }, Promise.resolve()).then(function () {
+        /* ⚠️ **올렸으면 로컬에서 지운다.** 그래야 localStorage 에는 「아직 안 보낸 초안」만 남고,
+           DB 가 유일한 정본이 된다 — 「어느 쪽이 최신인가」를 따질 일이 아예 없어진다.
+           화면의 글자는 그대로 둔다(방금 쓰신 게 사라지면 놀라신다). 다음에 열면 DB 에서 온다. */
+        items.forEach(function (it) { try { localStorage.removeItem(KEY + it.k); } catch (e) {} });
         send.textContent = "DB로 보내기";
         alert(sent + "건을 저장했습니다. 이제 창을 닫으셔도 됩니다.");
         sentAll = true;
+        document.getElementById("memofrom").textContent = " · DB에 저장됨";
       }).catch(function (e) {
         alert("보내지 못했습니다 — " + e.message + "\\n\\n「파일로 저장」으로 꺼내 두세요.");
       }).then(function () { send.disabled = false; });

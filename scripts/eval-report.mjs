@@ -550,11 +550,23 @@ function renderHtml(results, OUT, history = {}) {
   <title>AI 채팅 시나리오 테스트 — 환자 ${charts.length}마리</title>
   <style>
   :root{--line:#e5e9ec;--muted:#6b7885;--soft:#f6f8f9;--text:#16202a}
-  *{box-sizing:border-box}body{margin:0;font:15px/1.6 -apple-system,"Segoe UI","Malgun Gothic",sans-serif;color:var(--text)}
-  header{padding:18px 22px;border-bottom:1px solid var(--line)}
+  /* ⚠️ 예전엔 .wrap 이 calc(100vh - 74px) 였다 — 헤더 높이를 숫자로 박아 둔 것이라
+     헤더에 무엇 하나만 더 넣어도 본문이 그만큼 잘렸다(저장 막대를 넣자마자 그랬다).
+     세로 flex 로 바꿔 **헤더는 제 높이만큼, 본문은 남는 만큼** 가져가게 한다. */
+  *{box-sizing:border-box}body{margin:0;font:15px/1.6 -apple-system,"Segoe UI","Malgun Gothic",sans-serif;color:var(--text);
+   height:100vh;display:flex;flex-direction:column}
+  /* ⚠️ 헤더는 스크롤되지 않는다(.wrap 이 100vh-74px). 저장 막대를 여기 두면 **항상 보인다** —
+     오른쪽 아래 구석에 뒀더니 「저장 버튼이 안 보인다」는 말을 들었다. */
+  header{padding:14px 22px;border-bottom:1px solid var(--line);flex:0 0 auto;
+   display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .hd-l{flex:1 1 320px;min-width:0}
+  /* ⚠️⚠️ **탭을 굴리는 라디오 609개를 숨긴다.** 숨기는 규칙이 없어서 헤더 밑에 점들이 깔려 있었다 —
+     스크립트 없이 도는 탭을 만드느라 넣어 놓고 감추는 걸 잊은 것이다.
+     display:none 대신 화면 밖으로 뺀다 — 그래야 키보드로도 탭을 옮길 수 있다. (⚠️ 이 파일의 CSS/스크립트 블록은 템플릿 리터럴 안이다 — 주석에도 백틱을 쓰면 안 된다.) */
+  body>input[type=radio]{position:absolute;width:1px;height:1px;opacity:0;margin:0;pointer-events:none}
   h1{margin:0;font-size:1.15rem}
   .sum{margin-top:6px;color:var(--muted);font-size:.85rem}
-  .wrap{display:grid;grid-template-columns:210px minmax(0,1fr);height:calc(100vh - 74px)}
+  .wrap{display:grid;grid-template-columns:210px minmax(0,1fr);flex:1 1 auto;min-height:0}
   .plist{border-right:1px solid var(--line);overflow:auto;padding:8px}
   .plist button{display:block;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:9px;
    background:none;font:inherit;font-size:.88rem;cursor:pointer;color:var(--text)}
@@ -590,14 +602,21 @@ function renderHtml(results, OUT, history = {}) {
    border-radius:10px;background:#fffdf3;font:inherit;font-size:.85rem;color:var(--text);resize:vertical}
   .memo textarea:focus{outline:2px solid #e0c56a;outline-offset:1px;background:#fff}
   .qa:has(.memo textarea.filled){box-shadow:inset 3px 0 0 #e0b93a}
-  .memobar{position:fixed;right:16px;bottom:16px;z-index:5;display:flex;gap:8px;align-items:center;
-   background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 9px 7px 14px;
-   box-shadow:0 4px 18px rgba(0,0,0,.13);font-size:.82rem}
+  .memobar{display:flex;gap:10px;align-items:center;flex:0 0 auto;
+   background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 8px 6px 14px;
+   font-size:.82rem}
   .memobar b{color:#8a6d1f}
   .memobar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;
    font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
   .memobar button:hover{background:var(--soft)}
-  .memobar.none{opacity:.55}
+  /* ⚠️ **비었다고 숨기지 않는다.** 55% 로 흐려 놨더니 「저장 버튼이 안 보인다」는 말을 들었다 —
+     화면 오른쪽 아래 구석에 있는 데다 반투명하면 없는 것과 같다. 흐리게가 아니라 **조용하게** 둔다. */
+  .memobar.none{background:var(--soft)}
+  .memobar.none #memosend{background:#fff;color:#1d6b45}
+  /* 보내기가 이 막대의 본 일이다 — 채워진 버튼으로 눈에 먼저 들어오게 */
+  #memosend{background:#1d6b45;border-color:#1d6b45;color:#fff}
+  #memosend:hover{background:#175538}
+  #memosend:disabled{opacity:.5;cursor:default}
 .rec-head{font-size:.85rem;color:var(--muted);margin-bottom:10px}
 .rec-note{margin-top:6px;color:#a33;font-weight:700}
 /* ⚠️ 사정 메모는 진료 원문과 **다른 것**이다 — 원문은 사실이고 이건 우리가 뽑아 둔 판단이다. 색으로 가른다. */
@@ -680,6 +699,7 @@ ${charts.map((c, i) => `
 `).join("")).join("")}
   </style>
   <header>
+    <div class="hd-l">
     <h1>AI 채팅 시나리오 테스트 — 문답 ${byPatient.size}마리 · ${results.length}건${(() => {
       // ⚠️ 두 종류가 섞여 있다는 걸 **맨 위에서** 말한다. 안 하면 아래 청록 탭이 그냥 다른 색으로만 읽힌다.
       const a = results.filter((r) => r.auto);
@@ -691,6 +711,12 @@ ${charts.map((c, i) => `
     })()}</h1>
     <div class="sum">${Object.entries(tally).map(([k, v]) => `${TRIAGE_KO[k] ?? k} ${v}`).join(" · ")}
      · 생성 ${esc(TODAY)} · 연락처 ${PHONE}</div>
+    </div>
+    <div class="memobar none" id="memobar">
+      <span>✍️ 코멘트 <b id="memon">0</b>개
+        <span style="opacity:.65;font-weight:400" id="memofrom">· 칸에 적으시면 여기서 저장합니다</span></span>
+      <button type="button" id="memosend">DB로 보내기</button>
+    </div>
   </header>
   ${charts.map((c, i) => `<input type="radio" name="pt" id="p${i}"${i ? "" : " checked"}>` +
   ["record", ...keysOf(c)].map((k, si) => `<input type="radio" name="s${i}" id="p${i}s${si}"${si ? "" : " checked"}>`).join("")).join("")}
@@ -712,13 +738,6 @@ ${charts.map((c, i) => `
       }).join("")}</nav>
     <main>${patientPanes}</main>
   </div>
-  <div class="memobar none" id="memobar">
-    <span>✍️ 코멘트 <b id="memon">0</b>개
-      <span style="opacity:.65;font-weight:400" id="memofrom">· 아직 안 보낸 초안입니다</span></span>
-    <button type="button" id="memocopy">복사</button>
-    <button type="button" id="memosave">파일로 저장</button>
-    <button type="button" id="memosend" style="border-color:#1d6b45;color:#1d6b45">DB로 보내기</button>
-  </div>
   <script>
   /* ⚠️ 공개용 anon 키다 — 앱이 브라우저에 내려 주는 것과 같은 값이라 여기 있어도 새는 게 아니다.
      쓰기는 submit_chat_review DEFINER 하나로만 열려 있고, 읽기는 RLS 가 직원만 통과시킨다. */
@@ -738,6 +757,9 @@ ${charts.map((c, i) => `
     function count() {
       var c = boxes.filter(function (b) { return b.value.trim(); }).length;
       n.textContent = c; bar.className = "memobar" + (c ? "" : " none");
+      /* 0개일 때 「아직 안 보낸 초안입니다」는 말이 안 된다 — 그때는 뭘 하는 자리인지만 알려 준다 */
+      var from = document.getElementById("memofrom");
+      if (!sentAll) from.textContent = c ? " · 아직 안 보낸 초안입니다" : " · 칸에 적으시면 여기서 저장합니다";
     }
     boxes.forEach(function (b) {
       var k = KEY + b.dataset.k;
@@ -778,35 +800,11 @@ ${charts.map((c, i) => `
       }).catch(function () { /* 못 불러와도 화면은 그대로 쓸 수 있어야 한다 */ });
     }
 
-    /** 쓴 것만 모아 환자별로 묶는다. 질문과 채팅 답까지 같이 담아야 나중에 짝이 맞는다. */
-    function dump() {
-      var out = [], last = "";
-      boxes.forEach(function (b) {
-        if (!b.value.trim()) return;
-        var qa = b.closest(".qa"), pane = b.closest(".pane");
-        var who = pane ? pane.querySelector("h2").textContent.trim() : b.dataset.k.split("|")[0];
-        var when = b.dataset.when || b.dataset.k.split("|")[1];
-        if (who !== last) { out.push("\\n\\n## " + who); last = who; }
-        out.push("\\n\\n### [" + when + "] " + qa.querySelector(".q").textContent.trim());
-        out.push("\\n- 채팅 답: " + qa.querySelector(".a").textContent.trim().replace(/\\s+/g, " "));
-        out.push("\\n- **원장님:** " + b.value.trim());
-      });
-      return "# 채팅 검토 코멘트 (" + new Date().toISOString().slice(0, 10) + ")\\n"
-        + "총 " + boxes.filter(function (b) { return b.value.trim(); }).length + "건" + out.join("");
-    }
-    /* ⚠️⚠️ **꺼내지 않으면 날아간다.** localStorage 는 이 브라우저·이 주소에만 있고,
-       로컬 파일과 배포본은 **주소가 달라 서로 안 따라온다.** 방문기록을 지워도 사라진다.
-       그래서 쓴 게 있는 채로 창을 닫으려 하면 붙잡는다 — 저장 버튼을 누르시게. */
     window.addEventListener("beforeunload", function (e) {
       if (sentAll) return;
       if (!boxes.some(function (b) { return b.value.trim(); })) return;
       e.preventDefault(); e.returnValue = "";
     });
-    document.getElementById("memocopy").onclick = function () {
-      var t = dump();
-      navigator.clipboard.writeText(t).then(function () { alert("코멘트를 복사했습니다. 붙여넣어 보내 주세요."); },
-        function () { window.prompt("아래를 복사해 주세요", t); });
-    };
     /** 로컬에 쌓인 것을 **한 번에** DB 로. 같은 문답은 덮어쓰므로 여러 번 눌러도 안 쌓인다. */
     var send = document.getElementById("memosend");
     if (!SB_URL || !SB_KEY) { send.disabled = true; send.title = "키가 없어 이 사본에서는 못 보냅니다"; }
@@ -849,13 +847,8 @@ ${charts.map((c, i) => `
         sentAll = true;
         document.getElementById("memofrom").textContent = " · DB에 저장됨";
       }).catch(function (e) {
-        alert("보내지 못했습니다 — " + e.message + "\\n\\n「파일로 저장」으로 꺼내 두세요.");
+        alert("보내지 못했습니다 — " + e.message + "\\n\\n창을 닫지 마시고 잠시 뒤 다시 눌러 주세요.");
       }).then(function () { send.disabled = false; });
-    };
-    document.getElementById("memosave").onclick = function () {
-      var a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([dump()], { type: "text/markdown;charset=utf-8" }));
-      a.download = "채팅검토-코멘트.md"; a.click(); URL.revokeObjectURL(a.href);
     };
   })();
   </script>
